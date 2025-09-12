@@ -27,3 +27,21 @@ function __cpcready_echo_green() {
   local text="$1"
   echo -e "\033[0;32m${text}\033[0m"
 }
+
+# Función para mostrar un mensaje de error y salir del script.
+# Uso: __error_exit "Mensaje de error"
+function __error_exit() {
+  echo "Error: $1" >&2
+  exit 1
+}
+
+# Función para verificar si un archivo o directorio existe.
+# Uso: if file_exists "mi_archivo.txt"; then ...
+function __file_exists() {
+  local path="$1"
+  if [[ -e "$path" ]]; then
+    return 0  # Verdadero (existe)
+  else
+    return 1  # Falso (no existe)
+  fi
+}

@@ -1,24 +1,16 @@
 #!/bin/bash
 
-function __cpc_version() {
-    local version=$(cat $CPCREADY_DIR/var/VERSION)
-	echo ""
-	__sdkman_echo_yellow "SDKMAN $version"
-}
+# La variable $0 contiene la ruta del script actual
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+CPCREADY_LIB_DIR="$DIR/../lib"
 
-function __error_exit() {
-  echo "Error: $1" >&2
-  exit 1
-}
+# Carga la librería de funciones comunes
+source "$CPCREADY_LIB_DIR/cpcready-common.sh"
 
-# Función para verificar si un archivo o directorio existe.
-# Uso: if file_exists "mi_archivo.txt"; then ...
-function __file_exists() {
-  local path="$1"
-  if [[ -e "$path" ]]; then
-    return 0  # Verdadero (existe)
-  else
-    return 1  # Falso (no existe)
-  fi
-}
+version=$(cat $DIR/../var/VERSION)
+echo ""
+__cpcready_echo_yellow "CPCReady versión: $version"
+
+
+
 
