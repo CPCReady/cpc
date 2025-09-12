@@ -1,6 +1,5 @@
 #!/bin/bash
-# Obtiene la ruta al directorio 'lib' de forma segura
-# (Esto asume que este script está en .cpc/scripts/)
+
 # La variable $0 contiene la ruta del script actual
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 CPCREADY_LIB_DIR="$DIR/../lib"

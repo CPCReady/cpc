@@ -6,6 +6,13 @@ CPCREADY_DIR="$HOME/.cpcready"
 # Agrega el directorio 'bin' a tu PATH para que el comando 'cpc' funcione
 export PATH="$CPCREADY_DIR/bin:$PATH"
 
+# La variable $0 contiene la ruta del script actual
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+CPCREADY_LIB_DIR="$DIR/../lib"
+
+# Carga la librería de funciones comunes
+source "$CPCREADY_LIB_DIR/cpcready-common.sh"
+
 # Define una función principal para el comando 'cpc'
 cpc() {
   # Obtiene el primer argumento (la opción: save, run, disc)
