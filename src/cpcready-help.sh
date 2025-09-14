@@ -4,12 +4,14 @@
 source "$CPCREADY_DIR/lib/cpcready-common.sh"
 
 __get_version
-__cpcready_echo_green "Available commands:"
 echo""
-__cpcready_echo_command_help "  DISC:   " "Crea disco virtual"
-__cpcready_echo_blue "  DISC:   " 
-__cpcready_echo_blue "  DISC:   " 
-__cpcready_echo_blue "  DISC:   " 
+
+echo "Usage: cpc [command] [args...]"
+echo ""
+echo "For more details on a specific command, use: cpc [command] help"
+echo ""
+echo "Example: cpc save myfile.bas"
+echo ""
 
 # Ejemplo de acción:
 # cp "$FILE_TO_SAVE" "$HOME/.cpc/saved_files/"

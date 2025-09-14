@@ -4,7 +4,7 @@
 export PATH="$CPCREADY_DIR/bin:$PATH"
 
 # Carga la librería de funciones comunes
-source ="$CPCREADY_DIR/lib/cpcready-common.sh"
+source "$CPCREADY_DIR/lib/cpcready-common.sh"
 
 # Define una función principal para el comando 'cpc'
 cpc() {
@@ -33,10 +33,13 @@ cpc() {
     "help")
       "$CPCREADY_DIR/src/cpcready-help.sh" "$@"
       ;;
+    "commands")
+      "$CPCREADY_DIR/src/cpcready-commands.sh" "$@"
+      ;;  
     *)
       # Muestra un mensaje de error si el comando no es válido
       echo "Comando no reconocido: $cmd"
-      echo "Uso: cpc [save|run|disc|version]s"
+      echo "Uso: cpc [save|run|disc|version|commands|help] [args...]"
       return 1
       ;;
   esac
