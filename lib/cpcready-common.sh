@@ -28,6 +28,14 @@ function __cpcready_echo_green() {
   echo -e "\033[0;32m${text}\033[0m"
 }
 
+# Función para mostrar texto en color azul
+# Uso: __cpcready_echo_blue "Este es un mensaje informativo"
+function __cpcready_echo_command_help() {
+  local text="$1"
+  local description="$2"
+  echo -e "\033[0;34m${text}\033[0m${description}"
+}
+
 # Función para mostrar un mensaje de error y salir del script.
 # Uso: __error_exit "Mensaje de error"
 function __error_exit() {
