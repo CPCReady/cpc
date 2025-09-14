@@ -7,10 +7,4 @@ CPCREADY_LIB_DIR="$DIR/../lib"
 # Carga la librería de funciones comunes
 source "$CPCREADY_LIB_DIR/cpcready-common.sh"
 
-version=$(cat $DIR/../var/VERSION)
-echo ""
-__cpcready_echo_yellow "CPCReady versión: $version"
-echo ""
-
-
-
+__get_version

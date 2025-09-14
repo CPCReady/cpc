@@ -35,8 +35,9 @@ cpc() {
     "version")
       "$CPCREADY_DIR/src/cpcready-version.sh" "$@"
       ;;
-
-
+    "help")
+      "$CPCREADY_DIR/src/cpcready-help.sh" "$@"
+      ;;
     *)
       # Muestra un mensaje de error si el comando no es válido
       echo "Comando no reconocido: $cmd"

@@ -7,21 +7,14 @@ CPCREADY_LIB_DIR="$DIR/../lib"
 # Carga la librería de funciones comunes
 source "$CPCREADY_LIB_DIR/cpcready-common.sh"
 
-
-echo "Ejecutando la acción 'DISC'..."
-# Aquí va tu lógica para "guardar" algo.
-# Por ejemplo, podrías recibir un nombre de archivo
-# y copiarlo a un directorio específico.
-
-# Los argumentos pasados desde 'cpc()' están disponibles aquí
-if [ -z "$1" ]; then
-  echo "Error: Se necesita un nombre de archivo para 'DISC'."
-  exit 1
-fi
-
-FILE_TO_SAVE="$1"
-echo "PARAMETRO: $FILE_TO_SAVE"
-__cpcready_echo_red "Este es un mensaje de error"
+__get_version
+__cpcready_echo_green "Available commands:"
+echo""
+__cpcready_echo_blue "  DISC:   " && echo "Crea disco virtual"
+__cpcready_echo_blue "  DISC:   " 
+__cpcready_echo_blue "  DISC:   " 
+__cpcready_echo_blue "  DISC:   " 
 
 # Ejemplo de acción:
 # cp "$FILE_TO_SAVE" "$HOME/.cpc/saved_files/"
+

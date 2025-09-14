@@ -45,3 +45,13 @@ function __file_exists() {
     return 1  # Falso (no existe)
   fi
 }
+
+# funcion que devuelve la version del software
+# Uso: __get_version
+function __get_version(){
+  DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+  version=$(cat $DIR/../var/VERSION)
+  echo ""
+  __cpcready_echo_yellow "CPCReady: $version"
+  echo ""
+}
