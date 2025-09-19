@@ -58,7 +58,5 @@ function __file_exists() {
 # Uso: __get_version
 function __get_version(){
   version=$(cat $CPCREADY_DIR/var/VERSION)
-  echo ""
   __cpcready_echo_yellow "CPCReady: $version"
-  echo ""
 }
