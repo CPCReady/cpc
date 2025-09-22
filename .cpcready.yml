@@ -1,0 +1,18 @@
+project: Prueba de dashboard
+mode: 2
+author: Tu Nombre
+description: Este es un proyecto de prueba para el dashboard de CPCReady.
+cpc_model: 464
+drive_a: disk_a.dsk
+drive_b: disk_b.dsk
+drive_select: B
+version: 0.1.0
+license: MIT
+scripts:
+  - name: Iniciar Proyecto
+    command: echo 'Iniciando proyecto...'
+  - name: Compilar Código
+    command: echo 'Compilando código...'
+  - name: Ejecutar Tests
+    command: echo 'Ejecutando tests...'
+doc: https://github.com/charmbracelet/gum

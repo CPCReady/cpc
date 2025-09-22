@@ -1,5 +1,13 @@
 #!/bin/bash
 
+RED='\e[31m'
+BLUE='\e[34m'
+GREEN='\e[32m'
+YELLOW='\e[33m'
+YELLOW_BOLD='\e[1;33m'
+RESET='\e[0m'
+
+
 # Función para imprimir texto en color rojo.
 # Uso: __cpcready_echo_red "Este es un mensaje de error"
 function __cpcready_echo_red() {
@@ -58,5 +66,5 @@ function __file_exists() {
 # Uso: __get_version
 function __get_version(){
   version=$(cat $CPCREADY_DIR/var/VERSION)
-  __cpcready_echo_yellow "CPCReady: $version"
+  echo "CPCReady: $version"
 }

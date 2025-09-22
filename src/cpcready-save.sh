@@ -2,7 +2,7 @@
 
 # Carga la librería de funciones comunes
 source "$CPCREADY_DIR/lib/cpcready-common.sh"
-
+source "$CPCREADY_DIR/etc/logo.sh"
 echo "Ejecutando la acción 'SAVE'..."
 # Aquí va tu lógica para "guardar" algo.
 # Por ejemplo, podrías recibir un nombre de archivo
