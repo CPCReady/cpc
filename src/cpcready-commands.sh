@@ -2,14 +2,15 @@
 
 # Carga la librería de funciones comunes
 source "$CPCREADY_DIR/lib/cpcready-common.sh"
-
+echo 
 __cpcready_echo_green "Available commands:"
 echo""
-__cpcready_echo_command_help "  disc       " "Crea disco virtual"
-__cpcready_echo_command_help "  commands   " "Listado de comandos disponibles"
-__cpcready_echo_command_help "  run        " "Ejecuta un programa en el emulador"
-__cpcready_echo_command_help "  save       " "Guarda un archivo en el disco virtual"
-__cpcready_echo_command_help "  version    " "Muestra la versión del software"
+__cpcready_echo_command_help "  disc       " "Create a virtual disk"
+__cpcready_echo_command_help "  commands   " "List available commands"
+__cpcready_echo_command_help "  run        " "Run a program in the emulator"
+__cpcready_echo_command_help "  save       " "Save a file to the virtual disk"
+__cpcready_echo_command_help "  version    " "Show the software version"
+__cpcready_echo_command_help "  help       " "Show this help message"
 echo ""
 
 # Ejemplo de acción:
