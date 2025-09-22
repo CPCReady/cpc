@@ -19,27 +19,41 @@ cpc() {
   case "$cmd" in
     "save")
       # Ejecuta el script de 'save' y le pasa el resto de los argumentos
+      source "$CPCREADY_DIR/etc/logo.sh"
       "$CPCREADY_DIR/src/cpcready-save.sh" "$@"
       ;;
     "run")
+      source "$CPCREADY_DIR/etc/logo.sh"
       "$CPCREADY_DIR/src/cpcready-run.sh" "$@"
       ;;
     "disc")
+      source "$CPCREADY_DIR/etc/logo.sh"
       "$CPCREADY_DIR/src/cpcready-disc.sh" "$@"
       ;;
     "version")
-      "$CPCREADY_DIR/src/cpcready-version.sh" "$@"
+      source "$CPCREADY_DIR/etc/logo.sh"
       ;;
     "help")
+      source "$CPCREADY_DIR/etc/logo.sh"
       "$CPCREADY_DIR/src/cpcready-help.sh" "$@"
       ;;
     "commands")
+      source "$CPCREADY_DIR/etc/logo.sh"
       "$CPCREADY_DIR/src/cpcready-commands.sh" "$@"
       ;;  
     *)
+      if [ -z "$cmd" ]; then
+        # Si no se proporciona ningún comando, muestra la ayuda
+        source "$CPCREADY_DIR/etc/logo.sh"
+        "$CPCREADY_DIR/src/cpcready-help.sh"
+        return 0
+      fi
       # Muestra un mensaje de error si el comando no es válido
-      echo "Comando no reconocido: $cmd"
-      echo "Uso: cpc [save|run|disc|version|commands|help] [args...]"
+
+      source "$CPCREADY_DIR/etc/logo.sh"
+      echo
+      __cpcready_echo_red "Error: Unknown command $cmd"
+      "$CPCREADY_DIR/src/cpcready-help.sh"
       return 1
       ;;
   esac
