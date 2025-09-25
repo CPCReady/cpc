@@ -20,32 +20,31 @@ cpc() {
     "save")
       # Ejecuta el script de 'save' y le pasa el resto de los argumentos
       source "$CPCREADY_DIR/etc/logo.sh"
-      "$CPCREADY_DIR/src/cpcready-save.sh" "$@"
+      source "$CPCREADY_DIR/src/cpcready-save.sh" "$@"
       ;;
     "run")
       source "$CPCREADY_DIR/etc/logo.sh"
       "$CPCREADY_DIR/src/cpcready-run.sh" "$@"
       ;;
     "disc")
-      source "$CPCREADY_DIR/etc/logo.sh"
-      "$CPCREADY_DIR/src/cpcready-disc.sh" "$@"
+      source "$CPCREADY_DIR/src/cpcready-disc.sh" "$@"
       ;;
     "version")
       source "$CPCREADY_DIR/etc/logo.sh"
       ;;
     "help")
       source "$CPCREADY_DIR/etc/logo.sh"
-      "$CPCREADY_DIR/src/cpcready-help.sh" "$@"
+      source "$CPCREADY_DIR/src/cpcready-help.sh" "$@"
       ;;
     "commands")
       source "$CPCREADY_DIR/etc/logo.sh"
-      "$CPCREADY_DIR/src/cpcready-commands.sh" "$@"
+      source "$CPCREADY_DIR/src/cpcready-commands.sh" "$@"
       ;;  
     *)
       if [ -z "$cmd" ]; then
         # Si no se proporciona ningún comando, muestra la ayuda
         source "$CPCREADY_DIR/etc/logo.sh"
-        "$CPCREADY_DIR/src/cpcready-help.sh"
+        source "$CPCREADY_DIR/src/cpcready-help.sh"
         return 0
       fi
       # Muestra un mensaje de error si el comando no es válido

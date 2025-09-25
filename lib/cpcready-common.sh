@@ -68,3 +68,15 @@ function __get_version(){
   version=$(cat $CPCREADY_DIR/var/VERSION)
   echo "CPCReady: $version"
 }
+
+# Función para cargar la configuración desde .cpcready.yml
+# y exportarla como variables de entorno.
+# Uso: __load_config
+function __load_config() {
+  local config_file="$CPCREADY_DIR/.cpcready.yml"
+  if [[ ! -f "$config_file" ]]; then
+    __cpcready_echo_red "Error: Fichero de configuración no encontrado en '$config_file'"
+    return 1
+  fi
+  eval $(yq '. as $item | keys | .[] | "export \(. )=\"\($item[.]\)\""' "$config_file")
+}

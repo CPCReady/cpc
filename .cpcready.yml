@@ -1,11 +1,13 @@
-project: Prueba de dashboard
+---
+project: CPCReady2
 mode: 2
-author: Tu Nombre
-description: Este es un proyecto de prueba para el dashboard de CPCReady.
+author: "Tu Nomdbre"
+description: "Este es un proyecto de prueba para el dashboard de CPCReady."
 cpc_model: 464
 drive_a: disk_a.dsk
 drive_b: disk_b.dsk
 drive_select: B
+storage_select: DISC
 version: 0.1.0
 license: MIT
 scripts:
