@@ -8,7 +8,6 @@ CPCREADY_MARKER='export CPCREADY_DIR="$HOME/.cpcready"'
 
 if [ -d "$HOME/.cpcready" ]; then
     echo "¡CPCReady ya esta instalado en $HOME/.cpcready!"
-    exit 0
 else
     echo Descargando e instalando CPCReady...
 fi
@@ -61,3 +60,22 @@ else
     echo "Por favor, reinicia tu terminal o ejecuta 'source $BASHRC_FILE' para aplicar los cambios."
 fi
 
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
+sudo apt update && sudo apt install gum
+
+echo "Instalando yq (YAML processor)..."
+if [[ "$(uname -s)" == "Linux" && "$(uname -m)" == "x86_64" ]]; then
+    YQ_URL="https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"
+    YQ_DEST="$HOME/.cpcready/opt/yq"
+
+    mkdir -p "$HOME/.cpcready/opt"
+    if curl -L "$YQ_URL" -o "$YQ_DEST" && chmod +x "$YQ_DEST"; then
+        echo "yq instalado correctamente en $YQ_DEST"
+    else
+        echo "Error al instalar yq." >&2
+    fi
+else
+    echo "yq no se instalará. Sistema operativo o arquitectura no soportada (se requiere Linux x86_64)."
+fi
