@@ -34,6 +34,8 @@ cd() {
         gum spin --spinner dot --title "CPCReady project loaded..." -- sleep 1
         # __cpcready_echo_green "CPCReady project loaded..."
         echo
+    else
+        unset CPCREADY_PROJECT_CONFIG
     fi
 }
 
@@ -79,3 +81,4 @@ if [[ "$(uname -s)" == "Linux" && "$(uname -m)" == "x86_64" ]]; then
 else
     echo "yq no se instalará. Sistema operativo o arquitectura no soportada (se requiere Linux x86_64)."
 fi
+
