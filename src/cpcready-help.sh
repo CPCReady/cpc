@@ -9,7 +9,7 @@ echo "Usage: cpc [command] [args...]"
 
 source "$CPCREADY_DIR/src/cpcready-commands.sh"
 echo "" 
-echo "For more details on a specific command, use: cpc [command] help"
+echo "For more details on a specific command, use: cpc [command] --help"
 echo ""
 echo "Example: cpc save myfile.bas"
 echo ""
