@@ -55,6 +55,7 @@ main() {
 
   # Set the path for the iDSK utility.
   IDSK="$CPCREADY_DIR/opt/idsk"
+  YQ="$CPCREADY_DIR/opt/yq"
 
   # Check if a project configuration is loaded.
   echo
@@ -66,9 +67,9 @@ main() {
 
   # If no argument is provided, set storage_select to DISC.
   if [ -z "$1" ]; then
-    echo
-    if yq -i '.storage_select = "DISC"' "$CPCREADY_PROJECT_CONFIG"; then
+    if $YQ -i '.storage_select = "DISC"' "$CPCREADY_PROJECT_CONFIG"; then
       echo "Disc Ready"
+      echo
     else
       __cpcready_echo_red "Error modifying the configuration file."
       echo
