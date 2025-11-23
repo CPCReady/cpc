@@ -1,0 +1,66 @@
+---
+title: run
+description: Execute files from disk in RetroVirtualMachine emulator
+tags: [emulator, execute]
+---
+
+import { Badge } from '@astrojs/starlight/components';
+import { Card } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<Card>Launch RetroVirtualMachine emulator with the selected disk and optionally execute a file automatically. 
+Uses the CPC model configured in settings. Use <Badge text="-A" variant="note" /> or <Badge text="-B" variant="note" /> to specify which drive to use.</Card>
+
+## Uso
+
+```bash
+Usage: cpc run [OPTIONS] [FILE_TO_RUN]
+
+  Run a file from the selected drive in RetroVirtualMachine.
+
+  FILE_TO_RUN: Name of the file to execute from the disk (e.g., DISC,
+  GAME.BAS)
+
+  If -A or -B is not specified, uses the currently selected drive. The file
+  must exist in the disk of the selected drive.
+
+Options:
+  -A, --drive-a  Use disk from drive A
+  -B, --drive-b  Use disk from drive B
+  --help         Show this message and exit.
+```
+
+## Examples
+
+### Launch emulator with current disk
+```bash
+cpc run
+```
+
+### Execute a specific file from current disk
+```bash
+cpc run DISC.BIN
+```
+
+### Execute from drive A
+```bash
+cpc run GAME.BAS -A
+```
+
+### Execute from drive B
+```bash
+cpc run MENU -B
+```
+
+<video controls width="800" autoplay loop muted>
+  <source src="/videos/cat.mp4" type="video/mp4" />
+</video>
+
+<Aside type="tip">
+The emulator path and CPC model must be configured first using `cpc configweb` or `cpc settings`.
+</Aside>
+
+<Aside type="note">
+The command automatically closes any previous RetroVirtualMachine instances before launching a new one.
+</Aside>

@@ -1,0 +1,70 @@
+---
+title: era
+description: Delete file from DSK disk
+tags: [disk, file, delete]
+---
+
+import { Badge } from '@astrojs/starlight/components';
+import { Card } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<Card>Delete (erase) a file from the currently mounted DSK disk. Supports wildcards for batch deletion.</Card>
+
+## Usage
+
+```bash
+Usage: cpc era [OPTIONS] PATTERN
+
+  Delete file(s) from DSK disk.
+
+Arguments:
+  PATTERN  File pattern to delete (supports wildcards: *, ?)
+
+Options:
+  -A, --drive-a  Delete from drive A (default)
+  -B, --drive-b  Delete from drive B
+  --help         Show this message and exit.
+```
+
+## Examples
+
+### Delete specific file
+```bash
+cpc era GAME.BAS
+```
+
+### Delete all .BAK files
+```bash
+cpc era *.BAK
+```
+
+### Delete from drive B
+```bash
+cpc era OLDFILE.BIN -B
+```
+
+### Delete all files starting with TEST
+```bash
+cpc era TEST*.*
+```
+
+### Alternative command
+```bash
+cpcera MYFILE.TXT
+```
+
+<video controls width="800" autoplay loop muted>
+  <source src="/videos/cat.mp4" type="video/mp4" />
+</video>
+
+<Aside type="caution">
+**Deletion is permanent!** Files are removed from the DSK without confirmation. Make backups before using wildcards.
+</Aside>
+
+<Aside type="tip">
+Wildcards:  
+**\*** matches any characters  
+**?** matches single character  
+Example: `DATA?.BIN` matches DATA1.BIN, DATA2.BIN, etc.
+</Aside>

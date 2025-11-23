@@ -1,0 +1,23 @@
+{
+    "Main": {
+        "System Time": "14:00:00",
+        "System Date": "01/01/2025",
+        "SATA Mode": "AHCI",
+        "Memory Test": "Disabled"
+    },
+    "Advanced": {
+        "CPU Configuration": "Enabled",
+        "USB Configuration": "Enabled",
+        "PCI Settings": "Default"
+    },
+    "Security": {
+        "Supervisor Password": "",
+        "User Password": "",
+        "Secure Boot": "Disabled"
+    },
+    "Boot": {
+        "Boot Option #1": "HDD",
+        "Boot Option #2": "USB",
+        "Boot Option #3": "Network"
+    }
+}

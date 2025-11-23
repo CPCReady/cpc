@@ -1,0 +1,116 @@
+---
+title: save
+description: Save files to DSK disk with AMSDOS headers
+tags: [disk, file, save, amsdos]
+---
+
+import { Badge } from '@astrojs/starlight/components';
+import { Card } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<Card>Save files to DSK disk images with automatic or manual AMSDOS header creation. Supports binary, BASIC, and ASCII file types with hex or decimal addresses.</Card>
+
+## Usage
+
+```bash
+Usage: cpc save [OPTIONS] FILE_NAME [TYPE] [LOAD_ADDR] [EXEC_ADDR]
+
+  Save file to virtual disc with AMSDOS header.
+
+Arguments:
+  FILE_NAME   File to save (required)
+  TYPE        File type: 'b' (binary), 'p' (program), 'a' (ASCII), 'auto' (default)
+  LOAD_ADDR   Load address in hex (0x5BCC, &5BCC) or decimal (23500)
+  EXEC_ADDR   Execution address in hex or decimal
+
+Options:
+  -A, --drive-a  Save to drive A (default)
+  -B, --drive-b  Save to drive B
+  --help         Show this message and exit.
+```
+
+## File Types
+
+- **auto** (default): Detects type from content/extension
+  - `.BIN` files → Binary with header
+  - `.BAS` files → BASIC ASCII
+  - Files with AMSDOS header → Preserves header
+  - Other files → ASCII without header
+
+- **b** (binary): Binary file with specific load/exec addresses
+  - Requires LOAD_ADDR
+  - EXEC_ADDR optional (defaults to LOAD_ADDR)
+  - Adds AMSDOS header with type=2
+
+- **p** (program): Program with AMSDOS header
+  - Uses detected or specified addresses
+  - Sets read-only attribute
+
+- **a** (ASCII): Plain ASCII/data file
+  - No AMSDOS header
+  - Suitable for text files
+
+## Address Formats
+
+Addresses can be specified in three formats:
+
+- **Hexadecimal with 0x**: `0x5BCC`
+- **Hexadecimal with &**: `&5BCC`
+- **Decimal**: `23500`
+
+## Examples
+
+### Auto-detect file type
+```bash
+cpc save game.bin
+```
+
+### Save binary with hex addresses
+```bash
+cpc save 8bp.bin b 0x5BCC 0x4ABF
+```
+
+### Save binary with decimal addresses
+```bash
+cpc save screen.bin b 23500 19119
+```
+
+### Save binary with & notation
+```bash
+cpc save loader.bin b &4000 &4000
+```
+
+### Save BASIC ASCII file
+```bash
+cpc save program.bas a
+```
+
+### Save to drive B
+```bash
+cpc save data.bin b 0x8000 -B
+```
+
+### Alternative command
+```bash
+cpcsave myfile.bin b 0x4000
+```
+
+<video controls width="800" autoplay loop muted>
+  <source src="/videos/cat.mp4" type="video/mp4" />
+</video>
+
+<Aside type="tip">
+**Address conversion examples:**
+- `0x5BCC` = `&5BCC` = `23500` (decimal)
+- `0x4ABF` = `&4ABF` = `19119` (decimal)
+- `0x4000` = `&4000` = `16384` (decimal)
+</Aside>
+
+<Aside type="caution">
+Binary type 'b' requires at least the load address. If execution address is omitted, it defaults to the load address.
+</Aside>
+
+<Aside type="note">
+Files are saved to the current user number (see `cpc user`). The disk automatically updates its directory after saving.
+</Aside>

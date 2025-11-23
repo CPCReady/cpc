@@ -1,0 +1,55 @@
+---
+title: cat
+description: Mostrar el catálogo de una imagen DSK
+tags: [disc]
+---
+
+import { Badge } from '@astrojs/starlight/components';
+import { Card } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<Card>Lista los archivos del disco virtual. Si no se utilizan opciones se usa la unidad asignada por defecto. 
+Usa <Badge text="-A" variant="note" /> o <Badge text="-B" variant="note" /> para especificar la unidad.</Card>
+
+## Uso
+
+
+El comando se puede ejecutar de dos formas diferentes utilizando el comando principal <Badge text="cpc" variant="note" />
+pasandole como argumento el subcomando <Badge text="cat" variant="tip" />
+
+```bash
+Usage: cpc cat [OPTIONS]
+
+  List files in the virtual disc. If no option is selected, the selected drive
+  is displayed.
+
+Options:
+  -A, --drive-a  List files in the virtual disc from drive A
+  -B, --drive-b  List files in the virtual disc from drive B
+  --version      Show version and exit
+  --help         Show this message and exit.
+```
+o utilizando el comando principal <Badge text="catcpc" variant="note" />
+```bash
+Usage: catcpc [OPTIONS]
+
+  List files in the virtual disc. If no option is selected, the selected drive
+  is displayed.
+
+Options:
+  -A, --drive-a  List files in the virtual disc from drive A
+  -B, --drive-b  List files in the virtual disc from drive B
+  --version      Show version and exit
+  --help         Show this message and exit.
+```
+
+
+## Examples
+
+<video controls width="800" autoplay loop muted>
+  <source src="/videos/cat.mp4" type="video/mp4" />
+</video>
+
+
+<Aside>Contenido en un apartado.</Aside>

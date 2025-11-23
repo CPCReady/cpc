@@ -1,0 +1,95 @@
+'/Applications/Retro Virtual Machine 2.app/Contents/MacOS/Retro Virtual Machine 2' --help
+
+Retro Virtual Machine v2.0 BETA-1 r7
+MacOs x64 Build: 6783 - (Tue Jul  9 18:18:12 2019 UTC)
+
+©2018-19 Juan Carlos González Amestoy.
+
+ -help (-h):
+    Shows information about the available options.
+
+ -nocolor (-nc):
+    Disable colors in the terminal.
+
+ -list (-li):
+    List the available machines and their machine id's.
+
+ -boot=<<machineid>> (-b):
+    Boot the emulator in standalone mode.
+    The machine doesn't save the state in this mode.
+
+    EXAMPLE: RetroVirtualMachine -b=cpc464 ;boots a temporal cpc464
+
+ -load=<<address>> <<binFilePath>>(-l):
+    Load the binary file at the expecified address.
+    Using multiple "-load" options allows you to load multiple files..
+
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+    EXAMPLE: RetroVirtualMachine -b=cpc6128 -l=0x4000 file.bin -l=ram7:0x3000 file2.bin ;boots a cpc6128 and loads the file "file.bin" at 0x4000 and file2.bin at 0x3000 in the rom7 bank.
+
+ -jump=<<address>>(-j):
+    Jump to the especified address. 
+
+    The machine boots and wait for 100 frames to stabilizate prior to jump to the address. 
+    Initial setting varies depending on whether the machine is a ZX Spectrum or an Amstrad CPC:
+
+      * Zx Spectrum: The machine boots the code in a state similar to the USR0 state. the interrupts are enabled, and the interrupt line is low prior the jump.
+      * Amstrad CPC: All roms unmaped, the maped ram is the video ram (RAM0-3), the interrupts are enabled and the interrupt line is low.
+
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+    EXAMPLE: RetroVirtualMachine -b=zx48k -l=0x8000 file.bin -j=0x8100 ;boots a Zx Spectrum 48k, loads the file "file.bin" at the address 0x8000 and jump to 0x8100.
+
+ -insert <<tape or disk file>>(-i):
+    Insert the specified tape or disk in the machine.
+
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+    EXAMPLE: RetroVirtualMachine -b=zx+3 -i sample/test.dsk ;boots a Zx Spectrum +3, and inserts the disk "sample/test.dsk" in the disk drive
+
+ -command=<<ascii text>>(-c):
+    Send the command key by key to the Basic interpreter.
+
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+    EXAMPLE: RetroVirtualMachine -b=cpc664 -i sample/test.dsk -c='run"disc\n' ;boots a cpc664, inserts the disk "sample/test.dsk" in the disk drive and runs run"disc+enter
+
+ -play(-p):
+    Auto play the tape on init.
+
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+    EXAMPLE: RetroVirtualMachine -b=cpc464 -i sample/test.cdt -c='run"\n' -p ;boots a cpc464, inserts the tape "sample/test.cdt" in the recorders run the "run" command and auto play the tape. run"disc+enter
+
+ -warp(-w):
+    Init the emulation in the accelerated mode.
+
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+    EXAMPLE: RetroVirtualMachine -b=cpc464 -w ;boots a cpc464, in "warp" mode.
+
+ -snapshot(-s):
+    Load a snapshot (.sna in Amstrad CPC, .z80/.sna in ZX Spectrum).
+
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+    EXAMPLE: RetroVirtualMachine -b=cpc464 -s snap.sna ;boots a cpc464, and load the snapshot file.
+
+ -dandanator(-d):
+    Load a romset in a virtual cpc dandanator connected to the machine.
+
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+    EXAMPLE: RetroVirtualMachine -b=cpc464 -d romset.rom ;boots a cpc464, and load the romset in the virtual dandanator.
+
+ -width(-wi):
+   Adjust the with of the emulator window. The height is proportional (4/3 aspect ratio).
+   The minimun window width is 700px, the maximun the desktop size.
+    IMPORTANT: This command run only in the standalone boot mode (see the -boot option)
+
+   EXAMPLE: RetroVirtualMachine -wi=640 ;Start the emulator with a window size of 640x480
+
+ -noshader(-ns):
+   Disable the shader in the output view of the emulation.
+   Usefull when running rvm in low end machines

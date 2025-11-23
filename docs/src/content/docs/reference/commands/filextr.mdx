@@ -1,0 +1,63 @@
+---
+title: filextr
+description: Extract files from DSK disk image
+tags: [disc, file, extract]
+---
+
+import { Badge } from '@astrojs/starlight/components';
+import { Card } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<Card>Extract one or more files from a DSK disk image to the local file system. 
+Use <Badge text="-A" variant="note" /> or <Badge text="-B" variant="note" /> to specify the source drive.</Card>
+
+## Uso
+
+```bash
+Usage: cpc filextr [OPTIONS] FILES...
+
+  Extract files from disc.
+
+Arguments:
+  FILES...  Names of files to extract from the disk  [required]
+
+Options:
+  -A, --drive-a  Extract from drive A
+  -B, --drive-b  Extract from drive B
+  --help         Show this message and exit.
+```
+
+## Examples
+
+### Extract a single file
+```bash
+cpc filextr GAME.BAS
+```
+
+### Extract multiple files
+```bash
+cpc filextr MENU.BIN LOADER.BAS DATA.BIN
+```
+
+### Extract from drive A
+```bash
+cpc filextr GAME.BAS -A
+```
+
+### Extract from drive B
+```bash
+cpc filextr *.BAS -B
+```
+
+<video controls width="800" autoplay loop muted>
+  <source src="/videos/cat.mp4" type="video/mp4" />
+</video>
+
+<Aside type="tip">
+Files are extracted to the current working directory with their original names.
+</Aside>
+
+<Aside type="caution">
+If a file with the same name exists locally, it will be overwritten without confirmation.
+</Aside>

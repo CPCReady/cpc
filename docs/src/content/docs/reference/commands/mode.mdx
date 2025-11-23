@@ -1,0 +1,65 @@
+---
+title: mode
+description: Set or display CPC video mode
+tags: [config, system, video]
+---
+
+import { Badge } from '@astrojs/starlight/components';
+import { Card } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<Card>Configure or display the CPC video mode. 
+Supports modes <Badge text="0" variant="note" /> (160x200, 16 colors), <Badge text="1" variant="note" /> (320x200, 4 colors), and <Badge text="2" variant="note" /> (640x200, 2 colors).</Card>
+
+## Usage
+
+```bash
+Usage: cpc mode [OPTIONS] [VIDEO_MODE]
+
+  Set or display CPC video mode.
+
+Arguments:
+  VIDEO_MODE  Video mode: 0 (160x200, 16 colors), 
+                          1 (320x200, 4 colors), 
+                          2 (640x200, 2 colors)
+
+Options:
+  --help  Show this message and exit.
+```
+
+## Examples
+
+### Display current video mode
+```bash
+cpc mode
+```
+
+### Set mode 0 (16 colors)
+```bash
+cpc mode 0
+```
+
+### Set mode 1 (4 colors)
+```bash
+cpc mode 1
+```
+
+### Set mode 2 (2 colors)
+```bash
+cpc mode 2
+```
+
+<video controls width="800" autoplay loop muted>
+  <source src="/videos/cat.mp4" type="video/mp4" />
+</video>
+
+<Aside type="tip">
+**Mode 0**: 160x200 pixels, 16 colors - Best for graphics  
+**Mode 1**: 320x200 pixels, 4 colors - Balanced  
+**Mode 2**: 640x200 pixels, 2 colors - High resolution text
+</Aside>
+
+<Aside type="note">
+Configuration is stored in `~/.config/cpcready/cpcready.toml`.
+</Aside>

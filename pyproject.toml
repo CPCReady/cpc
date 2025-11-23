@@ -1,0 +1,60 @@
+[tool.poetry]
+name = "cpcready"
+version = "1.0.0"
+description = "CPCReady Toolchain"
+license = "MIT"
+authors = ["destroyer <destroyer.dcf@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.13,<3.14"
+click = "^8.3.0"
+pyyaml = "^6.0.3"
+jsonschema = "^4.25.1"
+tabulate = "^0.9.0"
+colorama = "^0.4.6"
+rich = "^14.2.0"
+prompt-toolkit = "^3.0.52"
+textual = "^6.4.0"
+cmd2 = "^2.7.0"
+npyscreen = "^4.10.5"
+pythondialog = "^3.5.3"
+watchdog = "^6.0.0"
+psutil = "^7.1.3"
+questionary = "^2.1.1"
+curse = "^0.0.1"
+tomli-w = "^1.1.0"
+tomli = {version = "^2.2.1", python = "<3.11"}
+pyside6 = "^6.10.0"
+pyobjc-framework-cocoa = {markers = "sys_platform == \"darwin\"", version = "^12.1"}
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0.0"
+pytest-mock = "^3.10.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+cpc = "cpcready.cli:cli"
+disc = "cpcready.disc.disc:disc"
+drive = "cpcready.drive:drive_group"
+catcpc = "cpcready.cat.cat:cat"
+A = "cpcready.drive.A:A"
+B = "cpcready.drive.B:B"
+user = "cpcready.user:user"
+save = "cpcready.save:save"
+era = "cpcready.era:era"
+list = "cpcready.list:list"
+
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
