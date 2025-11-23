@@ -178,6 +178,9 @@ echo -e "${BLUE}🔄 Updating version files...${NC}"
 # Cambiar al directorio raíz del proyecto
 cd "$(dirname "$0")/.."
 
+# Verificar la versión actual antes del cambio
+CURRENT_VERSION=$(grep -E "^__version__" cpcready/__init__.py | cut -d'"' -f2)
+
 # Actualizar versión usando sync_version.py
 if python3 Version/sync_version.py "$NEW_VERSION"; then
     echo -e "${GREEN}✅ Version files updated${NC}"
@@ -186,31 +189,57 @@ else
     exit 1
 fi
 
-echo ""
-echo -e "${BLUE}📝 Creating commit...${NC}"
+# Verificar si realmente hubo cambios
+if [[ -z $(git status -s cpcready/__init__.py pyproject.toml) ]]; then
+    echo -e "${YELLOW}ℹ️  Version is already ${NEW_VERSION}, no changes needed${NC}"
+    echo ""
+    echo -e "${BLUE}🏷️  Checking if tag exists...${NC}"
+    
+    TAG_EXISTS_LOCAL=$(git tag -l "v${NEW_VERSION}")
+    
+    if [[ -z "$TAG_EXISTS_LOCAL" ]]; then
+        # El tag no existe, solo crearlo sin commit
+        echo -e "${BLUE}🏷️  Creating tag...${NC}"
+        git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
+        echo -e "${GREEN}✅ Tag v${NEW_VERSION} created${NC}"
+        
+        echo ""
+        echo -e "${BLUE}📤 Pushing tag to remote...${NC}"
+        git push origin "v${NEW_VERSION}"
+        echo -e "${GREEN}✅ Pushed to remote${NC}"
+    else
+        echo -e "${YELLOW}ℹ️  Tag v${NEW_VERSION} already exists locally${NC}"
+        echo -e "${YELLOW}Use the tag deletion option if you need to recreate it${NC}"
+        exit 0
+    fi
+else
+    # Hubo cambios, hacer commit normal
+    echo ""
+    echo -e "${BLUE}📝 Creating commit...${NC}"
 
-# Hacer commit de los cambios de versión
-git add cpcready/__init__.py pyproject.toml
-git commit -m "chore: bump version to ${NEW_VERSION}"
+    # Hacer commit de los cambios de versión
+    git add cpcready/__init__.py pyproject.toml
+    git commit -m "chore: bump version to ${NEW_VERSION}"
 
-echo -e "${GREEN}✅ Commit created${NC}"
+    echo -e "${GREEN}✅ Commit created${NC}"
 
-echo ""
-echo -e "${BLUE}🏷️  Creating tag...${NC}"
+    echo ""
+    echo -e "${BLUE}🏷️  Creating tag...${NC}"
 
-# Crear tag
-git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
+    # Crear tag
+    git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
 
-echo -e "${GREEN}✅ Tag v${NEW_VERSION} created${NC}"
+    echo -e "${GREEN}✅ Tag v${NEW_VERSION} created${NC}"
 
-echo ""
-echo -e "${BLUE}📤 Pushing to remote...${NC}"
+    echo ""
+    echo -e "${BLUE}📤 Pushing to remote...${NC}"
 
-# Push commits y tags
-git push origin "${CURRENT_BRANCH}"
-git push origin "v${NEW_VERSION}"
+    # Push commits y tags
+    git push origin "${CURRENT_BRANCH}"
+    git push origin "v${NEW_VERSION}"
 
-echo -e "${GREEN}✅ Pushed to remote${NC}"
+    echo -e "${GREEN}✅ Pushed to remote${NC}"
+fi
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
