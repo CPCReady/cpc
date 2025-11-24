@@ -6,6 +6,7 @@ This directory contains tools for managing versions and creating releases for CP
 
 - `sync_version.py` - Synchronizes version between `__init__.py` and `pyproject.toml`
 - `create_release.sh` - Interactive script to create new releases
+- `smart_commit.sh` - **NEW!** Smart commit script with automatic repo detection and submodule handling
 - `VERSION_SYSTEM.md` - Documentation about the version system
 
 ## 🚀 Creating a New Release
@@ -50,6 +51,95 @@ cd Version
    - Builds package with Poetry
    - Creates GitHub Release
    - Uploads `.whl` and `.tar.gz` files
+
+---
+
+## ✨ Smart Commit Script (NEW!)
+
+### 🎯 What is it?
+
+`smart_commit.sh` is an intelligent Git commit script that:
+- **Auto-detects** if you're in the main repo or docs submodule
+- **Commits and pushes** automatically with one command
+- **Handles submodules** - When committing docs, also updates main project
+
+### 🚀 Usage
+
+**From main project:**
+```bash
+./Version/smart_commit.sh "feat: add new feature"
+```
+
+**From docs submodule:**
+```bash
+cd docs
+../Version/smart_commit.sh "docs: update installation guide"
+```
+
+**From anywhere:**
+```bash
+# Works from any subdirectory
+/path/to/cpc/Version/smart_commit.sh "fix: bug fix"
+```
+
+### 💡 What it does
+
+**When you're in the main project:**
+1. Detects you're in main repo (blue color)
+2. Shows all changes with `git status`
+3. Runs `git add .`
+4. Creates commit with your message
+5. Pushes to current branch
+
+**When you're in docs:**
+1. Detects you're in docs submodule (magenta color)
+2. Shows all changes in docs
+3. Commits and pushes docs
+4. **Automatically** goes to main project
+5. Updates submodule reference
+6. Commits main project with message: `"chore: update docs submodule"`
+7. Pushes main project
+
+### 🎨 Color Legend
+
+- 🔵 **Blue** - Main repository operations
+- 🟣 **Magenta** - Docs submodule operations  
+- 🟢 **Green** - Success messages
+- 🟡 **Yellow** - Warnings/info
+- 🔴 **Red** - Errors
+
+### 📝 Examples
+
+```bash
+# Add a feature
+./Version/smart_commit.sh "feat: add disk format support"
+
+# Fix a bug
+./Version/smart_commit.sh "fix: resolve CLI parsing issue"
+
+# Update docs (from docs directory)
+cd docs
+../Version/smart_commit.sh "docs: add Windows installation steps"
+# ↑ This will also update the main project automatically!
+
+# Refactor code
+./Version/smart_commit.sh "refactor: improve error handling"
+```
+
+### 📋 Commit Message Conventions
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation only
+- `refactor:` - Code refactoring
+- `test:` - Adding tests
+- `chore:` - Maintenance
+- `perf:` - Performance improvement
+- `style:` - Code style/formatting
+
+---
 
 ## 🛠️ Manual Version Update
 
