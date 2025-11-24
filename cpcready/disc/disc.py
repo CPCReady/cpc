@@ -168,6 +168,9 @@ def info(disc_name, drive_a, drive_b):
         error(f"disc file not found: {disc_name}")
         return
     
+    # Obtener la ruta absoluta para mostrar
+    disc_full_path = str(disc_path.resolve())
+    
     dsk = DSK(disc_name)
     info = dsk.get_info()
     entries = dsk.get_directory_entries()
@@ -224,15 +227,14 @@ def info(disc_name, drive_a, drive_b):
     print()
     
     # Panel de título: DISC INFO
-    title_content = f"[blue]Path:[/blue] [yellow]{disc_name}[/yellow]"
+    title_content = f"[blue]Path:[/blue] [yellow]{disc_full_path}[/yellow]"
     
     title_panel = Panel(
         title_content,
         title="[bold blue]DISC[/bold blue]",
         border_style="bright_blue",
         padding=(1, 2),
-        width=79,
-        height=5
+        width=79
     )
     
     # Panel 1: Estructura Física
