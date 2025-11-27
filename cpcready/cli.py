@@ -26,6 +26,7 @@ from cpcready.ren.ren import ren
 from cpcready.model.model import model
 from cpcready.mode.mode import mode
 from cpcready.run import run
+from cpcready.rvm.rvm import status as rvm_status, config as rvm_config
 # from cpcready.header import header
 from cpcready.configweb import configweb
 from cpcready.utils.click_custom import CustomGroup, CustomCommand
@@ -46,6 +47,16 @@ def cli(ctx):
 def version():
     """Show version information."""
     show_version_info()
+
+# Crear grupo para comandos rvm
+@cli.group(cls=CustomGroup, name='rvm')
+def rvm_group():
+    """RetroVirtualMachine emulator management."""
+    pass
+
+# Añadir comandos al grupo rvm
+rvm_group.add_command(rvm_status, name='status')
+rvm_group.add_command(rvm_config, name='config')
 
 # Reemplazar el tipo de comando/grupo de los subcomandos para personalizar la ayuda
 drive_group.type = CustomGroup

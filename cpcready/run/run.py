@@ -13,113 +13,12 @@
 # and limitations under the License.
 
 import click
-import psutil
-import subprocess
-import sys
-import time
 from pathlib import Path
 from cpcready.utils.click_custom import CustomCommand
-from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
+from cpcready.utils.console import info2, error, blank_line
 from cpcready.utils.toml_config import ConfigManager
 from cpcready.utils.manager import DriveManager
-
-
-# Nombres posibles del ejecutable RVM
-NOMBRES_RVM = [
-    "Retro Virtual Machine",
-    "retrovirtualmachine",
-    "RetroVirtualMachine.exe",
-    "retrovirtualmachine.exe"
-]
-
-
-def matar_rvm():
-    """Kill all previous RetroVirtualMachine instances."""
-    debug("Searching for previous RetroVirtualMachine instances...")
-    
-    count = 0
-    for proc in psutil.process_iter(['pid', 'name', 'exe', 'cmdline']):
-        try:
-            nombre = proc.info["name"] or ""
-            ruta = proc.info["exe"] or ""
-            cmd = " ".join(proc.info["cmdline"] or [])
-
-            if any(t.lower() in nombre.lower() for t in NOMBRES_RVM) or \
-               any(t.lower() in ruta.lower() for t in NOMBRES_RVM) or \
-               any(t.lower() in cmd.lower() for t in NOMBRES_RVM):
-
-                debug(f"Closing: PID {proc.pid} ({nombre})")
-                proc.kill()
-                proc.wait()
-                count += 1
-
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            pass
-    
-    if count > 0:
-        info2(f"Closed {count} RetroVirtualMachine instance(s).")
-
-
-def lanzar_rvm(ruta_ejecutable, modelo, archivo_dsk, archivo_ejecutar=None):
-    """
-    Launch RetroVirtualMachine with the specified parameters.
-    
-    Args:
-        ruta_ejecutable: Path to RVM executable or .app
-        modelo: CPC model (464, 664, 6128)
-        archivo_dsk: DSK file to load
-        archivo_ejecutar: File to execute automatically from disk
-    """
-    # Construir parámetros
-    parametros = [f"-b=cpc{modelo}"]
-    
-    if archivo_dsk:
-        parametros.extend(["-i", archivo_dsk])
-    
-    if archivo_ejecutar:
-        # Comando para ejecutar el archivo: run"archivo"\n
-        parametros.append(f'-c=run"{archivo_ejecutar}"\\n')
-    
-    debug(f"Parámetros: {' '.join(parametros)}")
-    
-    # Detectar si es macOS y la ruta es .app
-    if sys.platform == "darwin" and ruta_ejecutable.endswith(".app"):
-        # En macOS, usar 'open -a' para aplicaciones .app
-        comando = ["open", "-a", ruta_ejecutable, "--args"] + parametros
-        # info2(f"Launching: open -a '{ruta_ejecutable}' --args {' '.join(parametros)}")
-    else:
-        # Windows/Linux o ruta directa al binario
-        comando = [ruta_ejecutable] + parametros
-        info2(f"Launching: {' '.join(comando)}")
-    
-    try:
-        if sys.platform.startswith("win"):
-            # Windows: usar DETACHED_PROCESS para desconectar completamente
-            DETACHED_PROCESS = 0x00000008
-            subprocess.Popen(
-                comando, 
-                creationflags=DETACHED_PROCESS,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                stdin=subprocess.DEVNULL
-            )
-        else:
-            # Unix/Linux/macOS: usar start_new_session
-            subprocess.Popen(
-                comando,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                stdin=subprocess.DEVNULL,
-                start_new_session=True
-            )
-        
-        ok("RetroVirtualMachine launched successfully.")
-        
-    except FileNotFoundError:
-        error(f"Executable not found: {ruta_ejecutable}")
-        error("Check the path in configuration (cpc configweb).")
-    except Exception as e:
-        error(f"Error launching RetroVirtualMachine: {e}")
+from cpcready.utils.retrovirtualmachine import RVM
 
 
 @click.command(cls=CustomCommand)
@@ -200,10 +99,15 @@ def run(file_to_run, drive_a, drive_b):
     # Mostrar modelo
     info2(f"CPC Model: {modelo}")
     
-    # Matar instancias previas
-    matar_rvm()
-    time.sleep(0.5)  # Asegurar cierre
+    # Crear instancia de RVM y verificar versión
+    rvm = RVM(ruta_rvm)
     
-    # Lanzar nueva instancia
-    lanzar_rvm(ruta_rvm, modelo, disc_name, file_to_run)
+    is_valid, version_info = rvm.check_version()
+    if not is_valid:
+        error("RetroVirtualMachine version check failed.")
+        error(version_info)
+        return
+    
+    # Lanzar emulador
+    rvm.launch(modelo, archivo_dsk=disc_name, archivo_ejecutar=file_to_run)
     blank_line(1)
