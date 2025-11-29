@@ -12,7 +12,7 @@ def run_cpc(args):
     result = subprocess.run(CPC + args, capture_output=True, text=True)
     return result.stdout, result.stderr, result.returncode
 
-# Test para cada comando principal excepto console
+# Test para cada comando principal
 
 
 

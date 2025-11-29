@@ -20,7 +20,7 @@ import sys
 import time
 import re
 from pathlib import Path
-from cpcready.utils.console import info2, ok, debug, error, warn
+from cpcready.utils.console import info2, ok, debug, error, warn  # Eliminar si no se usa ninguna función
 
 
 class RVM:
