@@ -69,7 +69,7 @@ def save(file_name, type_file, load_addr, exec_addr, drive_a, drive_b):
       - p: Program file with AMSDOS header (preserves existing header if present)
     """
     
-    print(f"DEBUG START: file={file_name}, type={type_file}, load={load_addr}, exec={exec_addr}")
+    debug(f"file={file_name}, type={type_file}, load={load_addr}, exec={exec_addr}")
     
     # Verificar que el archivo existe
     if not Path(file_name).exists():
@@ -122,19 +122,19 @@ def save(file_name, type_file, load_addr, exec_addr, drive_a, drive_b):
                              user=int(user_number), force=True)
             # Detectar tipo según extensión para archivos sin cabecera
             elif file_base_name.endswith('.BAS'):
-                # BASIC ASCII (sin cabecera, conversión de line endings)
+                # BASIC ASCII (sin cabecera AMSDOS - guardar como RAW)
                 debug("Auto-detected as BASIC ASCII file (.BAS)")
-                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=2, user=int(user_number), force=True)
+                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=-1, user=int(user_number), force=True)
             elif file_base_name.endswith('.BIN'):
                 # Binario sin cabecera - añadir cabecera AMSDOS
                 debug("Auto-detected as BINARY file (.BIN)")
-                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=0, 
+                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=2, 
                              load_addr=0x4000, exec_addr=0x4000, 
                              user=int(user_number), force=True)
             else:
-                # Por defecto: ASCII sin cabecera
-                debug("Plain file without header, saving as ASCII")
-                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=2, 
+                # Por defecto: ASCII sin cabecera (RAW)
+                debug("Plain file without header, saving as RAW")
+                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=-1, 
                              user=int(user_number), force=True)
             
             dsk.save()
@@ -154,8 +154,8 @@ def save(file_name, type_file, load_addr, exec_addr, drive_a, drive_b):
             dsk = DSK(disc_name)
             file_base_name = Path(file_name).name.upper()
             
-            # Modo 2 = BASIC ASCII (sin cabecera)
-            dsk.write_file(file_name, dsk_filename=file_base_name, file_type=2, 
+            # Modo -1 = RAW (sin cabecera AMSDOS)
+            dsk.write_file(file_name, dsk_filename=file_base_name, file_type=-1, 
                          user=int(user_number), force=True)
             dsk.save()
             
@@ -189,10 +189,6 @@ def save(file_name, type_file, load_addr, exec_addr, drive_a, drive_b):
     elif type_file == "b":
         # Binary file con direcciones específicas
         info2("Saved as type 'b' (binary) by user request.")
-        
-        # Debug: ver los valores recibidos
-        print(f"DEBUG: load_addr parameter: {load_addr} (type: {type(load_addr)})")
-        print(f"DEBUG: exec_addr parameter: {exec_addr} (type: {type(exec_addr)})")
         
         # Validar que se proporcionaron las direcciones
         if load_addr is None:

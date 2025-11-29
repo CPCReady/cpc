@@ -29,6 +29,7 @@ from cpcready.run import run
 from cpcready.rvm.rvm import status as rvm_status, config as rvm_config
 from cpcready.emu.emu import emu
 from cpcready.m4.m4 import m4 as m4_group
+from cpcready.console.console import console
 # from cpcready.header import header
 from cpcready.configweb import configweb
 from cpcready.utils.click_custom import CustomGroup, CustomCommand
@@ -78,6 +79,7 @@ cli.add_command(mode)
 cli.add_command(run)
 cli.add_command(emu)
 cli.add_command(m4_group)
+cli.add_command(console)
 # cli.add_command(header)
 
 if __name__ == "__main__":

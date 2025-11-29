@@ -72,20 +72,16 @@ def list(file_name, drive_a, drive_b):
         # Leer archivo sin cabecera para procesarlo
         data = dsk.read_file(file_name, keep_header=False, user=user_number)
         
-        # Detectar formato BASIC
-        is_tokenized, description = detect_basic_format(data)
-        # info2(f"Format detected: {description}")
-        
-        # Intentar visualizar como BASIC
+        # Intentar visualizar como BASIC - auto detectar formato
         listing = view_basic(data, auto_detect=True)
         
-        # Si el listing está vacío o tiene muchos caracteres extraños, probablemente no es BASIC
-        if not listing or len([c for c in listing if ord(c) > 127]) > len(listing) * 0.3:
+        # Si el listing está vacío, no es BASIC
+        if not listing or not listing.strip():
             error(f"File does not appear to be a valid BASIC program: {file_name}")
             blank_line(1)
             return
         
-        # Mostrar el listado
+        # Mostrar el listado directamente sin más validaciones
         syntax = Syntax(listing, "basic", theme="monokai", line_numbers=True)
         console.print(Panel(syntax, title=f"Listing '{file_name}'", border_style="bright_blue"))
         
