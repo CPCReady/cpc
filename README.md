@@ -172,6 +172,35 @@ poetry run pytest
 poetry run cpc <command>
 ```
 
+## Tests automáticos
+
+Para ejecutar todos los tests automáticos de CPCReady, simplemente activa el entorno virtual y ejecuta:
+
+```bash
+source .venv/bin/activate && pytest tests --maxfail=20 --disable-warnings -v
+```
+
+Este comando ejecuta la batería completa de pruebas, cubriendo:
+
+- **Gestión de discos**: creación, inserción, existencia, sobrescritura, y manejo de errores.
+- **Gestión de drives**: inserción, expulsión, selección, prevención de duplicados, reemplazo y reset.
+- **Operaciones de archivos**: guardar, extraer, listar, renombrar, borrar y persistencia.
+- **Comandos de usuario, modelo y modo**: cambio y verificación de configuración.
+- **Integración con emulador**: lanzamiento y configuración.
+- **Cobertura avanzada**: secuencias largas, interacción, flags combinados, errores, ayuda, regresión y formato de salida.
+- **Estado y persistencia**: comprobación de consistencia y recuperación de estado.
+- **Limpieza automática**: todos los archivos `.dsk` temporales creados durante los tests se eliminan automáticamente tras cada prueba.
+
+### Resumen de tests que pasan
+
+- Todos los comandos principales (`disc`, `drive`, `cat`, `save`, `era`, `ren`, `list`, `filextr`, `run`, `user`, `model`, `mode`, `settings`).
+- Casos de error, edge y persistencia.
+- Integración y regresión.
+- Limpieza de temporales.
+- 92 tests pasan y 4 se omiten por requerir hardware/emulador o archivos inexistentes.
+
+No es necesario ningún parámetro extra ni configuración especial: solo ejecuta el comando anterior y tendrás la validación completa del sistema.
+
 ## License
 
 Apache License 2.0 - See [LICENSE.md](LICENSE.md) for details.

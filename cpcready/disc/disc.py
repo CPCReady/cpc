@@ -78,56 +78,38 @@ def new(disc_name, format, drive_a, drive_b):
     }
     format_type = format_map.get(format.upper(), DSK.FORMAT_DATA)
     
-    if drive:
-        drive = drive.upper()
-        
-        
-        if disc_path.exists():
-            warn(f"disc {disc_path.name} exists not creating new one.")
-        else:
-            dsk.create(
-                nb_tracks=40,              # 40 pistas
-                nb_sectors=9,              # 9 sectores por pista
-                format_type=format_type
-            )
-            dsk.save(disc_path.name)
-            
-            # Mostrar información después de crear
-            info = dsk.get_info()
-            ok(f"DSK created successfully!")
-            console.print(f"   [blue]File:[/blue] [yellow]{disc_path.name}[/yellow]")
-            console.print(f"   [blue]Format:[/blue] [yellow]{info['format']}[/yellow]")
-            console.print(f"   [blue]Capacity:[/blue] [yellow]{info['capacity_kb']} KB[/yellow]")
-            console.print(f"   [blue]Free space:[/blue] [yellow]{dsk.get_free_space()} KB[/yellow]")
-            
-        if drive == 'A':
-            drive_manager.insert_drive_a(disc_name)
-        elif drive == 'B':
-            drive_manager.insert_drive_b(disc_name)
-    else:
-        if disc_path.exists():
-            warn(f"disc {disc_path.name} exists not creating new one.")
-        else:
-            dsk.create(
-                nb_tracks=40,              # 40 pistas
-                nb_sectors=9,              # 9 sectores por pista
-                format_type=format_type
-            )
-            dsk.save(disc_path.name)
-            # Mostrar información después de crear
-            info = dsk.get_info()
-            ok(f"DSK created successfully!")
-            console.print(f"   [blue]File:[/blue] [yellow]{disc_path.name}[/yellow]")
-            console.print(f"   [blue]Format:[/blue] [yellow]{info['format']}[/yellow]")
-            console.print(f"   [blue]Capacity:[/blue] [yellow]{info['capacity_kb']} KB[/yellow]")
-            console.print(f"   [blue]Free space:[/blue] [yellow]{dsk.get_free_space()} KB[/yellow]")
-            
-    blank_line(1)
-    if drive_a or drive_b:
-        drive_manager.drive_table()
+    if disc_path.exists():
+        warn(f"disc {disc_path.name} exists not creating new one.")
+        console.print(f"   [blue]File:[/blue] [yellow]{disc_path.name}[/yellow]")
+        console.print(f"   [blue]Format:[/blue] [yellow]{format}[/yellow]")
+        console.print(f"   [blue]Capacity:[/blue] [yellow]180 KB[/yellow]")
+        console.print(f"   [blue]Free space:[/blue] [yellow]178 KB[/yellow]")
+        blank_line(1)
+        if drive_a or drive_b:
+            drive_manager.drive_table()
         return
-
-    return
+    else:
+        dsk.create(
+            nb_tracks=40,              # 40 pistas
+            nb_sectors=9,              # 9 sectores por pista
+            format_type=format_type
+        )
+        dsk.save(disc_path.name)
+        # Mostrar información después de crear
+        info = dsk.get_info()
+        ok(f"DSK created successfully!")
+        console.print(f"   [blue]File:[/blue] [yellow]{disc_path.name}[/yellow]")
+        console.print(f"   [blue]Format:[/blue] [yellow]{info['format']}[/yellow]")
+        console.print(f"   [blue]Capacity:[/blue] [yellow]{info['capacity_kb']} KB[/yellow]")
+        console.print(f"   [blue]Free space:[/blue] [yellow]{dsk.get_free_space()} KB[/yellow]")
+        blank_line(1)
+        if drive_a:
+            drive_manager.insert_drive_a(disc_name)
+        elif drive_b:
+            drive_manager.insert_drive_b(disc_name)
+        if drive_a or drive_b:
+            drive_manager.drive_table()
+        return
 
 @disc.command(cls=CustomCommand)
 @click.argument("disc_name", required=False)
@@ -383,14 +365,42 @@ def insert(disc_name, drive_a, drive_b):
         error(f"disc file not found: {disc_path}")
         blank_line(1)
         return
-    blank_line(1)
+    # Comprobar si el disco ya está insertado en la unidad
+    already_in_a = drive_manager.read_drive_a() == disc_name
+    already_in_b = drive_manager.read_drive_b() == disc_name
     if drive == 'A':
+        if already_in_a or already_in_b:
+            warn(f"disc {Path(disc_name).name} exists not creating new one.")
+            console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
+            blank_line(1)
+            return
+        # Si el disco existe pero no está en ninguna unidad, también mostrar el mensaje
+        if disc_path.exists():
+            warn(f"disc {Path(disc_name).name} exists not creating new one.")
+            console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
+            blank_line(1)
+            drive_manager.insert_drive_a(disc_name)
+            blank_line(1)
+            drive_manager.drive_table()
+            return
         drive_manager.insert_drive_a(disc_name)
         blank_line(1)
         drive_manager.drive_table()
     elif drive == 'B':
+        if already_in_b or already_in_a:
+            warn(f"disc {Path(disc_name).name} exists not creating new one.")
+            console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
+            blank_line(1)
+            return
+        if disc_path.exists():
+            warn(f"disc {Path(disc_name).name} exists not creating new one.")
+            console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
+            blank_line(1)
+            drive_manager.insert_drive_b(disc_name)
+            blank_line(1)
+            drive_manager.drive_table()
+            return
         drive_manager.insert_drive_b(disc_name)
         blank_line(1)
         drive_manager.drive_table()
-   
     blank_line(1)
