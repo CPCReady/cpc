@@ -68,6 +68,21 @@ cpc list <file>           # List BASIC program
 cpc filextr <file>        # Extract file from disk
 ```
 
+### Interactive Console
+
+```bash
+cpc console               # Launch interactive console with status bar
+```
+
+The interactive console provides:
+
+- **Status Bar**: Real-time display of CPC model, drive status (A/B), emulator, and video mode
+- **Amstrad Logo**: Visual branding with colored circles (●●●)
+- **Command History**: Navigate previous commands with arrow keys
+- **Auto-completion**: Tab completion for commands and filenames
+- **All Commands Available**: Access all `cpc` commands directly (cat, list, save, etc.)
+- **Persistent State**: Drive and configuration state maintained throughout session
+
 ### System Configuration
 
 ```bash
