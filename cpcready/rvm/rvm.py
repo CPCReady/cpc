@@ -41,7 +41,7 @@ def status():
     # Verificar que está configurado
     if not ruta_rvm:
         error("RetroVirtualMachine path not configured.")
-        error("Run 'cpc configweb' to configure the emulator.")
+        error("Configure the emulator using the configuration file.")
         blank_line(1)
         return
     
@@ -50,7 +50,7 @@ def status():
     # Verificar que existe
     if not Path(ruta_rvm).exists():
         error(f"RetroVirtualMachine not found at: {ruta_rvm}")
-        error("Check the path in configuration (cpc configweb).")
+        error("Check the path in configuration file.")
         blank_line(1)
         return
     

@@ -1,44 +1,4 @@
-# Copyright 2025 David CH.F (destroyer)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at:
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions
-# and limitations under the License.
 
-import streamlit as st
-import re
-from pathlib import Path
-from cpcready.utils import ConfigManager
-
-# Configuración de la página
-st.set_page_config(
-    page_title="CPCReady Configuration",
-    page_icon="💾",
-    layout="centered",
-    menu_items={
-        'Get Help': None,
-        'Report a bug': None,
-        'About': None
-    }
-)
-
-# Ocultar el menú hamburguesa y el botón Deploy
-hide_streamlit_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    .stDeployButton {display:none !important;}
-    button[kind="header"] {display:none !important;}
-    header[data-testid="stHeader"] button {display:none !important;}
-    footer {visibility: hidden;}
-    </style>
-    """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # Título

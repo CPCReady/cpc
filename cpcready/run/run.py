@@ -47,13 +47,13 @@ def run(file_to_run, drive_a, drive_b):
     
     if not ruta_rvm:
         error("RetroVirtualMachine path not configured.")
-        error("Run 'cpc configweb' to configure the emulator.")
+        error("Configure the emulator using the configuration file.")
         return
     
     # Verificar que existe
     if not Path(ruta_rvm).exists():
         error(f"RetroVirtualMachine not found at: {ruta_rvm}")
-        error("Check the path in configuration (cpc configweb).")
+        error("Check the path in configuration file.")
         return
     
     # Obtener disco de la unidad seleccionada

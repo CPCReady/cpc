@@ -81,7 +81,7 @@ def test_file_commands_options(temp_disk, temp_bas, cmd):
     out, err, code = run_cpc(args)
     assert code == 0 or code == 1
 
-@pytest.mark.parametrize("cmd", ["emu", "settings", "cat", "m4", "rvm"])
+@pytest.mark.parametrize("cmd", ["emu", "cat", "m4", "rvm"])
 def test_misc_commands_options(cmd):
     out, err, code = run_cpc([cmd])
     assert code == 0 or code == 1 or code == 2

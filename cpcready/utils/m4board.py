@@ -41,7 +41,7 @@ class M4Board:
             ip = config.get("m4board", "ip", "")
             
             if not ip:
-                raise ValueError("M4Board IP not configured. Use 'cpc configweb' to configure.")
+                raise ValueError("M4Board IP not configured. Edit the configuration file.")
         
         self.ip = ip
     

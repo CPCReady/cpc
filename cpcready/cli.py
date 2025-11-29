@@ -23,7 +23,6 @@ from cpcready.list import list
 from cpcready.filextr.filextr import filextr
 from cpcready.cat.cat import cat
 from cpcready.user.user import user
-from cpcready.settings import settings
 from cpcready.ren.ren import ren
 from cpcready.model.model import model
 from cpcready.mode.mode import mode
@@ -33,7 +32,6 @@ from cpcready.emu.emu import emu
 from cpcready.m4.m4 import m4 as m4_group
 from cpcready.console.console import console
 # from cpcready.header import header
-from cpcready.configweb import configweb
 from cpcready.utils.click_custom import CustomGroup, CustomCommand
 from cpcready.utils.console import message, blank_line
 from cpcready import __version__
@@ -72,8 +70,6 @@ cli.add_command(save)
 cli.add_command(era)
 cli.add_command(user)
 cli.add_command(list)
-cli.add_command(settings)
-cli.add_command(configweb)
 cli.add_command(ren)
 cli.add_command(filextr)
 cli.add_command(model)

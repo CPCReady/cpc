@@ -12,7 +12,7 @@ def run_cpc(args, input=None):
 
 # 1. Test de ayuda y uso
 def test_help_commands():
-    for cmd in ["cat", "disc", "drive", "save", "era", "filextr", "list", "ren", "run", "settings", "user"]:
+    for cmd in ["cat", "disc", "drive", "save", "era", "filextr", "list", "ren", "run", "user"]:
         out, err, code = run_cpc([cmd, "--help"])
         assert "Usage" in out or "usage" in out or code == 0
 

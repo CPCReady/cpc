@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `cpc user` - Manage CP/M user numbers
 - `cpc model` - Set CPC model (464/664/6128)
 - `cpc mode` - Set video mode
-- `cpc configweb` - GUI configuration
+
 
 [Unreleased]: https://github.com/CPCReady/cpc/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/CPCReady/cpc/releases/tag/v1.0.0

@@ -1,48 +1,10 @@
-# Copyright 2025 David CH.F (destroyer)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at:
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions
-# and limitations under the License.
 
-import click
-from prompt_toolkit.application import Application
-from prompt_toolkit.layout import Layout, HSplit
-from prompt_toolkit.widgets import Dialog, Label, TextArea, RadioList, Button
-from prompt_toolkit.validation import Validator, ValidationError
-from prompt_toolkit.key_binding import KeyBindings
-import ipaddress
-from cpcready.utils import ConfigManager
-from cpcready.utils.click_custom import CustomCommand
-from cpcready.utils.console import ok, error, blank_line
-
-
-class IPValidator(Validator):
-    """Validador de direcciones IP."""
-    def validate(self, document):
-        texto = document.text.strip()
-        if not texto:  # Permitir campo vacío
-            return
-        try:
-            ipaddress.ip_address(texto)
-        except ValueError:
-            raise ValidationError(
-                message="❌ Dirección IP no válida. Ejemplo: 192.168.1.10",
-                cursor_position=len(texto)
-            )
 
 
 def show_settings_form():
     """Muestra el formulario de configuración usando prompt_toolkit."""
     config_manager = ConfigManager()
-    config = config_manager.get_current_config()
+    config = config_manager.get_all()
     
     # Campo de IP con validación
     ip_field = TextArea(

@@ -172,7 +172,7 @@ class RVM:
         # Verificar que existe
         if not Path(self.ruta_ejecutable).exists():
             error(f"RetroVirtualMachine not found at: {self.ruta_ejecutable}")
-            error("Check the path in configuration (cpc configweb).")
+            error("Check the path in configuration file.")
             return False
         
         # Matar instancias previas
@@ -227,7 +227,7 @@ class RVM:
             
         except FileNotFoundError:
             error(f"Executable not found: {self.ruta_ejecutable}")
-            error("Check the path in configuration (cpc configweb).")
+            error("Check the path in configuration file.")
             return False
         except Exception as e:
             error(f"Error launching RetroVirtualMachine: {e}")

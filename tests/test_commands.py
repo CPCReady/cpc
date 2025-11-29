@@ -12,7 +12,7 @@ def run_cpc(args):
     result = subprocess.run(CPC + args, capture_output=True, text=True)
     return result.stdout, result.stderr, result.returncode
 
-# Test para cada comando principal excepto configweb y console
+# Test para cada comando principal excepto console
 
 
 
@@ -101,10 +101,6 @@ def test_save(temp_disk, temp_bas):
     mount_drive_a(temp_disk)
     out, err, code = run_cpc(["save", temp_bas])
     assert code == 0
-
-def test_settings():
-    out, err, code = run_cpc(["settings"])
-    assert code == 0 or code == 1
 
 def test_user():
     out, err, code = run_cpc(["user", "0"])

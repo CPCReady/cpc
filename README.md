@@ -24,7 +24,7 @@ CPCReady provides a comprehensive set of tools to work with Amstrad CPC virtual 
 - **File Operations**: Save, list, extract, rename, and delete files on disks
 - **CP/M User Areas**: Support for user numbers (0-15) like real CP/M systems
 - **Emulator Integration**: Launch RetroVirtualMachine with automatic configuration
-- **CPC Configuration**: Manage CPC model (464/664/6128), video mode, and settings
+- **CPC Configuration**: Manage CPC model (464/664/6128), video mode
 - **GUI Configuration**: PySide6-based graphical configuration editor
 
 ## Installation
@@ -89,8 +89,6 @@ The interactive console provides:
 cpc user <0-15>           # Set CP/M user number
 cpc model <464|664|6128>  # Set CPC model
 cpc mode <0|1|2>          # Set video mode
-cpc settings              # Show current settings
-cpc configweb             # Launch GUI configuration
 ```
 
 ### Emulator
@@ -193,7 +191,7 @@ Este comando ejecuta la batería completa de pruebas, cubriendo:
 
 ### Resumen de tests que pasan
 
-- Todos los comandos principales (`disc`, `drive`, `cat`, `save`, `era`, `ren`, `list`, `filextr`, `run`, `user`, `model`, `mode`, `settings`).
+- Todos los comandos principales (`disc`, `drive`, `cat`, `save`, `era`, `ren`, `list`, `filextr`, `run`, `user`, `model`, `mode`).
 - Casos de error, edge y persistencia.
 - Integración y regresión.
 - Limpieza de temporales.
