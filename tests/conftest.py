@@ -19,3 +19,16 @@ def temp_bas():
         f.flush()
         yield f.name
     os.unlink(f.name)
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_disks():
+    yield
+    import os
+    for fname in [
+        "disc_DATA.dsk", "disc_SYSTEM.dsk", "disc_VENDOR.dsk",
+        "seq.dsk", "standalone.dsk", "test_disc.dsk", "test.dsk"
+    ]:
+        try:
+            os.remove(fname)
+        except FileNotFoundError:
+            pass
