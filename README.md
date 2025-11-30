@@ -174,19 +174,28 @@ poetry run pytest
 poetry run cpc <command>
 ```
 
-### Building Homebrew Formula
+### Creating Releases
 
-The Homebrew formula is automatically updated when creating a release:
+CPCReady uses an automated release workflow:
 
 ```bash
 ./Version/create_release.sh
-# When prompted "Update Homebrew formula?", answer 'y'
 ```
 
-This will:
-1. Calculate the SHA256 of the release tarball
-2. Update the formula with new version and SHA256
-3. Commit and push to the homebrew tap repository
+This interactive script will:
+1. Create a new Git tag and GitHub release
+2. Build and publish the package to PyPI automatically
+3. Update and publish the Homebrew formula (if confirmed)
+4. Update and publish the Chocolatey package (if confirmed)
+
+For more details on the publishing workflows, see [.github/PUBLISHING.md](.github/PUBLISHING.md).
+
+#### Manual Publishing
+
+You can also trigger publishing workflows manually from the GitHub Actions tab:
+
+- **PyPI**: Actions → Publish to PyPI → Run workflow
+- **Chocolatey**: Actions → Publish to Chocolatey → Run workflow
 
 ## Tests automáticos
 

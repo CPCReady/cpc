@@ -1,0 +1,101 @@
+name: Publish to Chocolatey
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.1.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: Set version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event.inputs.version }}" -ne "") {
+            $VERSION = "${{ github.event.inputs.version }}"
+          } else {
+            $VERSION = "${{ github.ref_name }}".TrimStart('v')
+          }
+          echo "VERSION=$VERSION" >> $env:GITHUB_OUTPUT
+          echo "Publishing version: $VERSION"
+      
+      - name: Update Chocolatey package
+        shell: bash
+        working-directory: Installer/chocolatey-cpcready
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          bash update_package.sh "$VERSION"
+      
+      - name: Build Chocolatey package
+        shell: pwsh
+        working-directory: Installer/chocolatey-cpcready/cpc
+        run: |
+          choco pack
+      
+      - name: Test Chocolatey package installation
+        shell: pwsh
+        working-directory: Installer/chocolatey-cpcready/cpc
+        run: |
+          $VERSION = "${{ steps.version.outputs.VERSION }}"
+          choco install cpc -s . -y --force
+          
+          # Verify installation
+          cpc --version
+          
+          # Uninstall after test
+          choco uninstall cpc -y
+      
+      - name: Publish to Chocolatey
+        shell: pwsh
+        working-directory: Installer/chocolatey-cpcready/cpc
+        env:
+          CHOCO_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+        run: |
+          $VERSION = "${{ steps.version.outputs.VERSION }}"
+          choco push "cpc.$VERSION.nupkg" --source https://push.chocolatey.org/ --api-key $env:CHOCO_API_KEY
+      
+      - name: Commit and push package updates
+        shell: bash
+        working-directory: Installer/chocolatey-cpcready
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: update package to version $VERSION" || echo "No changes to commit"
+          git push || echo "Nothing to push"
+      
+      - name: Update submodule reference
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Installer/chocolatey-cpcready
+          git commit -m "chore: update chocolatey-cpcready submodule to v$VERSION" || echo "No changes to commit"
+          git push || echo "Nothing to push"
+      
+      - name: Verify publication
+        shell: pwsh
+        run: |
+          $VERSION = "${{ steps.version.outputs.VERSION }}"
+          Write-Host "Published CPCReady version $VERSION to Chocolatey"
+          Write-Host "View at: https://community.chocolatey.org/packages/cpc/$VERSION"
+          Write-Host ""
+          Write-Host "Users can install with: choco install cpc"
