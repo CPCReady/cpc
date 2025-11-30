@@ -25,16 +25,30 @@ CPCReady provides a comprehensive set of tools to work with Amstrad CPC virtual 
 - **CP/M User Areas**: Support for user numbers (0-15) like real CP/M systems
 - **Emulator Integration**: Launch RetroVirtualMachine with automatic configuration
 - **CPC Configuration**: Manage CPC model (464/664/6128), video mode
-- **GUI Configuration**: PySide6-based graphical configuration editor
 
 ## Installation
 
-### Prerequisites
+### Via Homebrew (Recommended)
+
+```bash
+# Add the CPCReady tap
+brew tap cpcready/cpcready https://github.com/cpcready/homebrew-cpcready
+
+# Install cpc
+brew install cpcready/cpcready/cpc
+
+# Verify installation
+cpc --version
+```
+
+### From Source
+
+#### Prerequisites
 
 - Python 3.13+
 - Poetry (dependency manager)
 
-### Install with Poetry
+#### Install with Poetry
 
 ```bash
 poetry install
@@ -159,6 +173,20 @@ poetry run pytest
 # Run in development mode
 poetry run cpc <command>
 ```
+
+### Building Homebrew Formula
+
+The Homebrew formula is automatically updated when creating a release:
+
+```bash
+./Version/create_release.sh
+# When prompted "Update Homebrew formula?", answer 'y'
+```
+
+This will:
+1. Calculate the SHA256 of the release tarball
+2. Update the formula with new version and SHA256
+3. Commit and push to the homebrew tap repository
 
 ## Tests automáticos
 

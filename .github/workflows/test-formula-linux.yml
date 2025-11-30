@@ -1,0 +1,53 @@
+name: Test Homebrew Formula (Linux)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  test-formula-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      
+      - name: Install cpc from tap
+        run: |
+          brew tap cpcready/cpcready https://github.com/cpcready/homebrew-cpcready
+          brew install cpcready/cpcready/cpc
+      
+      - name: Test cpc installation
+        run: |
+          cpc --version
+          which cpc
+      
+      - name: Test basic commands
+        run: |
+          # Crear un disco de prueba
+          cpc disc new test.dsk
+          
+          # Verificar que se creó
+          if [ ! -f "test.dsk" ]; then
+            echo "ERROR: test.dsk was not created"
+            exit 1
+          fi
+          
+          # Montar en drive A
+          cpc drive a test.dsk
+          
+          # Listar contenido
+          cpc cat || true
+          
+          echo "✅ Basic tests passed"
+      
+      - name: Cleanup
+        if: always()
+        run: |
+          brew uninstall cpc || true
+          rm -f test.dsk

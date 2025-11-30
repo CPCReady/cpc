@@ -33,21 +33,30 @@ cd Version
      - **Patch** (0.1.1) - Bug fixes
      - **Custom** - Specify any version
 
-3. **Updates version files**
+3. **Homebrew formula update (optional)**
+   - Prompts: "Update Homebrew formula? (y/N)"
+   - If yes:
+     - Downloads release tarball
+     - Calculates SHA256 automatically
+     - Updates `Installer/homebrew-cpcready/Formula/cpc.rb`
+     - Commits and pushes to homebrew tap
+
+4. **Updates version files**
    - Runs `sync_version.py` to update:
      - `cpcready/__init__.py`
      - `pyproject.toml`
 
-4. **Creates commit and tag**
+5. **Creates commit and tag**
    - Commits version changes
    - Creates annotated git tag (e.g., `v0.2.0`)
 
-5. **Pushes to GitHub**
+6. **Pushes to GitHub**
    - Pushes commit to current branch
    - Pushes tag to trigger GitHub Actions
 
-6. **GitHub Actions takes over**
+7. **GitHub Actions takes over**
    - Workflow detects new tag
+   - Linux CI tests Homebrew formula installation
    - Builds package with Poetry
    - Creates GitHub Release
    - Uploads `.whl` and `.tar.gz` files
