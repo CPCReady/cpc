@@ -17,12 +17,11 @@ import click
 import subprocess
 from pathlib import Path
 from tabulate import tabulate
-from colorama import Fore, Style, init
+from rich.console import Console
 from cpcready.utils.console import ok, debug,warn, error,info2,blank_line
 from cpcready.utils.toml_config import ConfigManager
 
-# Inicializa colorama (para colores en consola, también en Windows)
-init(autoreset=True)
+console = Console()
 
 class discManager:
     """
@@ -490,7 +489,7 @@ class discManager:
 
         # Header
         name = path.stem.upper()
-        print(f"{Fore.CYAN}{Style.BRIGHT}{name} disc INFORMATION{Style.RESET_ALL}")
+        console.print(f"[bold cyan]{name} disc INFORMATION[/bold cyan]")
         print("=" * 60)
         print(f"disc file: {dsk_file}")
         print(f"disc size: {disc_size} bytes")
@@ -498,7 +497,7 @@ class discManager:
 
         # Summary
         print("-" * 60)
-        print(f"{Fore.YELLOW}disc SUMMARY{Style.RESET_ALL}")
+        console.print(f"[yellow]disc SUMMARY[/yellow]")
         print("-" * 60)
         total_files = len(file_lines) if file_lines else 0
         print(f"Total files: {total_files}")
@@ -508,7 +507,7 @@ class discManager:
         print(f"- Other files: {other_files}")
         blank_line(1)
         print("-" * 60)
-        print(f"{Fore.YELLOW}CAT FILES{Style.RESET_ALL}")
+        console.print(f"[yellow]CAT FILES[/yellow]")
         print("-" * 60)
         blank_line(1)
         # File listing - show the formatted table from cat method
