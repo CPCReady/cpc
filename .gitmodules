@@ -4,3 +4,6 @@
 [submodule "Installer/homebrew-cpcready"]
 	path = Installer/homebrew-cpcready
 	url = git@github.com:CPCReady/homebrew-cpcready.git
+[submodule "Installer/chocolatey-cpcready"]
+	path = Installer/chocolatey-cpcready
+	url = git@github.com:CPCReady/chocolatey-cpcready.git
