@@ -14,6 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
+from rich.console import Console
+import sys
+console = Console()
+
+console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+sys.exit(0)
+
 import click
 import questionary
 from pathlib import Path
@@ -33,6 +41,8 @@ def m4():
 def status():
     """Check M4Board connection status."""
     blank_line(1)
+    
+    
     
     # Obtener configuración
     config = ConfigManager()

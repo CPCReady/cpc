@@ -72,9 +72,36 @@ class ConfigManager:
         }
     
     def _ensure_config(self):
-        """Crea el archivo de configuración si no existe."""
+        """
+        Crea el archivo de configuración si no existe, o valida que tenga todas las claves y tipos.
+        Si faltan claves o tipos, se añaden los valores por defecto.
+        """
+        default = self._default_config()
+        updated = False
         if not self.config_path.exists():
-            self._write(self._default_config())
+            self._write(default)
+            return
+        # Leer config actual
+        try:
+            config = self._read()
+        except Exception:
+            self._write(default)
+            return
+        # Validar y completar claves y tipos
+        def validate_section(section, default_section):
+            if section not in config or not isinstance(config[section], dict):
+                config[section] = default_section.copy()
+                return True
+            for key, value in default_section.items():
+                if key not in config[section] or not isinstance(config[section][key], type(value)):
+                    config[section][key] = value
+                    return True
+            return False
+        for section, default_section in default.items():
+            if validate_section(section, default_section):
+                updated = True
+        if updated:
+            self._write(config)
     
     def _read(self) -> Dict[str, Any]:
         """Lee y retorna el contenido del archivo TOML."""

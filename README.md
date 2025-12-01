@@ -26,6 +26,44 @@ CPCReady provides a comprehensive set of tools to work with Amstrad CPC virtual 
 - **Emulator Integration**: Launch RetroVirtualMachine with automatic configuration
 - **CPC Configuration**: Manage CPC model (464/664/6128), video mode
 
+## Recomendación de instalación y experiencia de usuario
+
+### Instalación recomendada
+
+Para la mejor experiencia y facilidad de uso, se recomienda instalar CPCReady usando gestores de paquetes:
+
+- **macOS y Linux:** Homebrew
+- **Windows:** Chocolatey
+
+Esto permite instalar y actualizar CPCReady con un solo comando, manteniendo el sistema limpio y seguro.
+
+```bash
+# macOS / Linux
+brew install cpcready/cpcready/cpc
+
+# Windows
+choco install cpc
+```
+
+### Alternativa: Binario standalone
+
+Si no puedes usar un gestor de paquetes, también puedes descargar el binario standalone generado con Nuitka. Este binario no requiere Python ni dependencias, pero puede ser más grande y menos portable entre sistemas.
+
+### Pros y contras
+
+| Método         | Pros usuario                      | Contras usuario                  | Pros desarrollo         | Contras desarrollo         |
+|---------------|-----------------------------------|----------------------------------|------------------------|---------------------------|
+| Homebrew/Choco| Instalación/actualización fácil   | Requiere gestor de paquetes      | Releases automáticas   | Mantener fórmulas/paquetes|
+|               | Integración con el sistema        | Requiere Python instalado        | Menos testing manual   | Menos control del entorno |
+| Standalone    | No requiere Python ni dependencias| Binario grande, menos portable   | Control total binario  | Compilar por arquitectura |
+|               | Doble click, sin instalación extra| Actualización manual             | Personalización total  | Firmas y testing extra    |
+
+**Recomendación:**
+- Usa Homebrew/Chocolatey como método principal para la mayoría de usuarios.
+- Ofrece el binario standalone como alternativa para entornos restringidos o usuarios avanzados.
+
+---
+
 ## Installation
 
 ### Via Homebrew (Recommended)
