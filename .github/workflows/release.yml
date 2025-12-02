@@ -116,6 +116,12 @@ jobs:
           formula-name: cpc
           homebrew-tap: CPCReady/homebrew-cpcready
           download-url: https://github.com/CPCReady/cpc/archive/refs/tags/v${{ steps.get_version.outputs.VERSION }}.tar.gz
+          create-pullrequest: false
+          tag-name: v${{ steps.get_version.outputs.VERSION }}
+          commit-message: |
+            chore: update cpc formula to v${{ steps.get_version.outputs.VERSION }}
+            
+            {{formulaName}} v${{ steps.get_version.outputs.VERSION }}
         env:
           COMMITTER_TOKEN: ${{ secrets.PAT_GITHUB }}
       
@@ -142,5 +148,27 @@ jobs:
           git add cpc/cpc.nuspec cpc/tools/chocolateyinstall.ps1
           git commit -m "chore: update cpc package to v${VERSION}" || echo "No changes to commit"
           git push
+          
+          # Crear tag con la versión
+          git tag -a "v${VERSION}" -m "Release v${VERSION}"
+          git push origin "v${VERSION}"
+        env:
+          PAT_GITHUB: ${{ secrets.PAT_GITHUB }}
+      
+      - name: Update Docs Repository Tag
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          
+          # Clonar el repositorio de docs con PAT
+          git clone https://x-access-token:${{ secrets.PAT_GITHUB }}@github.com/CPCReady/docs.git docs-repo
+          cd docs-repo
+          
+          # Configurar git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Crear tag con la versión
+          git tag -a "v${VERSION}" -m "Release v${VERSION}"
+          git push origin "v${VERSION}"
         env:
           PAT_GITHUB: ${{ secrets.PAT_GITHUB }}

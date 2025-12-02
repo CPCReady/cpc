@@ -53,6 +53,23 @@ SUBMODULE_CHANGES=false
 for submodule in "${SUBMODULES[@]}"; do
     if [ -d "$submodule" ]; then
         cd "$submodule"
+        
+        # Primero hacer pull para traer cambios remotos
+        echo -e "${BLUE}📥 Pulling changes from remote for ${submodule}...${NC}"
+        git fetch origin
+        
+        # Verificar si hay cambios remotos
+        LOCAL=$(git rev-parse @)
+        REMOTE=$(git rev-parse @{u} 2>/dev/null || echo $LOCAL)
+        
+        if [ $LOCAL != $REMOTE ]; then
+            echo -e "${YELLOW}⚠️  Remote changes detected in ${submodule}${NC}"
+            git pull --rebase
+            echo -e "${GREEN}✅ Changes pulled in ${submodule}${NC}"
+            SUBMODULE_CHANGES=true
+        fi
+        
+        # Luego verificar cambios locales sin commit
         if [[ -n $(git status -s) ]]; then
             echo -e "${YELLOW}⚠️  Uncommitted changes in ${submodule}${NC}"
             git status -s
