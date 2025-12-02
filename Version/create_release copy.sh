@@ -43,50 +43,9 @@ if [ "$CURRENT_BRANCH" != "main" ] && [ "$CURRENT_BRANCH" != "master" ]; then
     fi
 fi
 
-# Verificar y commitear cambios en submodulos
-echo ""
-echo -e "${BLUE}🔍 Checking submodules for uncommitted changes...${NC}"
-
-SUBMODULES=("docs" "Installer/homebrew-cpcready" "Installer/chocolatey-cpcready")
-SUBMODULE_CHANGES=false
-
-for submodule in "${SUBMODULES[@]}"; do
-    if [ -d "$submodule" ]; then
-        cd "$submodule"
-        if [[ -n $(git status -s) ]]; then
-            echo -e "${YELLOW}⚠️  Uncommitted changes in ${submodule}${NC}"
-            git status -s
-            echo ""
-            read -p "Commit changes in ${submodule}? (y/N) " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                git add .
-                read -p "Enter commit message: " commit_msg
-                git commit -m "$commit_msg"
-                git push
-                echo -e "${GREEN}✅ Changes committed and pushed in ${submodule}${NC}"
-                SUBMODULE_CHANGES=true
-            fi
-        fi
-        cd - > /dev/null
-    fi
-done
-
-# Actualizar referencias de submodulos si hubo cambios
-if [ "$SUBMODULE_CHANGES" = true ]; then
-    echo ""
-    echo -e "${BLUE}📦 Updating submodule references in main repo...${NC}"
-    git add "${SUBMODULES[@]}"
-    if [[ -n $(git diff --cached) ]]; then
-        git commit -m "chore: update submodule references"
-        git push
-        echo -e "${GREEN}✅ Submodule references updated${NC}"
-    fi
-fi
-
-# Verificar que no hay cambios sin commit en el repo principal
+# Verificar que no hay cambios sin commit
 if [[ -n $(git status -s) ]]; then
-    echo -e "${RED}❌ You have uncommitted changes in main repo. Please commit or stash them first.${NC}"
+    echo -e "${RED}❌ You have uncommitted changes. Please commit or stash them first.${NC}"
     git status -s
     exit 1
 fi
@@ -231,25 +190,14 @@ echo -e "${BLUE}🔄 Updating version files...${NC}"
 # Cambiar al directorio raíz del proyecto
 cd "$(dirname "$0")/.."
 
-# Actualizar cpcready/__init__.py
-INIT_FILE="cpcready/__init__.py"
-if [ -f "$INIT_FILE" ]; then
-    # Actualizar solo la línea de __version__
-    sed -i.bak "s/^__version__ = \".*\"/__version__ = \"${NEW_VERSION}\"/" "$INIT_FILE"
-    rm -f "${INIT_FILE}.bak"
-    echo -e "${GREEN}✅ Updated ${INIT_FILE}${NC}"
-else
-    echo -e "${RED}❌ File ${INIT_FILE} not found${NC}"
-    exit 1
-fi
+# Verificar la versión actual antes del cambio
+CURRENT_VERSION=$(grep -E "^__version__" cpcready/__init__.py | cut -d'"' -f2)
 
-# Actualizar pyproject.toml
-if [ -f "pyproject.toml" ]; then
-    sed -i.bak "s/^version = \".*\"/version = \"${NEW_VERSION}\"/" "pyproject.toml"
-    rm -f "pyproject.toml.bak"
-    echo -e "${GREEN}✅ Updated pyproject.toml${NC}"
+# Actualizar versión usando sync_version.py
+if python3 Version/sync_version.py "$NEW_VERSION"; then
+    echo -e "${GREEN}✅ Version files updated${NC}"
 else
-    echo -e "${RED}❌ File pyproject.toml not found${NC}"
+    echo -e "${RED}❌ Failed to update version files${NC}"
     exit 1
 fi
 
