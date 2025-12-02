@@ -172,50 +172,34 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 echo ""
 
-# Verificar si el tag ya existe
+# Verificar si el tag ya existe localmente y borrarlo automáticamente
 TAG_EXISTS_LOCAL=$(git tag -l "v${NEW_VERSION}")
+
+if [[ -n "$TAG_EXISTS_LOCAL" ]]; then
+    echo -e "${YELLOW}⚠️  Tag v${NEW_VERSION} already exists locally${NC}"
+    echo -e "${BLUE}🗑️  Deleting local tag...${NC}"
+    git tag -d "v${NEW_VERSION}"
+    echo -e "${GREEN}✅ Deleted local tag v${NEW_VERSION}${NC}"
+    echo ""
+fi
+
+# Verificar si existe en remoto
 TAG_EXISTS_REMOTE=$(git ls-remote --tags origin "refs/tags/v${NEW_VERSION}" 2>/dev/null)
 
-if [[ -n "$TAG_EXISTS_LOCAL" ]] || [[ -n "$TAG_EXISTS_REMOTE" ]]; then
-    echo -e "${YELLOW}⚠️  Tag v${NEW_VERSION} already exists!${NC}"
-    
-    if [[ -n "$TAG_EXISTS_LOCAL" ]]; then
-        echo -e "   ${YELLOW}• Found locally${NC}"
-    fi
-    
-    if [[ -n "$TAG_EXISTS_REMOTE" ]]; then
-        echo -e "   ${YELLOW}• Found on remote${NC}"
-    fi
-    
+if [[ -n "$TAG_EXISTS_REMOTE" ]]; then
+    echo -e "${YELLOW}⚠️  Tag v${NEW_VERSION} exists on remote${NC}"
     echo ""
-    echo -e "${YELLOW}Do you want to:${NC}"
-    echo -e "  ${GREEN}1)${NC} Delete existing tag and recreate"
-    echo -e "  ${RED}2)${NC} Cancel"
-    echo ""
-    
-    read -p "Choose [1-2]: " delete_choice
-    
-    if [[ $delete_choice != "1" ]]; then
+    read -p "Delete remote tag and recreate? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "${BLUE}🗑️  Deleting remote tag...${NC}"
+        git push origin --delete "v${NEW_VERSION}" 2>/dev/null || true
+        echo -e "${GREEN}✅ Deleted remote tag${NC}"
+        echo ""
+    else
         echo -e "${YELLOW}Cancelled${NC}"
         exit 0
     fi
-    
-    echo ""
-    echo -e "${BLUE}🗑️  Deleting existing tags...${NC}"
-    
-    # Eliminar tag local si existe
-    if [[ -n "$TAG_EXISTS_LOCAL" ]]; then
-        git tag -d "v${NEW_VERSION}"
-        echo -e "${GREEN}✅ Deleted local tag${NC}"
-    fi
-    
-    # Eliminar tag remoto si existe
-    if [[ -n "$TAG_EXISTS_REMOTE" ]]; then
-        git push origin --delete "v${NEW_VERSION}" 2>/dev/null || true
-        echo -e "${GREEN}✅ Deleted remote tag${NC}"
-    fi
-    
-    echo ""
 fi
 
 read -p "Proceed with release? (y/N) " -n 1 -r
