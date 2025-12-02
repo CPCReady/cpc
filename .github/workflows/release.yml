@@ -17,7 +17,7 @@ name: CPCReady Release
 on:
   push:
     tags:
-      - 'v111111111*'
+      - 'v*'
 
 permissions:
   contents: write
@@ -69,17 +69,17 @@ jobs:
           poetry run pip install twine
           poetry run twine check dist/*
       
-      - name: Publish to TestPyPI
-        env:
-          POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: |
-          poetry config repositories.testpypi https://test.pypi.org/legacy/
-          poetry publish -r testpypi
+      # - name: Publish to TestPyPI
+      #   env:
+      #     POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      #   run: |
+      #     poetry config repositories.testpypi https://test.pypi.org/legacy/
+      #     poetry publish -r testpypi
       
-      - name: Publish to PyPI
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
-        run: poetry publish
+      # - name: Publish to PyPI
+      #   env:
+      #     POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
+      #   run: poetry publish
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -107,5 +107,40 @@ jobs:
             See [CHANGELOG.md](CHANGELOG.md) for details.
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update Homebrew Formula
+        uses: mislav/bump-homebrew-formula-action@v3
+        with:
+          formula-name: cpc
+          homebrew-tap: CPCReady/homebrew-cpcready
+          download-url: https://github.com/CPCReady/cpc/archive/refs/tags/v${{ steps.get_version.outputs.VERSION }}.tar.gz
+        env:
+          COMMITTER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update Chocolatey Package
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          
+          # Clonar el repositorio de chocolatey
+          git clone https://github.com/CPCReady/chocolatey-cpcready.git choco-repo
+          cd choco-repo
+          
+          # Actualizar la versión en el nuspec
+          sed -i "s|<version>.*</version>|<version>${VERSION}</version>|" cpc/cpc.nuspec
+          
+          # Actualizar la URL en chocolateyinstall.ps1
+          TARBALL_URL="https://github.com/CPCReady/cpc/archive/refs/tags/v${VERSION}.tar.gz"
+          sed -i "s|https://github.com/CPCReady/cpc/archive/refs/tags/v.*\.tar\.gz|${TARBALL_URL}|" cpc/tools/chocolateyinstall.ps1
+          
+          # Configurar git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Commit y push
+          git add cpc/cpc.nuspec cpc/tools/chocolateyinstall.ps1
+          git commit -m "chore: update cpc package to v${VERSION}" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/CPCReady/chocolatey-cpcready.git main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

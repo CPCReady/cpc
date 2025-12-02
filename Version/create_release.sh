@@ -86,9 +86,21 @@ fi
 
 # Verificar que no hay cambios sin commit en el repo principal
 if [[ -n $(git status -s) ]]; then
-    echo -e "${RED}❌ You have uncommitted changes in main repo. Please commit or stash them first.${NC}"
+    echo -e "${YELLOW}⚠️  You have uncommitted changes in main repo${NC}"
     git status -s
-    exit 1
+    echo ""
+    read -p "Commit these changes? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        git add .
+        read -p "Enter commit message: " commit_msg
+        git commit -m "$commit_msg"
+        git push
+        echo -e "${GREEN}✅ Changes committed and pushed${NC}"
+    else
+        echo -e "${RED}❌ Cannot create release with uncommitted changes${NC}"
+        exit 1
+    fi
 fi
 
 # Obtener el último tag
@@ -160,16 +172,6 @@ echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}📦 New version: ${YELLOW}v${NEW_VERSION}${NC} (${VERSION_TYPE})"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-
-# Preguntar si actualizar la fórmula de Homebrew
-echo -e "${BLUE}🍺 Update Homebrew formula?${NC}"
-read -p "Do you want to update the Homebrew formula? (y/N) " -n 1 -r
-echo
-UPDATE_FORMULA=false
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    UPDATE_FORMULA=true
-fi
 echo ""
 
 # Verificar si el tag ya existe localmente y borrarlo automáticamente
@@ -289,57 +291,17 @@ else
     echo -e "${GREEN}✅ Pushed to remote${NC}"
 fi
 
-# Actualizar fórmula de Homebrew si se solicitó
-if [ "$UPDATE_FORMULA" = true ]; then
-    echo ""
-    echo -e "${BLUE}🍺 Updating Homebrew formula...${NC}"
-    
-    FORMULA_PATH="Installer/homebrew-cpcready/Formula/cpc.rb"
-    
-    if [ ! -f "$FORMULA_PATH" ]; then
-        echo -e "${YELLOW}⚠️  Formula not found at ${FORMULA_PATH}${NC}"
-    else
-        # Calcular SHA256 del tarball
-        echo -e "${BLUE}📥 Downloading release tarball...${NC}"
-        TARBALL_URL="https://github.com/CPCReady/cpc/archive/refs/tags/v${NEW_VERSION}.tar.gz"
-        SHA256=$(curl -sL "$TARBALL_URL" | shasum -a 256 | cut -d' ' -f1)
-        
-        if [ -z "$SHA256" ]; then
-            echo -e "${RED}❌ Failed to calculate SHA256${NC}"
-        else
-            echo -e "${GREEN}✅ SHA256: ${SHA256}${NC}"
-            
-            # Actualizar URL y SHA256 en la fórmula
-            sed -i.bak "s|url \"https://github.com/CPCReady/cpc/archive/refs/tags/v.*\.tar\.gz\"|url \"${TARBALL_URL}\"|" "$FORMULA_PATH"
-            sed -i.bak "s|sha256 \".*\"|sha256 \"${SHA256}\"|" "$FORMULA_PATH"
-            rm -f "${FORMULA_PATH}.bak"
-            
-            echo -e "${GREEN}✅ Formula updated${NC}"
-            
-            # Commit y push de la fórmula
-            cd Installer/homebrew-cpcready
-            
-            if [[ -n $(git status -s Formula/cpc.rb) ]]; then
-                git add Formula/cpc.rb
-                git commit -m "chore: update cpc formula to v${NEW_VERSION}"
-                git push
-                echo -e "${GREEN}✅ Formula pushed to homebrew tap${NC}"
-            else
-                echo -e "${YELLOW}ℹ️  Formula already up to date${NC}"
-            fi
-            
-            cd ../..
-        fi
-    fi
-fi
-
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║  🎉 Release ${NEW_VERSION} completed!     ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${BLUE}📋 Next steps:${NC}"
-echo -e "   1. GitHub Actions will automatically build and create the release"
-echo -e "   2. Check: ${YELLOW}https://github.com/CPCReady/cpc2/actions${NC}"
-echo -e "   3. Release will be available at: ${YELLOW}https://github.com/CPCReady/cpc2/releases${NC}"
+echo -e "   1. GitHub Actions will automatically:"
+echo -e "      - Build and publish to PyPI"
+echo -e "      - Update Homebrew formula"
+echo -e "      - Update Chocolatey package"
+echo -e "      - Create GitHub release"
+echo -e "   2. Check workflow status: ${YELLOW}https://github.com/CPCReady/cpc/actions${NC}"
+echo -e "   3. Release will be available at: ${YELLOW}https://github.com/CPCReady/cpc/releases${NC}"
 echo ""
