@@ -17,10 +17,6 @@
 
 from rich.console import Console
 import sys
-console = Console()
-
-console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
-sys.exit(0)
 
 import click
 import questionary
@@ -29,6 +25,9 @@ from cpcready.utils.click_custom import CustomCommand, CustomGroup
 from cpcready.utils.console import info2, ok, error, warn, blank_line
 from cpcready.utils.toml_config import ConfigManager
 from cpcready.utils.m4board import M4Board
+
+console = Console()
+
 
 
 @click.group(cls=CustomGroup)
@@ -42,7 +41,8 @@ def status():
     """Check M4Board connection status."""
     blank_line(1)
     
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     
     # Obtener configuración
     config = ConfigManager()
@@ -77,7 +77,8 @@ def status():
 def config():
     """Configure M4Board IP address."""
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     # Obtener configuración actual
     config_manager = ConfigManager()
     current_ip = config_manager.get("m4board", "ip", "")
@@ -126,7 +127,8 @@ def config():
 def reset_m4():
     """Reset M4Board."""
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.reset_m4()
@@ -140,7 +142,8 @@ def reset_m4():
 def reset_cpc():
     """Reset CPC."""
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.reset_cpc()
@@ -160,7 +163,8 @@ def push(file_path, destination, header):
     FILE_PATH: Local file to upload
     """
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.upload_file(file_path, destination, with_header=header)
@@ -179,7 +183,8 @@ def pull(cpc_path, output):
     CPC_PATH: File path on M4Board SD card
     """
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.download_file(cpc_path, local_path=output)
@@ -197,7 +202,8 @@ def exec(cpc_file):
     CPC_FILE: File path on M4Board SD card to execute
     """
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.execute(cpc_file)
@@ -216,7 +222,8 @@ def run(file_path, destination):
     FILE_PATH: Local file to upload and execute
     """
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         file_name = Path(file_path).name
@@ -240,7 +247,8 @@ def mkdir(folder):
     FOLDER: Directory path to create
     """
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.mkdir(folder)
@@ -258,7 +266,8 @@ def cd(folder):
     FOLDER: Directory path
     """
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.cd(folder)
@@ -276,7 +285,8 @@ def rm(cpc_file):
     CPC_FILE: File or directory to remove
     """
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.rm(cpc_file)
@@ -290,7 +300,8 @@ def rm(cpc_file):
 def pause():
     """Pause CPC execution."""
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         m4.pause()
@@ -308,7 +319,8 @@ def ls(folder):
     FOLDER: Directory to list (default: current directory)
     """
     blank_line(1)
-    
+    console.print("[bold yellow]\n⚠️ This feature is under development.\nExiting...\n[/bold yellow]")
+    sys.exit(0)
     try:
         m4 = M4Board()
         listing = m4.ls(folder)

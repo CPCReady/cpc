@@ -63,17 +63,9 @@ class CustomCommand(click.Command):
         if self.show_banner:
             try:
                 from cpcready.utils.version import show_banner
-                # Capturar la salida del banner
-                import io
-                import sys
-                old_stdout = sys.stdout
-                sys.stdout = banner_buffer = io.StringIO()
-                show_banner()
-                sys.stdout = old_stdout
-                banner_text = banner_buffer.getvalue()
-                return f"{banner_text}{help_text}\n"
+                show_banner()  # Imprime el banner con Rich en color
             except ImportError:
-                return f"\n{help_text}\n"
+                pass
         return f"\n{help_text}\n"
 
 class CustomGroup(click.Group):
@@ -86,17 +78,9 @@ class CustomGroup(click.Group):
         if self.show_banner:
             try:
                 from cpcready.utils.version import show_banner
-                # Capturar la salida del banner
-                import io
-                import sys
-                old_stdout = sys.stdout
-                sys.stdout = banner_buffer = io.StringIO()
-                show_banner()
-                sys.stdout = old_stdout
-                banner_text = banner_buffer.getvalue()
-                return f"{banner_text}{help_text}\n"
+                show_banner()  # Imprime el banner con Rich en color
             except ImportError:
-                return f"\n{help_text}\n"
+                pass
         return f"\n{help_text}\n"
     
     def command(self, *args, **kwargs):

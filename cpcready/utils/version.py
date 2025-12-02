@@ -27,13 +27,15 @@ from cpcready.utils.console import message, blank_line,warn
 
 def show_banner():
     """Display ASCII art banner."""
+    from rich.console import Console
+    console = Console()
     blank_line()
-    message("▞▀▖▛▀▖▞▀▖▛▀▖        ▌   ")
-    message("▌  ▙▄▘▌  ▙▄▘▞▀▖▝▀▖▞▀▌▌ ▌")
-    message("▌ ▖▌  ▌ ▖▌▚ ▛▀ ▞▀▌▌ ▌▚▄▌")
-    message("▝▀ ▘  ▝▀ ▘ ▘▝▀▘▝▀▘▝▀▘▗▄▘")
-    message(f"CLI Toolchain v{__version__}")
-    message(f"Copyright (c) 2025 {__author__}")
+    console.print("▞▀▖▛▀▖▞▀▖▛▀▖        ▌   ", style="bold yellow")
+    console.print("▌  ▙▄▘▌  ▙▄▘▞▀▖▝▀▖▞▀▌▌ ▌", style="bold yellow")
+    console.print("▌ ▖▌  ▌ ▖▌▚ ▛▀ ▞▀▌▌ ▌▚▄▌", style="bold yellow")
+    console.print("▝▀ ▘  ▝▀ ▘ ▘▝▀▘▝▀▘▝▀▘▗▄▘", style="bold yellow")
+    console.print(f"CLI Toolchain v{__version__}", style="bold blue")
+    console.print(f"Copyright (c) 2025 {__author__}", style="bold blue")
     blank_line()
 
 
