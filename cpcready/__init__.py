@@ -16,7 +16,7 @@
 CPCReady Toolchain
 """
 
-__version__ = "2.0.0"
+__version__ = "3.0.0"
 __author__ = "destroyer"
 __email__ = "destroyer.dcf@gmail.com"
 __license__ = "GPL 3.0"
