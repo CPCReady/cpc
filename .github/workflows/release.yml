@@ -117,7 +117,7 @@ jobs:
           homebrew-tap: CPCReady/homebrew-cpcready
           download-url: https://github.com/CPCReady/cpc/archive/refs/tags/v${{ steps.get_version.outputs.VERSION }}.tar.gz
         env:
-          COMMITTER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.PAT_GITHUB }}
       
       - name: Update Chocolatey Package
         run: |

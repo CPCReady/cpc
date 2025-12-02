@@ -47,7 +47,6 @@ Para que los workflows funcionen, necesitas configurar los siguientes secretos e
 #### `PYPI_API_TOKEN`
 - **Descripción:** Token de API de PyPI para publicar paquetes
 - **Obtención:**
-  1. Inicia sesión en https://pypi.org/
   2. Ve a Account settings → API tokens
   3. Click en "Add API token"
   4. Nombre: `CPCReady GitHub Actions`
@@ -64,12 +63,30 @@ Para que los workflows funcionen, necesitas configurar los siguientes secretos e
 ### Para Chocolatey
 
 #### `CHOCOLATEY_API_KEY`
+
 - **Descripción:** API Key de Chocolatey Community Repository
 - **Obtención:**
-  1. Inicia sesión en https://community.chocolatey.org/
+  1. Inicia sesión en <https://community.chocolatey.org/>
   2. Ve a tu perfil → Account → API Key
   3. Si no tienes una, click en "Generate new API Key"
   4. Copia la key generada
+
+#### `PAT_GITHUB`
+
+- **Descripción:** Personal Access Token para actualizar la fórmula de Homebrew
+- **Obtención:**
+  1. Ve a GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+  2. Click en "Generate new token (classic)"
+  3. Nombre: `CPCReady Homebrew Formula Update`
+  4. Permisos necesarios:
+     - ✅ `repo` (full control)
+     - ✅ `workflow`
+  5. Genera el token y **cópialo** (solo se muestra una vez)
+  6. Ve a tu repositorio `CPCReady/cpc` → Settings → Secrets and variables → Actions
+  7. Click "New repository secret"
+  8. Name: `PAT_GITHUB`
+  9. Value: pega el token
+  10. Click "Add secret"
 
 ## Configuración de Environments (Opcional pero recomendado)
 

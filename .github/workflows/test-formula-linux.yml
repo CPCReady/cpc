@@ -3,7 +3,7 @@ name: Test Homebrew Formula (Linux)
 on:
   push:
     tags:
-      - 'v*'
+      - 'v1111111111111*'
   workflow_dispatch:
 
 jobs:
