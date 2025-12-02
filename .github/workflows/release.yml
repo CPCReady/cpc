@@ -123,8 +123,8 @@ jobs:
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
           
-          # Clonar el repositorio de chocolatey
-          git clone https://github.com/CPCReady/chocolatey-cpcready.git choco-repo
+          # Clonar el repositorio de chocolatey con PAT
+          git clone https://x-access-token:${{ secrets.PAT_GITHUB }}@github.com/CPCReady/chocolatey-cpcready.git choco-repo
           cd choco-repo
           
           # Actualizar la versión en el nuspec
@@ -138,9 +138,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Commit y push
+          # Commit y push con PAT
           git add cpc/cpc.nuspec cpc/tools/chocolateyinstall.ps1
           git commit -m "chore: update cpc package to v${VERSION}" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/CPCReady/chocolatey-cpcready.git main
+          git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAT_GITHUB: ${{ secrets.PAT_GITHUB }}
