@@ -40,7 +40,7 @@ class TestdiscCommand:
         """Setup para cada test"""
         self.runner = CliRunner()
         
-    @patch('cpcready.disc.disc.DriveManager')
+    @patch('cpcready.disc.disc.DriveManager', create=True)
     @patch('cpcready.utils.system.process_dsk_name')
     def test_disc_create_new_with_drive_a(self, mock_process_name, mock_drive_manager):
         """Test: Crear disco nuevo y asignarlo a drive A"""
@@ -63,7 +63,7 @@ class TestdiscCommand:
             assert ("File:" in result.output or "exists not creating new one" in result.output)
             mock_manager_instance.insert_drive_a.assert_called_with("/test/path/test.dsk")
     
-    @patch('cpcready.disc.disc.DriveManager')
+    @patch('cpcready.disc.disc.DriveManager', create=True)
     @patch('cpcready.utils.system.process_dsk_name')
     def test_disc_existing_with_drive_a(self, mock_process_name, mock_drive_manager):
         """Test: Insertar disco existente en drive A"""
@@ -83,7 +83,7 @@ class TestdiscCommand:
             assert ("exists not creating new one" in result.output or "DSK created successfully" in result.output)
             mock_manager_instance.insert_drive_a.assert_called_with("/test/path/existing.dsk")
     
-    @patch('cpcready.disc.disc.DriveManager')
+    @patch('cpcready.disc.disc.DriveManager', create=True)
     @patch('cpcready.utils.system.process_dsk_name')
     def test_disc_already_in_same_drive(self, mock_process_name, mock_drive_manager):
         """Test: Intentar insertar disco que ya está en la misma unidad"""
@@ -104,7 +104,7 @@ class TestdiscCommand:
             # No debería llamar a insert porque ya está insertado
             mock_manager_instance.insert_drive_a.assert_not_called()
     
-    @patch('cpcready.disc.disc.DriveManager')
+    @patch('cpcready.disc.disc.DriveManager', create=True)
     @patch('cpcready.utils.system.process_dsk_name')
     def test_disc_already_in_other_drive(self, mock_process_name, mock_drive_manager):
         """Test: Intentar insertar disco que ya está en la otra unidad"""
@@ -125,7 +125,7 @@ class TestdiscCommand:
             # No debería llamar a insert porque está en la otra unidad
             mock_manager_instance.insert_drive_a.assert_not_called()
     
-    @patch('cpcready.disc.disc.DriveManager')
+    @patch('cpcready.disc.disc.DriveManager', create=True)
     @patch('cpcready.utils.system.process_dsk_name')
     def test_disc_eject_previous_disc(self, mock_process_name, mock_drive_manager):
         """Test: Eyectar disco anterior al insertar uno nuevo"""
