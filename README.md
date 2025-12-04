@@ -6,7 +6,8 @@
 
 [![Release](https://img.shields.io/github/v/release/CPCReady/cpc)](https://github.com/CPCReady/cpc/releases)
 [![Build](https://img.shields.io/github/actions/workflow/status/CPCReady/cpc/release.yml)](https://github.com/CPCReady/cpc/actions)
-[![Python](https://img.shields.io/badge/python-3.13+-blue)](https://www.python.org)
+[![Tests](https://img.shields.io/github/actions/workflow/status/CPCReady/cpc/test-compatibility.yml?label=tests)](https://github.com/CPCReady/cpc/actions/workflows/test-compatibility.yml)
+[![Python](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org)
 [![Poetry](https://img.shields.io/badge/poetry-managed-blue)](https://python-poetry.org)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE.md)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
