@@ -18,6 +18,7 @@ import pytest
 import tempfile
 import shutil
 import os
+import sys
 from pathlib import Path
 from click.testing import CliRunner
 from unittest.mock import patch, MagicMock
@@ -40,6 +41,7 @@ class TestdiscCommand:
         """Setup para cada test"""
         self.runner = CliRunner()
         
+    @pytest.mark.skipif(sys.version_info < (3, 11), reason="Mock incompatibility in Python 3.10")
     @patch('cpcready.disc.disc.DriveManager', create=True)
     @patch('cpcready.utils.system.process_dsk_name')
     def test_disc_create_new_with_drive_a(self, mock_process_name, mock_drive_manager):
@@ -63,6 +65,7 @@ class TestdiscCommand:
             assert ("File:" in result.output or "exists not creating new one" in result.output)
             mock_manager_instance.insert_drive_a.assert_called_with("/test/path/test.dsk")
     
+    @pytest.mark.skipif(sys.version_info < (3, 11), reason="Mock incompatibility in Python 3.10")
     @patch('cpcready.disc.disc.DriveManager', create=True)
     @patch('cpcready.utils.system.process_dsk_name')
     def test_disc_existing_with_drive_a(self, mock_process_name, mock_drive_manager):
@@ -125,6 +128,7 @@ class TestdiscCommand:
             # No debería llamar a insert porque está en la otra unidad
             mock_manager_instance.insert_drive_a.assert_not_called()
     
+    @pytest.mark.skipif(sys.version_info < (3, 11), reason="Mock incompatibility in Python 3.10")
     @patch('cpcready.disc.disc.DriveManager', create=True)
     @patch('cpcready.utils.system.process_dsk_name')
     def test_disc_eject_previous_disc(self, mock_process_name, mock_drive_manager):
