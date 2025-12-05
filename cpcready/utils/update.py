@@ -102,7 +102,7 @@ def show_update_notification():
     try:
         has_update, latest_version = check_for_updates()
         if has_update:
-            warn(f"New version available: v{latest_version} (current: v{__version__})")
+            warn(f"\nNew version available: v{latest_version} (current: v{__version__})")
             warn("Update with: pip install --upgrade cpcready")
             print()  # Blank line to separate
     except Exception:
