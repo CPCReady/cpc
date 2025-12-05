@@ -19,6 +19,8 @@ import time
 from pathlib import Path
 from cpcready.utils.version import __version__
 from cpcready.utils.console import warn
+from rich.console import Console
+console = Console()
 
 # Cache file para evitar consultas frecuentes a PyPI
 CACHE_FILE = Path.home() / ".config" / "cpcready" / "update_cache"
@@ -102,9 +104,9 @@ def show_update_notification():
     try:
         has_update, latest_version = check_for_updates()
         if has_update:
-            warn(f"\nNew version available: v{latest_version} (current: v{__version__})")
-            warn("Update with: pip install --upgrade cpcready")
-            print()  # Blank line to separate
+            print()
+            console.print(f"[yellow]New version available: v{latest_version} (current: v{__version__})[/yellow]")
+            console.print("[yellow]Update with: pip install --upgrade cpcready[/yellow]")
     except Exception:
         # In case of any error, silently do nothing
         pass
