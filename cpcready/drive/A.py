@@ -17,11 +17,13 @@ from cpcready.utils.console import info2, ok, debug,warn, error,blank_line, bann
 from cpcready.utils.manager import DriveManager
 from cpcready.utils.click_custom import CustomCommand
 from cpcready.utils.version import add_version_option
+from cpcready.utils.update import show_update_notification
 
 @add_version_option
 @click.command(cls=CustomCommand, show_banner=True)
 def A():
     """Select drive A as active drive."""
+    show_update_notification()
     drive_manager = DriveManager()
     if drive_manager.read_drive_a() == "":
         blank_line(1)

@@ -35,12 +35,16 @@ from cpcready.utils.click_custom import CustomGroup, CustomCommand
 from cpcready.utils.console import message, blank_line
 from cpcready import __version__
 from cpcready.utils.version import add_version_option_to_group, show_version_info
+from cpcready.utils.update import show_update_notification
 
 @add_version_option_to_group
 @click.group(cls=CustomGroup, invoke_without_command=True, show_banner=True)
 @click.pass_context
 def cli(ctx):
     """Toolchain CLI for Amstrad CPC."""
+    # Mostrar notificación de actualización si la hay
+    show_update_notification()
+    
     # Si no hay comando, mostrar ayuda
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())

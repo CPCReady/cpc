@@ -19,6 +19,7 @@ from cpcready.utils import console, system, DriveManager, discManager
 from cpcready.utils.click_custom import CustomCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
+from cpcready.utils.update import show_update_notification
 from cpcready.pydsk import DSK
 from rich.console import Console
 from rich.panel import Panel
@@ -37,6 +38,9 @@ console = Console()
 @click.pass_context
 def disc(ctx):
     """Create or manage virtual discs."""
+    # Mostrar notificación de actualización si la hay
+    show_update_notification()
+    
     # Si no hay comando, mostrar ayuda
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())

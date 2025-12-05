@@ -19,6 +19,7 @@ from cpcready.utils import console, system, DriveManager
 from cpcready.utils.click_custom import CustomCommand
 from cpcready.utils.console import info2, ok, debug, warn, error, message, blank_line, banner
 from cpcready.utils.version import add_version_option
+from cpcready.utils.update import show_update_notification
 from cpcready.pydsk import DSK, DSKError
 from rich.console import Console
 from rich.panel import Panel
@@ -33,6 +34,7 @@ def cat(drive_a, drive_b):
     """List files in the virtual disc.
     If no option is selected, the selected drive is displayed.
     """
+    show_update_notification()
     # estandarizamos nombre del disc
     drive_manager = DriveManager()
  
