@@ -69,17 +69,17 @@ jobs:
           poetry run pip install twine
           poetry run twine check dist/*
       
-      # - name: Publish to TestPyPI
-      #   env:
-      #     POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.TEST_PYPI_API_TOKEN }}
-      #   run: |
-      #     poetry config repositories.testpypi https://test.pypi.org/legacy/
-      #     poetry publish -r testpypi
+      - name: Publish to TestPyPI
+        env:
+          POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          poetry config repositories.testpypi https://test.pypi.org/legacy/
+          poetry publish -r testpypi
       
-      # - name: Publish to PyPI
-      #   env:
-      #     POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
-      #   run: poetry publish
+      - name: Publish to PyPI
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
+        run: poetry publish
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
