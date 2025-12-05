@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cpcready"
-version = "3.0.1"
+version = "0.0.0"
 description = "CPCReady Toolchain"
 license = "MIT"
 authors = ["destroyer <destroyer.dcf@gmail.com>"]
@@ -33,10 +33,8 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 cpc = "cpcready.cli:cli"
 disc = "cpcready.disc.disc:disc"
-drive = "cpcready.drive:drive_group"
+drive = "cpcready.drive.drive:drive"
 catcpc = "cpcready.cat.cat:cat"
-A = "cpcready.drive.A:A"
-B = "cpcready.drive.B:B"
 user = "cpcready.user:user"
 save = "cpcready.save:save"
 era = "cpcready.era:era"

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import click
-from cpcready.drive import drive_group
+from cpcready.drive import drive
 from cpcready.disc import disc
 from cpcready.save import save
 from cpcready.era import era
@@ -42,8 +42,8 @@ from cpcready.utils.update import show_update_notification
 @click.pass_context
 def cli(ctx):
     """Toolchain CLI for Amstrad CPC."""
-    # Mostrar notificación de actualización si la hay
-    show_update_notification()
+    # # Mostrar notificación de actualización si la hay
+    # show_update_notification()
     
     # Si no hay comando, mostrar ayuda
     if ctx.invoked_subcommand is None:
@@ -64,9 +64,8 @@ def rvm_group():
 rvm_group.add_command(rvm_status, name='status')
 rvm_group.add_command(rvm_config, name='config')
 
-# Reemplazar el tipo de comando/grupo de los subcomandos para personalizar la ayuda
-drive_group.type = CustomGroup
-cli.add_command(drive_group)
+# Añadir comandos al CLI principal
+cli.add_command(drive, name='drive')
 cli.add_command(disc)
 cli.add_command(cat)
 cli.add_command(save)
@@ -93,10 +92,8 @@ if __name__ == "__main__":
     command_map = {
         'cpc': cli,
         'disc': disc,
-        'drive': drive_group,
+        'drive': drive,
         'catcpc': cat,
-        'A': lambda: drive_group(['A'] + sys.argv[1:]),
-        'B': lambda: drive_group(['B'] + sys.argv[1:]),
         'user': user,
         'save': save,
         'era': era,
@@ -107,11 +104,7 @@ if __name__ == "__main__":
     
     # Si fue invocado con un alias, ejecutar el comando directamente
     if invoked_name in command_map:
-        if invoked_name in ['A', 'B']:
-            # Para A y B, necesitamos invocar drive_group con el subcomando
-            command_map[invoked_name]()
-        else:
-            command_map[invoked_name]()
+        command_map[invoked_name]()
     else:
         # Por defecto, ejecutar el CLI principal
         cli()
