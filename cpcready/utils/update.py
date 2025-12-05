@@ -98,13 +98,13 @@ def check_for_updates():
 
 
 def show_update_notification():
-    """Muestra notificación de actualización disponible si la hay."""
+    """Shows update notification if available."""
     try:
         has_update, latest_version = check_for_updates()
         if has_update:
-            warn(f"Nueva versión disponible: v{latest_version} (actual: v{__version__})")
-            warn("Actualiza con: pip install --upgrade cpcready")
-            print()  # Línea en blanco para separar
+            warn(f"New version available: v{latest_version} (current: v{__version__})")
+            warn("Update with: pip install --upgrade cpcready")
+            print()  # Blank line to separate
     except Exception:
-        # En caso de cualquier error, silenciosamente no hacer nada
+        # In case of any error, silently do nothing
         pass
