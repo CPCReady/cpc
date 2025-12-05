@@ -46,8 +46,10 @@ def run(file_to_run, drive_a, drive_b):
     ruta_rvm = config.get("emulator", "retro_virtual_machine_path", "")
     
     if not ruta_rvm:
+        blank_line(1)
         error("RetroVirtualMachine path not configured.")
-        error("Configure the emulator using the configuration file.")
+        error("Configure the emulator using emu command.")
+        blank_line(1)
         return
     
     # Verificar que existe
