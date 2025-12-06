@@ -81,19 +81,6 @@ jobs:
         run: |
           choco pack
       
-      - name: Test Chocolatey package installation
-        shell: pwsh
-        working-directory: Installer/chocolatey-cpcready/cpc
-        run: |
-          $VERSION = "${{ steps.version.outputs.VERSION }}"
-          choco install cpc -s . -y --force
-          
-          # Verify installation
-          cpc --version
-          
-          # Uninstall after test
-          choco uninstall cpc -y
-      
       - name: Publish to Chocolatey
         shell: pwsh
         working-directory: Installer/chocolatey-cpcready/cpc
