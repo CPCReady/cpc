@@ -59,12 +59,12 @@ jobs:
           
           Write-Host "SHA256: $SHA256"
           
-          # Actualizar nuspec
+          # Actualizar nuspec usando XML parsing
           $nuspecPath = "cpc/cpc.nuspec"
-          $content = Get-Content $nuspecPath -Raw
-          $content = $content -replace '<version>.*?</version>', "<version>$VERSION</version>"
-          $content = $content -replace '/releases/tag/v[^"]*"', "/releases/tag/v$VERSION`""
-          $content | Set-Content -Path $nuspecPath -Encoding UTF8
+          [xml]$xml = Get-Content $nuspecPath
+          $xml.package.metadata.version = $VERSION
+          $xml.package.metadata.releaseNotes = "https://github.com/CPCReady/cpc/releases/tag/v$VERSION"
+          $xml.Save((Resolve-Path $nuspecPath))
           
           # Actualizar chocolateyinstall.ps1
           $installPath = "cpc/tools/chocolateyinstall.ps1"
