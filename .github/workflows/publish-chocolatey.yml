@@ -62,16 +62,16 @@ jobs:
           # Actualizar nuspec
           $nuspecPath = "cpc/cpc.nuspec"
           $content = Get-Content $nuspecPath -Raw
-          $content = $content -replace '<version>.*</version>', "<version>$VERSION</version>"
+          $content = $content -replace '<version>.*?</version>', "<version>$VERSION</version>"
           $content = $content -replace '/releases/tag/v[^"]*"', "/releases/tag/v$VERSION`""
-          Set-Content -Path $nuspecPath -Value $content -NoNewline
+          $content | Set-Content -Path $nuspecPath -Encoding UTF8
           
           # Actualizar chocolateyinstall.ps1
           $installPath = "cpc/tools/chocolateyinstall.ps1"
           $content = Get-Content $installPath -Raw
           $content = $content -replace "\`$version = '[^']*'", "`$version = '$VERSION'"
           $content = $content -replace "\`$checksum = '[^']*'", "`$checksum = '$SHA256'"
-          Set-Content -Path $installPath -Value $content -NoNewline
+          $content | Set-Content -Path $installPath -Encoding UTF8
           
           Write-Host "Package updated to version $VERSION"
       
