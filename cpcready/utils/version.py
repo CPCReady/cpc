@@ -23,7 +23,7 @@ import click
 from functools import wraps
 from cpcready import __version__, __author__, __license__
 from cpcready.utils.console import message, blank_line,warn
-
+from rich import print as rprint
 
 def show_banner():
     """Display ASCII art banner."""
@@ -34,16 +34,18 @@ def show_banner():
     console.print("▌  ▙▄▘▌  ▙▄▘▞▀▖▝▀▖▞▀▌▌ ▌", style="bold yellow")
     console.print("▌ ▖▌  ▌ ▖▌▚ ▛▀ ▞▀▌▌ ▌▚▄▌", style="bold yellow")
     console.print("▝▀ ▘  ▝▀ ▘ ▘▝▀▘▝▀▘▝▀▘▗▄▘", style="bold yellow")
-    console.print(f"CLI Toolchain v{__version__}", style="bold blue")
-    console.print(f"Copyright (c) 2025 {__author__}", style="bold blue")
+    console.print(f"CLI Toolchain v{__version__}", style="yellow", highlight=False)
+    console.print(f"Copyright (c) 2025 {__author__}", style="yellow", highlight=False)
+    console.print(f"License: {__license__}", style="yellow", highlight=False)
+    console.print("Repository: https://github.com/CPCReady/cpc", style="yellow")
+    console.print("Issue Tracker: https://github.com/CPCReady/cpc/issues", style="yellow")
+    console.print("Docs: https://cpcready.github.io/docs", style="yellow")
     blank_line()
 
 
 def show_version_info():
     """Display version information."""
     show_banner()
-    message(f"License: {__license__}")
-    blank_line()
 
 
 def version_option_handler(ctx, param, value):
