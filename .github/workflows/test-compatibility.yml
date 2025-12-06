@@ -45,3 +45,35 @@ jobs:
           poetry run cpc --version
           poetry run disc --help
           poetry run drive --help
+  
+  docs-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: docs
+        run: npm ci
+      
+      - name: Build documentation
+        working-directory: docs
+        run: npm run build
+      
+      - name: Check build output
+        working-directory: docs
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not found"
+            exit 1
+          fi
+          echo "✅ Documentation built successfully"
