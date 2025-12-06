@@ -47,7 +47,7 @@ fi
 echo ""
 echo -e "${BLUE}🔍 Checking submodules for uncommitted changes...${NC}"
 
-SUBMODULES=("docs" "Installer/homebrew-cpcready")
+SUBMODULES=("docs")
 SUBMODULE_CHANGES=false
 
 for submodule in "${SUBMODULES[@]}"; do
@@ -316,8 +316,6 @@ echo ""
 echo -e "${BLUE}📋 Next steps:${NC}"
 echo -e "   1. GitHub Actions will automatically:"
 echo -e "      - Build and publish to PyPI"
-echo -e "      - Update Homebrew formula"
-echo -e "      - Update Chocolatey package"
 echo -e "      - Create GitHub release"
 echo -e "   2. Check workflow status: ${YELLOW}https://github.com/CPCReady/cpc/actions${NC}"
 echo -e "   3. Release will be available at: ${YELLOW}https://github.com/CPCReady/cpc/releases${NC}"
