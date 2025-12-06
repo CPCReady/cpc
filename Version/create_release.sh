@@ -47,7 +47,7 @@ fi
 echo ""
 echo -e "${BLUE}🔍 Checking submodules for uncommitted changes...${NC}"
 
-SUBMODULES=("docs" "Installer/homebrew-cpcready" "Installer/chocolatey-cpcready")
+SUBMODULES=("docs" "Installer/homebrew-cpcready")
 SUBMODULE_CHANGES=false
 
 for submodule in "${SUBMODULES[@]}"; do
