@@ -27,7 +27,7 @@ from cpcready.ren.ren import ren
 from cpcready.model.model import model
 from cpcready.mode.mode import mode
 from cpcready.run import run
-from cpcready.rvm.rvm import status as rvm_status, config as rvm_config
+from cpcready.rvm.rvm import rvm_group
 from cpcready.emu.emu import emu
 # from cpcready.m4.m4 import m4 as m4_group
 # from cpcready.header import header
@@ -54,16 +54,6 @@ def version():
     """Show version information."""
     show_version_info()
 
-# Crear grupo para comandos rvm
-@cli.group(cls=CustomGroup, name='rvm')
-def rvm_group():
-    """RetroVirtualMachine emulator management."""
-    pass
-
-# Añadir comandos al grupo rvm
-rvm_group.add_command(rvm_status, name='status')
-rvm_group.add_command(rvm_config, name='config')
-
 # Añadir comandos al CLI principal
 cli.add_command(drive, name='drive')
 cli.add_command(disc)
@@ -78,6 +68,7 @@ cli.add_command(model)
 cli.add_command(mode)
 cli.add_command(run)
 cli.add_command(emu)
+cli.add_command(rvm_group)
 # cli.add_command(m4_group)
 # cli.add_command(header)
 

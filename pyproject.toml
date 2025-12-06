@@ -45,6 +45,7 @@ cpc-user = "cpcready.user.user:user"
 cpc-save = "cpcready.save.save:save"
 cpc-era = "cpcready.era.era:era"
 cpc-ren = "cpcready.ren.ren:ren"
+cpc-rvm = "cpcready.rvm.rvm:rvm_group"
 
 
 [tool.pytest.ini_options]
