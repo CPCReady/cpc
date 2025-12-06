@@ -36,11 +36,44 @@ jobs:
           echo "Publishing version: $VERSION"
       
       - name: Update Chocolatey package
-        shell: bash
+        shell: pwsh
         working-directory: Installer/chocolatey-cpcready
         run: |
-          VERSION="${{ steps.version.outputs.VERSION }}"
-          bash update_package.sh "$VERSION"
+          $VERSION = "${{ steps.version.outputs.VERSION }}"
+          
+          Write-Host "Updating Chocolatey package to version $VERSION"
+          
+          # Calcular SHA256
+          $TARBALL_URL = "https://github.com/CPCReady/cpc/archive/refs/tags/v$VERSION.tar.gz"
+          Write-Host "Downloading tarball from $TARBALL_URL"
+          
+          $tempFile = [System.IO.Path]::GetTempFileName()
+          Invoke-WebRequest -Uri $TARBALL_URL -OutFile $tempFile
+          $SHA256 = (Get-FileHash -Path $tempFile -Algorithm SHA256).Hash
+          Remove-Item $tempFile
+          
+          if ([string]::IsNullOrEmpty($SHA256)) {
+              Write-Error "Failed to calculate SHA256"
+              exit 1
+          }
+          
+          Write-Host "SHA256: $SHA256"
+          
+          # Actualizar nuspec
+          $nuspecPath = "cpc/cpc.nuspec"
+          $content = Get-Content $nuspecPath -Raw
+          $content = $content -replace '<version>.*</version>', "<version>$VERSION</version>"
+          $content = $content -replace '/releases/tag/v[^"]*"', "/releases/tag/v$VERSION`""
+          Set-Content -Path $nuspecPath -Value $content -NoNewline
+          
+          # Actualizar chocolateyinstall.ps1
+          $installPath = "cpc/tools/chocolateyinstall.ps1"
+          $content = Get-Content $installPath -Raw
+          $content = $content -replace "\`$version = '[^']*'", "`$version = '$VERSION'"
+          $content = $content -replace "\`$checksum = '[^']*'", "`$checksum = '$SHA256'"
+          Set-Content -Path $installPath -Value $content -NoNewline
+          
+          Write-Host "Package updated to version $VERSION"
       
       - name: Build Chocolatey package
         shell: pwsh
