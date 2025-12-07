@@ -9,7 +9,7 @@
 [![Tests](https://img.shields.io/github/actions/workflow/status/CPCReady/cpc/test-compatibility.yml?label=tests)](https://github.com/CPCReady/cpc/actions/workflows/test-compatibility.yml)
 [![Python](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org)
 [![Poetry](https://img.shields.io/badge/poetry-managed-blue)](https://python-poetry.org)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE.md)
+[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE.md)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A command-line toolchain for managing Amstrad CPC disk images (.DSK files) and running them in emulators.
@@ -267,7 +267,7 @@ No es necesario ningún parámetro extra ni configuración especial: solo ejecut
 
 ## License
 
-Apache License 2.0 - See [LICENSE.md](LICENSE.md) for details.
+Apache GPL 3.0- See [LICENSE.md](LICENSE.md) for details.
 
 ---
 

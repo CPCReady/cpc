@@ -32,21 +32,20 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 cpc = "cpcready.cli:cli"
-disc = "cpcready.disc.disc:disc"
-drive = "cpcready.drive.drive:drive"
-emu = "cpcready.emu.emu:emu"
-filextr = "cpcready.filextr.filextr:filextr"
-list = "cpcready.list.list:list"
-mode = "cpcready.mode.mode:mode"
-model = "cpcready.model.model:model"
-run = "cpcready.run.run:run"
-catcpc = "cpcready.cat.cat:cat"
-user = "cpcready.user.user:user"
-save = "cpcready.save.save:save"
-era = "cpcready.era.era:era"
-ren = "cpcready.ren.ren:ren"
-
-
+cpc-disc = "cpcready.disc.disc:disc"
+cpc-drive = "cpcready.drive.drive:drive"
+cpc-emu = "cpcready.emu.emu:emu"
+cpc-filextr = "cpcready.filextr.filextr:filextr"
+cpc-list = "cpcready.list.list:list"
+cpc-mode = "cpcready.mode.mode:mode"
+cpc-model = "cpcready.model.model:model"
+cpc-run = "cpcready.run.run:run"
+cpc-cat = "cpcready.cat.cat:cat"
+cpc-user = "cpcready.user.user:user"
+cpc-save = "cpcready.save.save:save"
+cpc-era = "cpcready.era.era:era"
+cpc-ren = "cpcready.ren.ren:ren"
+cpc-rvm = "cpcready.rvm.rvm:rvm_group"
 
 
 [tool.pytest.ini_options]

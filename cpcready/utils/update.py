@@ -105,8 +105,8 @@ def show_update_notification():
         has_update, latest_version = check_for_updates()
         if has_update:
             print()
-            console.print(f"[yellow]New version available: v{latest_version} (current: v{__version__})[/yellow]")
-            console.print("[yellow]Update with: pip install --upgrade cpcready[/yellow]")
+            console.print(f"[yellow]New version available: v{latest_version} (current: v{__version__})[/yellow]", highlight=False)
+            console.print("[yellow]Update with: pipx upgrade cpcready[/yellow]", highlight=False)
     except Exception:
         # In case of any error, silently do nothing
         pass

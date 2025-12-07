@@ -17,13 +17,20 @@
 import click
 import questionary
 from pathlib import Path
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, CustomGroup
 from cpcready.utils.console import info2, ok, error, warn, blank_line
 from cpcready.utils.toml_config import ConfigManager
 from cpcready.utils.retrovirtualmachine import RVM
 
 
-@click.command(cls=CustomCommand)
+# Crear grupo principal de comandos rvm
+@click.group(cls=CustomGroup, name='rvm')
+def rvm_group():
+    """RetroVirtualMachine emulator management."""
+    pass
+
+
+@rvm_group.command(cls=CustomCommand, name='status')
 def status():
     """Check RetroVirtualMachine installation and version.
     
@@ -75,7 +82,7 @@ def status():
         blank_line(1)
 
 
-@click.command(cls=CustomCommand)
+@rvm_group.command(cls=CustomCommand, name='config')
 def config():
     """Configure RetroVirtualMachine executable path.
     

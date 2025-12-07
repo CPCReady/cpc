@@ -1,19 +1,16 @@
 # Changelog
 
-All notable changes to CPCReady will be documented in this file.
+## [0.1.1] - 2025-12-6
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### Added
 
-## [Unreleased]
-
-### Planned for 1.1.0
-- PyPI package distribution
-- Extended documentation with video tutorials
-- Performance optimizations
-- Batch file operations
-
-## [1.0.0] - 2025-11-23
+## [0.1.0] - 2025-11-23
+- chore: cambios de comando para ser mas funcionalidades. Añadimos 'cpc-' como prefix
+- chore: añadimos que version muestro urls del proyecto: doc,issue y repo
+- chore: cambiamos mostrar como actualizar
+- chore: desactivamos comando m4 hasta que este funcional 100%
+- test: activamos test para astro
+- chore: cambios en documentacion
 
 ### Added
 - Initial release
@@ -40,7 +37,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `cpc user` - Manage CP/M user numbers
 - `cpc model` - Set CPC model (464/664/6128)
 - `cpc mode` - Set video mode
-
-
-[Unreleased]: https://github.com/CPCReady/cpc/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/CPCReady/cpc/releases/tag/v1.0.0
