@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cpcready"
-version = "0.1.0"
+version = "0.1.1"
 description = "CPCReady Toolchain"
 license = "MIT"
 authors = ["destroyer <destroyer.dcf@gmail.com>"]
