@@ -50,8 +50,8 @@ jobs:
       - name: Test CLI commands
         run: |
           poetry run cpc --version
-          poetry run disc --help
-          poetry run drive --help
+          poetry run cpc-disc --help
+          poetry run cpc-drive --help
   
   docs-build:
     runs-on: ubuntu-latest
