@@ -1,16 +1,22 @@
 # Changelog
 
+## [0.1.2] - 2025-12-8
+
+### Added
+- fix: convertimos archivos unix a dos antes de añadir a la imagen de disco"
+
 ## [0.1.1] - 2025-12-6
 
 ### Added
-
-## [0.1.0] - 2025-11-23
 - chore: cambios de comando para ser mas funcionalidades. Añadimos 'cpc-' como prefix
 - chore: añadimos que version muestro urls del proyecto: doc,issue y repo
 - chore: cambiamos mostrar como actualizar
 - chore: desactivamos comando m4 hasta que este funcional 100%
 - test: activamos test para astro
 - chore: cambios en documentacion
+
+
+## [0.1.0] - 2025-11-23
 
 ### Added
 - Initial release
