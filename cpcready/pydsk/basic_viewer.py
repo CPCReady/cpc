@@ -370,3 +370,175 @@ def view_basic(data: bytes, auto_detect: bool = True) -> str:
             return detokenize_basic(data)
         except:
             return view_basic_ascii(data)
+
+
+def tokenize_basic(text: str) -> bytes:
+    """
+    Tokeniza un programa BASIC ASCII a formato tokenizado CPC.
+    Implementación basada en el formato exacto del Amstrad CPC.
+    
+    Formato de cada línea tokenizada:
+    - 2 bytes: Longitud total de la línea (little-endian) 
+               = 2 (num línea) + contenido tokenizado + 1 (0x00 final)
+    - 2 bytes: Número de línea (little-endian)
+    - N bytes: Contenido tokenizado
+    - 1 byte:  0x00 (fin de línea)
+    
+    Fin de programa: 0x00 0x00
+    
+    Args:
+        text: Código BASIC en texto (formato: "10 PRINT \"HELLO\"\\n20 GOTO 10")
+        
+    Returns:
+        bytes: Programa tokenizado (sin header AMSDOS)
+    """
+    result = bytearray()
+    lines = text.strip().split('\n')
+    
+    for line_text in lines:
+        line_text = line_text.strip()
+        if not line_text:
+            continue
+        
+        # Separar número de línea del contenido
+        parts = line_text.split(None, 1)
+        if not parts:
+            continue
+        
+        try:
+            line_num = int(parts[0])
+        except ValueError:
+            continue
+        
+        if not (0 <= line_num <= 65535):
+            raise ValueError(f"Line number out of range: {line_num}")
+        
+        # Contenido de la línea (puede estar vacío)
+        content = parts[1] if len(parts) > 1 else ""
+        
+        # Tokenizar el contenido
+        tokenized = _tokenize_line(content)
+        
+        # Calcular longitud: 2 (número línea) + contenido + 1 (0x00)
+        line_length = 2 + len(tokenized) + 1
+        
+        # Escribir línea tokenizada
+        result.append(line_length & 0xFF)          # Longitud (byte bajo)
+        result.append((line_length >> 8) & 0xFF)   # Longitud (byte alto)
+        result.append(line_num & 0xFF)             # Número línea (byte bajo)
+        result.append((line_num >> 8) & 0xFF)      # Número línea (byte alto)
+        result.extend(tokenized)                   # Contenido tokenizado
+        result.append(0x00)                        # Fin de línea
+    
+    # Fin de programa
+    result.append(0x00)
+    result.append(0x00)
+    
+    return bytes(result)
+
+
+def _tokenize_line(content: str) -> bytearray:
+    """
+    Tokeniza el contenido de una línea BASIC (sin el número de línea).
+    
+    Args:
+        content: Contenido de la línea sin número
+        
+    Returns:
+        bytearray: Contenido tokenizado
+    """
+    result = bytearray()
+    i = 0
+    in_string = False
+    in_rem = False
+    
+    while i < len(content):
+        char = content[i]
+        
+        # Dentro de string: copiar todo literalmente hasta cerrar comillas
+        if in_string:
+            result.append(ord(char))
+            if char == '"':
+                in_string = False
+            i += 1
+            continue
+        
+        # Dentro de REM: copiar todo hasta el final
+        if in_rem:
+            result.append(ord(char))
+            i += 1
+            continue
+        
+        # Detectar inicio de string
+        if char == '"':
+            in_string = True
+            result.append(ord(char))
+            i += 1
+            continue
+        
+        # Detectar números enteros
+        if char.isdigit():
+            num_str = ''
+            j = i
+            while j < len(content) and content[j].isdigit():
+                num_str += content[j]
+                j += 1
+            
+            num = int(num_str)
+            
+            # Números 0-10 usan tokens especiales 0x0E-0x18
+            if 0 <= num <= 10:
+                result.append(0x0E + num)
+            # Números 11-255 usan 0x19 + byte
+            elif 11 <= num <= 255:
+                result.append(0x19)
+                result.append(num & 0xFF)
+            # Números 256-65535 usan 0x1A + 2 bytes little-endian
+            elif 256 <= num <= 65535:
+                result.append(0x1A)
+                result.append(num & 0xFF)
+                result.append((num >> 8) & 0xFF)
+            else:
+                # Números muy grandes: copiar como texto
+                for c in num_str:
+                    result.append(ord(c))
+            
+            i = j
+            continue
+        
+        # Buscar tokens de comandos BASIC (más largos primero)
+        matched = False
+        for length in range(min(15, len(content) - i), 0, -1):
+            word = content[i:i+length].upper()
+            
+            # Buscar en tokens de comandos (0x80-0xFE)
+            if word in BASIC_TOKENS:
+                token_index = BASIC_TOKENS.index(word)
+                # Verificar que no es parte de un identificador
+                if i + length >= len(content) or content[i + length] in ' \t:,()=<>+-*/^;"\r\n':
+                    result.append(0x80 + token_index)
+                    i += length
+                    matched = True
+                    
+                    # Si es REM, activar modo comentario
+                    if word == "REM":
+                        in_rem = True
+                    break
+            
+            # Buscar en funciones (0xFF + 0x00-0x7F)
+            if word in BASIC_FUNCTIONS:
+                func_index = BASIC_FUNCTIONS.index(word)
+                # Verificar que no es parte de un identificador
+                if i + length >= len(content) or content[i + length] in ' \t(,)=<>+-*/^;"\r\n':
+                    result.append(0xFF)
+                    result.append(func_index)
+                    i += length
+                    matched = True
+                    break
+        
+        if not matched:
+            # Carácter normal: copiar tal cual
+            result.append(ord(char))
+            i += 1
+    
+    return result

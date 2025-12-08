@@ -18,5 +18,8 @@ CPCReady Interactive Console
 """
 
 from .console import console
+from .interactive import interactive
+from .webapp import webconsole
+from .warp import warpconsole
 
-__all__ = ["console"]
+__all__ = ["console", "interactive", "webconsole", "warpconsole"]

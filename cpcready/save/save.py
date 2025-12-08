@@ -15,229 +15,217 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import click
+import os
+import tempfile
 from pathlib import Path
-import shutil
-from cpcready.utils import console, system, DriveManager, discManager, SystemCPM
-from cpcready.utils.click_custom import CustomCommand, CustomGroup
-from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
-from cpcready.utils.version import add_version_option_to_group
+from cpcready.utils import DriveManager, SystemCPM
+from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.console import info2, ok, debug, error, blank_line
 from rich.console import Console
-from rich.panel import Panel
 from cpcready.pydsk.dsk import DSK
 
 console = Console()
 
-def is_header(ruta):
-    with open(ruta, "rb") as f:
-        cabecera = f.read(128)
-        if len(cabecera) < 128:
-            return None, None
-        
-        # El byte 0 debe estar en el rango válido de tipos AMSDOS (0-2 normalmente)
-        if cabecera[0] > 2:
-            return None, None
-        
-        # Verificar que nombre y extensión sean ASCII válidos (letras/números)
-        try:
-            nombre_str = cabecera[1:9].decode("ascii").strip()
-            ext_str = cabecera[9:12].decode("ascii").strip()
-            # Debe tener al menos un carácter válido en el nombre
-            if not nombre_str or not nombre_str.replace(" ", "").isalnum():
-                return None, None
-        except:
-            return None, None
-        
-        # Load address: bytes 21-22 (little endian)
-        load_addr = cabecera[21] + (cabecera[22] << 8)
-        
-        # Exec address: bytes 26-27 (little endian)
-        exec_addr = cabecera[26] + (cabecera[27] << 8)
-        
-        return load_addr, exec_addr
-
 @click.command(cls=CustomCommand)
 @click.argument("file_name", required=True)
-@click.argument("type_file", required=False, type=click.Choice(["a", "b", "p"], case_sensitive=True))
-@click.argument("load_addr", required=False)
-@click.argument("exec_addr", required=False)
-@click.option("-A", "--drive-a", is_flag=True, help="Insert disc into drive A")
-@click.option("-B", "--drive-b", is_flag=True, help="Insert disc into drive B")
-def save(file_name, type_file, load_addr, exec_addr, drive_a, drive_b):
-    """Save file to virtual disc.
+@click.option(
+    "-t", "--type", "file_type",
+    type=click.Choice(["0", "1", "2"]),
+    help="File type: 0=ASCII, 1=BINARY, 2=RAW"
+)
+@click.option("-c", "--load", "load_addr", help="Load address (hex, e.g., C000)")
+@click.option("-e", "--exec", "exec_addr", help="Execute address (hex, e.g., C000)")
+@click.option("-f", "--force", is_flag=True, help="Force overwrite if file exists")
+@click.option("-o", "--read-only", is_flag=True, help="Mark as read-only")
+@click.option("-s", "--system", is_flag=True, help="Mark as system file")
+@click.option("-u", "--user", type=int, help="User number (0-15)")
+@click.option("-A", "--drive-a", is_flag=True, help="Use drive A")
+@click.option("-B", "--drive-b", is_flag=True, help="Use drive B")
+def save(
+    file_name, file_type, load_addr, exec_addr,
+    force, read_only, system, user, drive_a, drive_b
+):
+    """Import file to DSK (exactly like iDSK -i).
     
-    Type options:
-      - a: ASCII/Data file (no AMSDOS header)
-      - b: Binary file with AMSDOS header (requires load_addr and optional exec_addr)
-      - p: Program file with AMSDOS header (preserves existing header if present)
+    FILE_NAME: File to import
+    
+    Types (same as iDSK):
+      -t 0: ASCII mode - saves file without AMSDOS header (text files)
+      -t 1: BINARY mode - adds AMSDOS header (default for .BAS files)
+      -t 2: RAW mode - no processing at all
+    
+    Default behavior (no -t):
+      - Adds AMSDOS header to the file (like iDSK)
+      - Does NOT tokenize BASIC files
+    
+    Examples:
+      cpc save file.bas                    # Add header (default)
+      cpc save prog.bas -t 0               # No header (pure data)
+      cpc save prog.bin -t 1 -c 4000       # Binary at 0x4000
+      cpc save file.txt -t 2               # Raw copy
     """
     
-    debug(f"file={file_name}, type={type_file}, load={load_addr}, exec={exec_addr}")
-    
-    # Verificar que el archivo existe
+    # Verificar archivo existe
     if not Path(file_name).exists():
         blank_line(1)
         error(f"File '{file_name}' not found.")
         blank_line(1)
         return
     
-    # Obtener el nombre del disco usando DriveManager
+    # Obtener disco
     drive_manager = DriveManager()
     system_cpm = SystemCPM()
     
     disc_name = drive_manager.get_disc_name(drive_a, drive_b)
-    
     if disc_name is None:
-        error("No disc inserted in the specified drive.")
+        error("No disc inserted.")
         return
     
-    # Obtener el user number (por defecto 0)
-    user_number = str(system_cpm.get_user_number())
-
-    
-    # Verificar si el archivo tiene cabecera AMSDOS
-    header_load_addr, header_exec_addr = is_header(file_name)
-    
-    if header_load_addr is not None:
-        blank_line(1)
-        info2(f"File '{file_name}' has AMSDOS header.")
-        console.print(f"  [blue]Load address:[/blue] [yellow]&{header_load_addr:04X}[/yellow]")
-        console.print(f"  [blue]Exec address:[/blue] [yellow]&{header_exec_addr:04X}[/yellow]")
-        # Si el archivo tiene cabecera y no se especificó tipo, preservarla
-        # NO forzamos type_file aquí, dejamos que el usuario o el auto-detect decidan
+    # User number
+    if user is None:
+        user_number = system_cpm.get_user_number()
     else:
-        blank_line(1)
-        info2(f"File '{file_name}' has no AMSDOS header.")
+        if not (0 <= user <= 15):
+            error("User number must be 0-15.")
+            return
+        user_number = user
     
-    if type_file is None:
-        # Sin tipo especificado: detectar automáticamente
-        try:
-            dsk = DSK(disc_name)
+    # Leer archivo completo
+    with open(file_name, "rb") as f:
+        file_data = bytearray(f.read())
+    
+    # Verificar si tiene header AMSDOS
+    has_header = False
+    if len(file_data) >= 128:
+        checksum = sum(file_data[0:67]) & 0xFFFF
+        stored_checksum = file_data[67] | (file_data[68] << 8)
+        has_header = (checksum == stored_checksum)
+    
+    # Default type: 1 (BINARY) like iDSK
+    if file_type is None:
+        file_type = "1"
+    
+    # COMPORTAMIENTO EXACTO DE iDSK:
+    # Si hay -c o -e, fuerza modo BINARY (tipo 1)
+    if load_addr or exec_addr:
+        file_type = "1"
+    
+    blank_line(1)
+    
+    # MODE_ASCII (0): Save WITHOUT AMSDOS header
+    if file_type == "0":
+        info2("MODE_ASCII (no header)")
+        # In ASCII mode, delete the header if there is one
+        if has_header:
+            debug("File has AMSDOS header, removing it")
+            file_data = file_data[128:]
+        else:
+            debug("File has no AMSDOS header")
+    
+    # MODE_BINAIRE (1): Add AMSDOS header if not present
+    elif file_type == "1":
+        info2("MODE_BINAIRE (add header if needed)")
+        if not has_header:
+            debug("Automatically generating header for file")
             
-            # Obtener nombre del archivo sin path
-            file_base_name = Path(file_name).name.upper()
+            # Parse addresses
+            load = int(load_addr, 16) if load_addr else 0
+            exec = int(exec_addr, 16) if exec_addr else 0
             
-            # Si tiene cabecera AMSDOS, preservarla usando file_type=0 (binario)
-            # El método write_file detectará la cabecera existente y la preservará
-            if header_load_addr is not None:
-                debug(f"File has AMSDOS header (load=&{header_load_addr:04X}, exec=&{header_exec_addr:04X}), preserving it")
-                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=0, 
-                             user=int(user_number), force=True)
-            # Detectar tipo según extensión para archivos sin cabecera
-            elif file_base_name.endswith('.BAS'):
-                # BASIC ASCII (sin cabecera AMSDOS - guardar como RAW)
-                debug("Auto-detected as BASIC ASCII file (.BAS)")
-                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=-1, user=int(user_number), force=True)
-            elif file_base_name.endswith('.BIN'):
-                # Binario sin cabecera - añadir cabecera AMSDOS
-                debug("Auto-detected as BINARY file (.BIN)")
-                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=2, 
-                             load_addr=0x4000, exec_addr=0x4000, 
-                             user=int(user_number), force=True)
-            else:
-                # Por defecto: ASCII sin cabecera (RAW)
-                debug("Plain file without header, saving as RAW")
-                dsk.write_file(file_name, dsk_filename=file_base_name, file_type=-1, 
-                             user=int(user_number), force=True)
+            # Crear header AMSDOS
+            file_size = len(file_data)
+            if file_size >= 0x10000:
+                error("Creating header for files larger than 64K not supported")
+                return
             
-            dsk.save()
-            ok(f"File '{file_name}' saved successfully.")
-             
-            # Mostrar listado actualizado
-            blank_line(1)
-            dsk.list_files(simple=False, use_rich=True)
-        except Exception as e:
-            error(f"Failed to save file: {e}")
-            return
-
-    elif type_file == "a":
-        # ASCII/Data file sin cabecera AMSDOS
-        debug("Saved as type 'a' (ASCII/data) by user request.")
-        try:
-            dsk = DSK(disc_name)
-            file_base_name = Path(file_name).name.upper()
+            header = bytearray(128)
+            # User number
+            header[0] = user_number
+            # Filename (8 chars)
+            base_name = Path(file_name).stem.upper()[:8]
+            for i, c in enumerate(base_name):
+                header[1 + i] = ord(c)
+            # Padding con espacios para completar 15 bytes del nombre
+            for i in range(len(base_name), 8):
+                header[1 + i] = ord(' ')
+            # Extension (3 chars)
+            ext = Path(file_name).suffix[1:].upper()[:3] if Path(file_name).suffix else ""
+            for i, c in enumerate(ext):
+                header[9 + i] = ord(c)
+            for i in range(len(ext), 3):
+                header[9 + i] = ord(' ')
+            # Completar FileName hasta byte 15 (0x01-0x0F)
+            for i in range(12, 16):
+                header[i] = 0
             
-            # Modo -1 = RAW (sin cabecera AMSDOS)
-            dsk.write_file(file_name, dsk_filename=file_base_name, file_type=-1, 
-                         user=int(user_number), force=True)
-            dsk.save()
+            # Block number, last block, file type
+            header[0x10] = 0  # Block number
+            header[0x11] = 0  # Last block  
+            header[0x12] = 2  # File type (2=BINARY, like iDSK)
             
-            ok(f"File '{file_name}' saved successfully.")
-            blank_line(1)
-            dsk.list_files(simple=False, use_rich=True)
-        except Exception as e:
-            error(f"Failed to save file: {e}")
-            return
+            # Data length
+            header[0x18] = file_size & 0xFF
+            header[0x19] = (file_size >> 8) & 0xFF
             
-    elif type_file == "p":
-        # Program file con cabecera AMSDOS
-        print("Saved as type 'p' (program) by user request.")
-        try:
-            dsk = DSK(disc_name)
-            file_base_name = Path(file_name).name.upper()
+            # Load address
+            header[0x15] = load & 0xFF
+            header[0x16] = (load >> 8) & 0xFF
             
-            # Modo 0 = Binario con cabecera AMSDOS
-            dsk.write_file(file_name, dsk_filename=file_base_name, file_type=0, 
-                         load_addr=header_load_addr or 0, exec_addr=header_exec_addr or 0,
-                         user=int(user_number), force=True, read_only=True)
-            dsk.save()
+            # First block (always 0 for user files)
+            header[0x17] = 0
             
-            ok(f"File '{file_name}' saved successfully.")
-            blank_line(1)
-            dsk.list_files(simple=False, use_rich=True)
-        except Exception as e:
-            error(f"Failed to save file: {e}")
-            return
+            # Entry address
+            header[0x1A] = exec & 0xFF
+            header[0x1B] = (exec >> 8) & 0xFF
             
-    elif type_file == "b":
-        # Binary file con direcciones específicas
-        info2("Saved as type 'b' (binary) by user request.")
+            # Logical length (same as data length for most files)
+            header[0x40] = file_size & 0xFF
+            header[0x41] = (file_size >> 8) & 0xFF
+            
+            # Calcular checksum
+            checksum = sum(header[0:67]) & 0xFFFF
+            header[67] = checksum & 0xFF
+            header[68] = (checksum >> 8) & 0xFF
+            
+            # Insertar header
+            file_data = header + file_data
+            
+            debug(f"Load: &{load:04X}, Exec: &{exec:04X}")
+        else:
+            debug("File already has an header")
+    
+    # MODE_RAW (2): No header processing
+    elif file_type == "2":
+        info2("Using raw mode, no header")
+    
+    # Escribir archivo procesado al DSK
+    try:
+        dsk = DSK(disc_name)
+        file_base_name = Path(file_name).name.upper()
         
-        # Validar que se proporcionaron las direcciones
-        if load_addr is None:
-            error("Binary type 'b' requires load address. Usage: save file.bin b 0x4000 [0x4000]")
-            return
+        # Guardar archivo modificado temporalmente
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.tmp') as tmp:
+            tmp.write(file_data)
+            tmp_path = tmp.name
         
         try:
-            dsk = DSK(disc_name)
-            file_base_name = Path(file_name).name.upper()
-            
-            # Convertir direcciones hexadecimales
-            if isinstance(load_addr, str):
-                if load_addr.startswith(('0x', '0X')):
-                    load_address = int(load_addr, 16)
-                elif load_addr.startswith('&'):
-                    load_address = int(load_addr[1:], 16)
-                else:
-                    load_address = int(load_addr)
-            else:
-                load_address = int(load_addr)
-            
-            # Exec address: usar load_address si no se especifica
-            if exec_addr is None:
-                exec_address = load_address
-            elif isinstance(exec_addr, str):
-                if exec_addr.startswith(('0x', '0X')):
-                    exec_address = int(exec_addr, 16)
-                elif exec_addr.startswith('&'):
-                    exec_address = int(exec_addr[1:], 16)
-                else:
-                    exec_address = int(exec_addr)
-            else:
-                exec_address = int(exec_addr)
-            
-            debug(f"Load address: 0x{load_address:04X}, Exec address: 0x{exec_address:04X}")
-            
-            # Modo 2 = Binario con cabecera AMSDOS
-            dsk.write_file(file_name, dsk_filename=file_base_name, file_type=2, 
-                         load_addr=load_address, exec_addr=exec_address,
-                         user=int(user_number), force=True)
+            # Escribir con file_type=-1 (RAW) porque ya procesamos el header
+            dsk.write_file(tmp_path, dsk_filename=file_base_name, file_type=-1,
+                         user=user_number, force=force,
+                         read_only=read_only, system=system)
             dsk.save()
-            ok(f"File '{file_name}' saved successfully.")
+            
+            ok(f"File '{file_name}' imported successfully.")
             blank_line(1)
             dsk.list_files(simple=False, use_rich=True)
-        except Exception as e:
-            error(f"Failed to save file: {e}")
-            import traceback
-            traceback.print_exc()
-            return
+        finally:
+            import os
+            os.unlink(tmp_path)
+        
+    except Exception as e:
+        blank_line(1)
+        error(f"Failed to import: {e}")
+        import traceback
+        traceback.print_exc()
 

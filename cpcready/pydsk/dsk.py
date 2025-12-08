@@ -726,8 +726,9 @@ class DSK:
         # Procesar archivo según tipo
         has_header = self._check_amsdos_header(file_data)
         
-        # Si se especifica load o exec address, forzar modo binario
-        if load_addr != 0 or exec_addr != 0:
+        # Si se especifica load o exec address Y el tipo no es BASIC, forzar modo binario
+        # BASIC (tipos 0 y 1) siempre usan load_addr=0x170, así que no debe cambiar a binario
+        if (load_addr != 0 or exec_addr != 0) and file_type not in (0, 1):
             file_type = 2  # Binario con cabecera
         
         if file_type == 0 or file_type == 1 or file_type == 2 or file_type == 3:  # Archivos con cabecera AMSDOS
