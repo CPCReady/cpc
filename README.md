@@ -146,14 +146,17 @@ cpc run [file] -B         # Run from drive B
 
 When saving files, you can specify:
 
-- `a` - ASCII/text file (no AMSDOS header)
+- `a` - ASCII/text file (no AMSDOS header, auto-converted to DOS format)
 - `b` - Binary file (requires load/exec addresses)
 - `p` - Program file (preserves existing header)
+
+**Automatic DOS conversion:** All files are automatically converted to DOS format (CRLF line endings) before saving to ensure compatibility with CPC emulators and match iDSK behavior.
 
 Example:
 ```bash
 cpc save game.bin b 0x4000 0x4000    # Binary at address 0x4000
-cpc save data.txt a                  # ASCII file
+cpc save data.txt a                  # ASCII file (auto-converted to DOS)
+cpc save program.bas                 # Auto-detect type, convert to DOS
 ```
 
 ## Configuration
