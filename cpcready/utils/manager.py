@@ -669,7 +669,7 @@ class DriveManager:
     
     def set_emulator(self, emulator):
         """Establece el emulador."""
-        valid_emulators = ["RetroVirtualMachine", "CPCEmu", "M4Board"]
+        valid_emulators = ["RetroVirtualMachine", "M4Board"]
         if emulator not in valid_emulators:
             error(f"Invalid emulator. Use one of: {', '.join(valid_emulators)}")
             return False
@@ -1007,9 +1007,29 @@ class SystemCPM:
         self.config.set("system", "mode", str(mode))
         return True
 
+    def get_storage(self):
+        """
+        Obtiene el storage seleccionado.
+        
+        Returns:
+            str: Storage seleccionado, por defecto 'disc'
+        """
+        return str(self.config.get("system", "storage", "disc"))
+
+    def set_storage(self, storage):
+        """
+        Establece el storage seleccionado.
+        
+        Args:
+            storage (str): Storage seleccionado
+        """
+        if str(storage) not in ["disc", "tape"]:
+            raise ValueError("Invalid storage. Must be 'disc' or 'tape'")
+        self.config.set("system", "storage", str(storage    ))
+        return True
 
 class LegacyConfigManager:
-    """
+    """ 
     Clase para gestionar toda la configuración del sistema (drives, emulador, etc).
     Unifica DriveManager y añade configuración de emulador.
     DEPRECATED: Usar ConfigManager de toml_config en su lugar.

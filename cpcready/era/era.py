@@ -26,7 +26,7 @@ from cpcready.pydsk import DSK, DSKError, DSKFileNotFoundError, DSKFileExistsErr
 console = Console()
 
 @click.command(cls=CustomCommand)
-@click.argument("file_patterns", nargs=-1, required=True)
+@click.argument("file_patterns", nargs=-1, required=False)
 @click.option("-A", "--drive-a", is_flag=True, help="Insert disc into drive A")
 @click.option("-B", "--drive-b", is_flag=True, help="Insert disc into drive B")
 def era(file_patterns, drive_a, drive_b):
@@ -40,6 +40,13 @@ def era(file_patterns, drive_a, drive_b):
         era "*.bin"
         era "GAME.*"
     """
+    # Validar que se hayan proporcionado patrones de archivo
+    if not file_patterns:
+        blank_line(1)
+        error("No file patterns specified")
+        blank_line(1)
+        return 1
+    
     # Obtener el nombre del disco usando DriveManager
     drive_manager = DriveManager()
     

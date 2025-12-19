@@ -62,12 +62,13 @@ class ConfigManager:
             "emulator": {
                 "default": "RetroVirtualMachine",
                 "retro_virtual_machine_path": "",
-                "m4board_ip": ""
+                "m4board_ip": "0.0.0.0"
             },
             "system": {
                 "user": 0,
                 "model": "6128",
-                "mode": 1
+                "mode": 1,
+                "storage": "disc"
             }
         }
     
@@ -89,14 +90,15 @@ class ConfigManager:
             return
         # Validar y completar claves y tipos
         def validate_section(section, default_section):
+            section_updated = False
             if section not in config or not isinstance(config[section], dict):
                 config[section] = default_section.copy()
                 return True
             for key, value in default_section.items():
                 if key not in config[section] or not isinstance(config[section][key], type(value)):
                     config[section][key] = value
-                    return True
-            return False
+                    section_updated = True
+            return section_updated
         for section, default_section in default.items():
             if validate_section(section, default_section):
                 updated = True

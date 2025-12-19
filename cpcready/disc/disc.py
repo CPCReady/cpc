@@ -15,7 +15,7 @@
 import click
 from pathlib import Path
 import shutil
-from cpcready.utils import console, system, DriveManager, discManager
+from cpcready.utils import console, system, DriveManager, SystemCPM
 from cpcready.utils.click_custom import CustomCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
@@ -25,6 +25,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.columns import Columns
 from rich.table import Table
+from rich import box
 import sys
 from pathlib import Path
 
@@ -37,13 +38,17 @@ console = Console()
 @click.group(cls=CustomGroup, help="Create or manage virtual discs.", invoke_without_command=True, show_banner=True)
 @click.pass_context
 def disc(ctx):
-    """Create or manage virtual discs."""
+    """Select storage for CPC Ready session."""
     # Mostrar notificación de actualización si la hay
     show_update_notification()
     
-    # Si no hay comando, mostrar ayuda
+    # Solo mostrar mensaje de selección si no se ejecuta un subcomando
     if ctx.invoked_subcommand is None:
-        click.echo(ctx.get_help())
+        System = SystemCPM()
+        System.set_storage("disc")
+        blank_line(1)
+        ok("'disc' Selected for CPCReady session.")
+        blank_line(1)
 
 @disc.command(cls=CustomCommand)
 @click.argument("disc_name", required=True)
@@ -55,8 +60,6 @@ def new(disc_name, format, drive_a, drive_b):
     """
     # Test step by step
     drive_manager = DriveManager()
-    
-  
     
     disc_name = str(system.process_dsk_name(disc_name))
     disc_path = Path(f"{disc_name}")
@@ -85,11 +88,11 @@ def new(disc_name, format, drive_a, drive_b):
     format_type = format_map.get(format.upper(), DSK.FORMAT_DATA)
     
     if disc_path.exists():
-        warn(f"disc {disc_path.name} exists not creating new one.")
-        console.print(f"   [blue]File:[/blue] [yellow]{disc_path.name}[/yellow]")
-        console.print(f"   [blue]Format:[/blue] [yellow]{format}[/yellow]")
-        console.print(f"   [blue]Capacity:[/blue] [yellow]180 KB[/yellow]")
-        console.print(f"   [blue]Free space:[/blue] [yellow]178 KB[/yellow]")
+        warn(f"disc '{disc_path.name}' exists not creating new one.")
+        # console.print(f"   [blue]File:[/blue] [yellow]{disc_path.name}[/yellow]")
+        # console.print(f"   [blue]Format:[/blue] [yellow]{format}[/yellow]")
+        # console.print(f"   [blue]Capacity:[/blue] [yellow]180 KB[/yellow]")
+        # console.print(f"   [blue]Free space:[/blue] [yellow]178 KB[/yellow]")
         blank_line(1)
         if drive_a or drive_b:
             drive_manager.drive_table()
@@ -103,16 +106,27 @@ def new(disc_name, format, drive_a, drive_b):
         dsk.save(disc_path.name)
         # Mostrar información después de crear
         info = dsk.get_info()
-        ok(f"DSK created successfully!")
-        console.print(f"   [blue]File:[/blue] [yellow]{disc_path.name}[/yellow]")
-        console.print(f"   [blue]Format:[/blue] [yellow]{info['format']}[/yellow]")
-        console.print(f"   [blue]Capacity:[/blue] [yellow]{info['capacity_kb']} KB[/yellow]")
-        console.print(f"   [blue]Free space:[/blue] [yellow]{dsk.get_free_space()} KB[/yellow]")
+        ok(f"'{disc_path.name}' created successfully!")
+        blank_line(1)
+        
+        # Crear tabla para mostrar información del disco
+        table = Table(show_header=False, box=None, padding=(0, 0))
+        table.add_column(style="blue", justify="left")
+        table.add_column(style="yellow", justify="left")
+        
+        table.add_row("File: ", disc_path.name)
+        table.add_row("Format: ", info['format'])
+        table.add_row("Capacity: ", f"{info['capacity_kb']} KB")
+        table.add_row("Free space: ", f"{dsk.get_free_space()} KB")
+        
+        console.print(table)
         blank_line(1)
         if drive_a:
             drive_manager.insert_drive_a(disc_name)
+            blank_line(1)
         elif drive_b:
             drive_manager.insert_drive_b(disc_name)
+            blank_line(1)
         if drive_a or drive_b:
             drive_manager.drive_table()
         return

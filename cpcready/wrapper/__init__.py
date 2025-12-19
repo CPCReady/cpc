@@ -12,4 +12,8 @@
 # See the License for the specific language governing permissions
 # and limitations under the License.
 
-from cpcready.disc.disc import disc
+"""CPCReady Wrapper - Project environment manager."""
+
+from .wrapper import wrapper
+
+__all__ = ['wrapper']

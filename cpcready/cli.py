@@ -35,6 +35,7 @@ from cpcready.emu.emu import emu
 from cpcready.console import warpconsole
 from cpcready.webconsole.cli import webconsole
 from cpcready.configweb.configweb import configweb
+from cpcready.wrapper.wrapper import wrapper
 from cpcready.utils.click_custom import CustomGroup, CustomCommand
 from cpcready.utils.console import message, blank_line
 from cpcready import __version__
@@ -73,7 +74,8 @@ cli.add_command(mode)
 cli.add_command(run)
 cli.add_command(emu)
 cli.add_command(rvm_group)
-cli.add_command(warpconsole)
+# cli.add_command(warpconsole)
+cli.add_command(wrapper)
 cli.add_command(a)
 cli.add_command(b)
 cli.add_command(sysinfo)

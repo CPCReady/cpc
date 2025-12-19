@@ -59,52 +59,28 @@ def sysinfo():
     cpc_model = System.get_model()
     screen = System.get_mode()
     ip = drive_manager.read_m4board_ip()
+    user = System.get_user_number()
 
-        
-    print(f"Emulator: {emulator}")
-    # Crear tabla Rich
     table = Table(
         border_style="bright_yellow",
         box=box.ROUNDED
     )
     
     table.add_column("CPC Model", justify="center")
+    table.add_column("User", justify="center")
     table.add_column("Screen", justify="center")
     table.add_column("Emulator", justify="center")
     table.add_column("M4Board IP", justify="center")
     
     table.add_row(
-        cpc_model,
-        screen,
-        emulator,
-        ip
+        str(cpc_model),
+        str(user),
+        str(screen),
+        str(emulator),
+        str(ip)
     )
     
     # Mostrar tabla
     console.print(table)
     blank_line(1)
-    
-    
-    table = Table(show_header=False, box=box.ROUNDED, border_style="bright_yellow")
-
-    table.add_column(style="bold cyan", no_wrap=True)
-    table.add_column(style="white")
-
-    table.add_row("Input", "archivo.txt")
-    table.add_row("Output", "resultado.bin")
-    table.add_row("Mode", "fast")
-    table.add_row("Verbose", "True")
-
-    console.print(table)
-    # # Si se solicita devolver, crear versión sin color
-    # if devolver:
-    #     datos_sin_color = [
-    #         [symbol_a, "A", drive_a],
-    #         [symbol_b, "B", drive_b],
-    #     ]
-    #     tabla_sin_color = tabulate(
-    #         datos_sin_color, headers=["Select", "Drive", "disc"],
-    #         tablefmt=estilo, stralign="left"
-    #     )
-    #     return tabla_sin_color
     
