@@ -48,9 +48,8 @@ def era(file_patterns, drive_a, drive_b):
     if disc_name is None:
         error("No disc inserted in the specified drive.")
         return
-    
-    blank_line(1)
-    
+
+
     dsk = DSK(disc_name)
     
     # Obtener lista de archivos en el DSK
@@ -72,6 +71,7 @@ def era(file_patterns, drive_a, drive_b):
             if matches:
                 files_to_delete.update(matches)
             else:
+                blank_line(1)
                 warn(f"No files match pattern: {pattern}")
         else:
             # Archivo específico
@@ -84,9 +84,11 @@ def era(file_patterns, drive_a, drive_b):
     for filename in sorted(files_to_delete):
         try:
             dsk.delete_file(filename)
+            blank_line(1)
             ok(f"Erased: {filename}")
             deleted_count += 1
         except DSKFileNotFoundError:
+            blank_line(1)
             error(f"File not found: {filename}")
             failed_count += 1
         except DSKError as e:
@@ -101,12 +103,11 @@ def era(file_patterns, drive_a, drive_b):
             error(f"Error saving disc: {e}")
             return
     
-    blank_line(1)
+ 
     if deleted_count > 0:
         ok(f"{deleted_count} file(s) erased successfully")
     if failed_count > 0:
         error(f"{failed_count} file(s) failed")
-    
     blank_line(1)
     dsk.list_files(simple=False, use_rich=True, show_title=True)
-    blank_line(1)
+

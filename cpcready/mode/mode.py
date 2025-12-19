@@ -16,6 +16,8 @@ import click
 from cpcready.utils import SystemCPM
 from cpcready.utils.click_custom import CustomCommand
 from cpcready.utils.console import ok, error, info2, blank_line
+from rich.console import Console
+console = Console()
 
 @click.command(cls=CustomCommand)
 @click.argument("screen_mode", required=False, type=click.Choice(['0', '1', '2'], case_sensitive=False))
@@ -25,7 +27,8 @@ def mode(screen_mode):
     Supported modes: 0, 1, 2
     """
     system_cpm = SystemCPM()
-    
+ 
+
     if screen_mode:
         # Set new mode
         try:

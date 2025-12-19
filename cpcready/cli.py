@@ -15,7 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import click
-from cpcready.drive import drive
+from cpcready.drive import drive,a,b
+from cpcready.sysinfo import sysinfo
 from cpcready.disc import disc
 from cpcready.save import save
 from cpcready.era import era
@@ -31,6 +32,9 @@ from cpcready.rvm.rvm import rvm_group
 from cpcready.emu.emu import emu
 # from cpcready.m4.m4 import m4 as m4_group
 # from cpcready.header import header
+from cpcready.console import warpconsole
+from cpcready.webconsole.cli import webconsole
+from cpcready.configweb.configweb import configweb
 from cpcready.utils.click_custom import CustomGroup, CustomCommand
 from cpcready.utils.console import message, blank_line
 from cpcready import __version__
@@ -69,6 +73,12 @@ cli.add_command(mode)
 cli.add_command(run)
 cli.add_command(emu)
 cli.add_command(rvm_group)
+cli.add_command(warpconsole)
+cli.add_command(a)
+cli.add_command(b)
+cli.add_command(sysinfo)
+# cli.add_command(webconsole)
+# cli.add_command(configweb)
 # cli.add_command(m4_group)
 # cli.add_command(header)
 

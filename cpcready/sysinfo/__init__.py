@@ -14,6 +14,5 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from cpcready.drive.drive import drive
-from cpcready.drive.a import a
-from cpcready.drive.b import b
+from cpcready.sysinfo.sysinfo import sysinfo
+

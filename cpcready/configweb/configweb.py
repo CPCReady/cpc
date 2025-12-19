@@ -24,52 +24,51 @@ from cpcready.utils.console import ok, error, blank_line, info2
 
 @click.command(cls=CustomCommand)
 def configweb():
-    """Configure CPCReady options via web interface."""
+    """Configure CPCReady options via web interface (Streamlit)."""
     try:
         # Ruta al script de Streamlit
         script_path = Path(__file__).parent / "streamlit_app.py"
         
+        if not script_path.exists():
+            blank_line(1)
+            error(f"Streamlit app not found at: {script_path}")
+            blank_line(1)
+            return
+        
         blank_line(1)
-        ok("Starting web configuration interface...")
+        ok("Starting CPCReady configuration interface...")
         
-        # Ejecutar Streamlit completamente en segundo plano (daemon)
-        # Usando nohup para desacoplar del proceso padre
-        if sys.platform == "win32":
-            # Windows
-            subprocess.Popen(
-                [sys.executable, "-m", "streamlit", "run", str(script_path),
-                 "--server.headless", "true",
-                 "--browser.gatherUsageStats", "false"],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
-            )
-        else:
-            # Unix/Linux/macOS
-            subprocess.Popen(
-                [sys.executable, "-m", "streamlit", "run", str(script_path),
-                 "--server.headless", "true",
-                 "--browser.gatherUsageStats", "false"],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                start_new_session=True,
-                preexec_fn=os.setpgrp
-            )
-        
-        # Esperar un poco para que Streamlit inicie
-        time.sleep(2)
-        
-        # Abrir el navegador automáticamente
+        # Abrir navegador en un thread separado
         url = "http://localhost:8501"
-        webbrowser.open(url)
         
-        ok(f"Web interface opened at: {url}")
-        info2("Server running in background. To stop: pkill -f 'streamlit run'")
+        def open_browser():
+            time.sleep(2)
+            webbrowser.open(url)
+        
+        import threading
+        threading.Thread(target=open_browser, daemon=True).start()
+        
+        ok(f"Web interface will open at: {url}")
+        info2("Press Ctrl+C to stop the server")
         blank_line(1)
+        
+        # Ejecutar Streamlit usando os.execvp para reemplazar el proceso actual
+        # Esto evita problemas de fork en macOS
+        import os
+        os.execvp(
+            sys.executable,
+            [sys.executable, "-m", "streamlit", "run", str(script_path),
+             "--server.headless", "true",
+             "--browser.gatherUsageStats", "false"]
+        )
         
     except FileNotFoundError:
         blank_line(1)
         error("Streamlit is not installed. Install it with: pip install streamlit")
+        blank_line(1)
+    except KeyboardInterrupt:
+        blank_line(1)
+        ok("Server stopped")
         blank_line(1)
     except Exception as e:
         blank_line(1)

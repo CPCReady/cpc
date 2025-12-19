@@ -37,7 +37,7 @@ def cat(drive_a, drive_b):
     show_update_notification()
     # estandarizamos nombre del disc
     drive_manager = DriveManager()
- 
+
        # Validar que solo se especifique una unidad
     if drive_a and drive_b:
         error("Cannot specify both -A and -B options. Choose one drive.")
@@ -56,8 +56,8 @@ def cat(drive_a, drive_b):
             disc_name = drive_manager.read_drive_a()
         else:
             disc_name = drive_manager.read_drive_b()
-            
     
+   
     if disc_name == "":
         blank_line(1)
         error(f"Drive {drive}: disc missing\n")

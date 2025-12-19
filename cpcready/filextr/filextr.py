@@ -44,6 +44,7 @@ def filextr(files, drive_a, drive_b):
     # Obtener el nombre del disco usando DriveManager
     drive_manager = DriveManager()
     disc_manager = discManager("idsk20")
+
     
     disc_name = drive_manager.get_disc_name(drive_a, drive_b)
     

@@ -447,14 +447,14 @@ class DSK:
                 
                 # Configurar título según show_title
                 display_name = display_name.upper()
-                table_title = f"[bold cyan]{display_name}[/bold cyan]" if show_title else None
+                table_title = f"[bold yellow] ▶ {display_name}[/bold yellow]" if show_title else None
                 
                 table = Table(
                     title=table_title,
                     title_justify="left",
                     show_header=True,
-                    header_style="bold magenta",
-                    border_style="bright_blue",
+                    header_style="bold white",
+                    border_style="bright_yellow",
                     title_style="bold cyan",
                     box=box.ROUNDED
                 )
@@ -464,7 +464,7 @@ class DSK:
                 table.add_column("Size", justify="right", style="green", width=8)
                 table.add_column("Load", justify="center", style="yellow", width=10)
                 table.add_column("Exec", justify="center", style="yellow", width=10)
-                table.add_column("User", justify="center", style="magenta", width=6)
+                table.add_column("User", justify="center", style="yellow", width=6)
                 table.add_column("Type", style="dim", width=12)
                 
                 # Procesar archivos
@@ -535,7 +535,7 @@ class DSK:
                 # Mostrar espacio libre
                 free_space = self.get_free_space()
                 free_text = f"[bold green]{free_space}K[/bold green] free"
-                console.print(Panel(free_text, style="bright_blue", expand=False))
+                console.print(Panel(free_text, style="bright_yellow", expand=False))
                 console.print()
                 
                 return None  # Rich imprime directamente

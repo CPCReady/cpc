@@ -1,3 +1,28 @@
+import streamlit as st
+from pathlib import Path
+import sys
+
+# Agregar el directorio raíz al path para importar cpcready
+root_path = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(root_path))
+
+from cpcready.utils.config import ConfigManager
+
+# Configurar página
+st.set_page_config(
+    page_title="CPCReady Configuration",
+    page_icon="🎮",
+    layout="wide"
+)
+
+# CSS personalizado para ocultar elementos de Streamlit
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+</style>
+"""
 
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 

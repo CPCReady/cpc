@@ -39,9 +39,7 @@ def ren(file_old, file_new, drive_a, drive_b):
     if disc_name is None:
         error("No disc inserted in the specified drive.")
         return
-    
-    blank_line(1)
-    
+
     try:
         # Cargar DSK y renombrar archivo
         dsk = DSK(disc_name)
@@ -57,9 +55,12 @@ def ren(file_old, file_new, drive_a, drive_b):
         
     except DSKFileNotFoundError as e:
         error(f"File not found: {file_old}")
+        blank_line(1)
     except DSKFileExistsError as e:
         error(f"File already exists: {file_new}")
+        blank_line(1)
     except DSKError as e:
         error(f"Error renaming file: {e}")
+        blank_line(1)
     
-    blank_line(1)
+  

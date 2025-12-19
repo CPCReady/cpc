@@ -18,10 +18,12 @@ from cpcready.utils.manager import DriveManager
 from cpcready.utils.click_custom import CustomCommand
 from cpcready.utils.version import add_version_option
 from cpcready.utils.update import show_update_notification
+from rich.console import Console
+console = Console()
 
 @add_version_option
 @click.command(cls=CustomCommand, show_banner=True)
-@click.argument('action', type=click.Choice(['a', 'b', 'eject', 'status'], case_sensitive=False), required=False)
+@click.argument('action', type=click.Choice(['a', 'b'], case_sensitive=False), required=False)
 @click.option('-A', '--drive-a', is_flag=True, help='Eject disc from drive A (use with eject action)')
 @click.option('-B', '--drive-b', is_flag=True, help='Eject disc from drive B (use with eject action)')
 def drive(action, drive_a, drive_b):
@@ -55,8 +57,9 @@ def drive(action, drive_a, drive_b):
     if action == 'a':
         if drive_manager.read_drive_a() == "":
             blank_line(1)
-            error(f"Drive A: disc missing\n")
-            drive_manager.drive_table()
+            error(f"Drive A: No disc inserted\n")
+            # drive_manager.drive_table()
+            exit(1)
             return
         blank_line(1)
         drive_manager.select_drive("a")
@@ -66,34 +69,12 @@ def drive(action, drive_a, drive_b):
     elif action == 'b':
         if drive_manager.read_drive_b() == "":
             blank_line(1)
-            error(f"Drive B: disc missing\n")
-            drive_manager.drive_table()
+            error(f"Drive B: No disc inserted\n")
+            # drive_manager.drive_table()
             return
         blank_line(1)
         drive_manager.select_drive("b")
         blank_line(1)
         drive_manager.drive_table()
+
     
-    elif action == 'eject':
-        # Validar que solo se especifique una unidad
-        if drive_a and drive_b:
-            blank_line(1)
-            error("Cannot specify both -A and -B options. Choose one drive.")
-            return
-        
-        if drive_a:
-            blank_line(1)
-            drive_manager.eject('A')
-            drive_manager.drive_table()
-        elif drive_b:
-            blank_line(1)
-            drive_manager.eject('B')
-            drive_manager.drive_table()
-        else:
-            blank_line(1)
-            warn("Please specify a drive using -A or -B option.\n")
-            return
-    
-    elif action == 'status':
-        blank_line(1)
-        drive_manager.drive_table()

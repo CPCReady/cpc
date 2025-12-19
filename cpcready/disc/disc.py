@@ -56,6 +56,8 @@ def new(disc_name, format, drive_a, drive_b):
     # Test step by step
     drive_manager = DriveManager()
     
+  
+    
     disc_name = str(system.process_dsk_name(disc_name))
     disc_path = Path(f"{disc_name}")
     
@@ -122,8 +124,9 @@ def new(disc_name, format, drive_a, drive_b):
 def info(disc_name, drive_a, drive_b):
     """Show detailed information about a disc file."""
     drive_manager = DriveManager()
-    disc_manager = discManager("idsk")
     dsk = DSK()
+    
+    
     # Validar que solo se especifique una opción
     if drive_a and drive_b:
         error("Cannot specify both -A and -B options. Choose one drive.")
@@ -145,7 +148,7 @@ def info(disc_name, drive_a, drive_b):
     
     if disc_name == "":
         blank_line(1)
-        error(f"Drive {drive}: disc missing")
+        error(f"Drive {drive}: disc not inserted\n")
         blank_line(1)
         return
     
@@ -217,24 +220,23 @@ def info(disc_name, drive_a, drive_b):
     
     title_panel = Panel(
         title_content,
-        title="[bold blue]DISC[/bold blue]",
-        border_style="bright_blue",
+        border_style="bright_yellow",
         padding=(1, 2),
         width=79
     )
     
     # Panel 1: Estructura Física
     physical_content = f"""
-[blue]Pistas:[/blue]            [yellow]{info['tracks']}[/yellow]
-[blue]Caras:[/blue]             [yellow]{info['heads']}[/yellow]
-[blue]Tamaño pista:[/blue]      [yellow]{info['track_size']:,} bytes[/yellow]
-[blue]Tamaño total:[/blue]      [yellow]{info['total_size']:,} bytes[/yellow]
+[green]Pistas:[/green]            [yellow]{info['tracks']}[/yellow]
+[green]Caras:[/green]             [yellow]{info['heads']}[/yellow]
+[green]Tamaño pista:[/green]      [yellow]{info['track_size']:,} bytes[/yellow]
+[green]Tamaño total:[/green]      [yellow]{info['total_size']:,} bytes[/yellow]
 """
     
     physical_panel = Panel(
         physical_content,
-        title="[bold cyan]ESTRUCTURA FÍSICA[/bold cyan]",
-        border_style="cyan",
+        title="[bold green]PHYSICAL STRUCTURE[/bold green]",
+        border_style="yellow",
         padding=(0, 2),
         width=39,
         height=8
@@ -242,16 +244,16 @@ def info(disc_name, drive_a, drive_b):
     
     # Panel 2: Formato
     format_content = f"""
-[blue]Tipo:[/blue]            [yellow]{info['format']}[/yellow]
-[blue]Primer sector:[/blue]   [yellow]0x{dsk.get_min_sector():02X}[/yellow]
+[green]Tipo:[/green]            [yellow]{info['format']}[/yellow]
+[green]Primer sector:[/green]   [yellow]0x{dsk.get_min_sector():02X}[/yellow]
 
 
 """
     
     format_panel = Panel(
         format_content,
-        title="[bold cyan]FORMATO[/bold cyan]",
-        border_style="cyan",
+        title="[bold green]FORMAT[/bold green]",
+        border_style="yellow",
         padding=(0, 2),
         width=39,
         height=8
@@ -259,16 +261,16 @@ def info(disc_name, drive_a, drive_b):
     
     # Panel 3: Capacidad
     capacity_content = f"""
-[blue]Total:[/blue]      [yellow]{info['capacity_kb']} KB[/yellow]
-[blue]Usado:[/blue]      [yellow]{espacio_usado} KB ({porcentaje_usado:.1f}%)[/yellow]
-[blue]Libre:[/blue]      [yellow]{espacio_libre} KB ({100-porcentaje_usado:.1f}%)[/yellow]
+[green]Total:[/green]      [yellow]{info['capacity_kb']} KB[/yellow]
+[green]Usado:[/green]      [yellow]{espacio_usado} KB ({porcentaje_usado:.1f}%)[/yellow]
+[green]Libre:[/green]      [yellow]{espacio_libre} KB ({100-porcentaje_usado:.1f}%)[/yellow]
 
 """
     
     capacity_panel = Panel(
         capacity_content,
-        title="[bold cyan]CAPACIDAD[/bold cyan]",
-        border_style="cyan",
+        title="[bold green]CAPACITY[/bold green]",
+        border_style="yellow",
         padding=(0, 2),
         width=39,
         height=8
@@ -276,17 +278,17 @@ def info(disc_name, drive_a, drive_b):
     
     # Panel 4: Tipos de archivos
     filetype_content = f"""
-[blue]binary:[/blue]   [yellow]{tipos_archivo['BINARY']}[/yellow]
-[blue]basic:[/blue]    [yellow]{tipos_archivo['BASIC']}[/yellow]
-[blue]basic+:[/blue]   [yellow]{tipos_archivo['BASIC+']}[/yellow]
-[blue]ascii:[/blue]    [yellow]{tipos_archivo['ASCII']}[/yellow]
+[green]binary:[/green]   [yellow]{tipos_archivo['BINARY']}[/yellow]
+[green]basic:[/green]    [yellow]{tipos_archivo['BASIC']}[/yellow]
+[green]basic+:[/green]   [yellow]{tipos_archivo['BASIC+']}[/yellow]
+[green]ascii:[/green]    [yellow]{tipos_archivo['ASCII']}[/yellow]
 
 """
     
     filetype_panel = Panel(
         filetype_content,
-        title="[bold cyan]TIPOS DE ARCHIVOS[/bold cyan]",
-        border_style="cyan",
+        title="[bold green]FILE TYPES[/bold green]",
+        border_style="yellow",
         padding=(0, 2),
         width=39,
         height=8
@@ -296,8 +298,8 @@ def info(disc_name, drive_a, drive_b):
     blocks_list = sorted(list(bloques_usados))[:10]
     blocks_str = ", ".join(str(b) for b in blocks_list)
     blocks_content = f"""
-[blue]Usados:[/blue]  [yellow]{len(bloques_usados)}[/yellow]
-[blue]Primeros:[/blue][yellow]{blocks_str}[/yellow]
+[green]Usados:[/green]  [yellow]{len(bloques_usados)}[/yellow]
+[green]Primeros:[/green][yellow]{blocks_str}[/yellow]
 
 
 """
@@ -305,8 +307,8 @@ def info(disc_name, drive_a, drive_b):
     
     blocks_panel = Panel(
         blocks_content,
-        title="[bold cyan]BLOQUES[/bold cyan]",
-        border_style="cyan",
+        title="[bold green]BLOQUES[/bold green]",
+        border_style="yellow",
         padding=(0, 2),
         width=39,
         height=8
@@ -331,7 +333,6 @@ def info(disc_name, drive_a, drive_b):
 def insert(disc_name, drive_a, drive_b):
     """Insert existing disc into specified drive."""
     drive_manager = DriveManager()
-    disc_manager = discManager("idsk")
     
     # Validar que solo se especifique una opción
     if drive_a and drive_b:
@@ -351,6 +352,7 @@ def insert(disc_name, drive_a, drive_b):
         error("Please provide a disc name to insert.")
         blank_line(1)
         return
+    
     
     disc_name = str(system.process_dsk_name(disc_name))
     disc_path = Path(f"{disc_name}")
@@ -372,16 +374,19 @@ def insert(disc_name, drive_a, drive_b):
     # Comprobar si el disco ya está insertado en la unidad
     already_in_a = drive_manager.read_drive_a() == disc_name
     already_in_b = drive_manager.read_drive_b() == disc_name
+    
     if drive == 'A':
         if already_in_a or already_in_b:
-            warn(f"disc {Path(disc_name).name} exists not creating new one.")
-            console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
             blank_line(1)
+            warn(f"disc '{Path(disc_name).name}' is already inserted.")
+            # console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
+            blank_line(1)
+            drive_manager.drive_table()
             return
         # Si el disco existe pero no está en ninguna unidad, también mostrar el mensaje
         if disc_path.exists():
-            warn(f"disc {Path(disc_name).name} exists not creating new one.")
-            console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
+            # warn(f"disc {Path(disc_name).name} exists not creating new one.")
+            # console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
             blank_line(1)
             drive_manager.insert_drive_a(disc_name)
             blank_line(1)
@@ -392,12 +397,15 @@ def insert(disc_name, drive_a, drive_b):
         drive_manager.drive_table()
     elif drive == 'B':
         if already_in_b or already_in_a:
-            warn(f"disc {Path(disc_name).name} exists not creating new one.")
-            console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
             blank_line(1)
+            warn(f"disc '{Path(disc_name).name}' is already inserted.")
+            # console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
+            blank_line(1)
+            drive_manager.drive_table()
             return
         if disc_path.exists():
-            warn(f"disc {Path(disc_name).name} exists not creating new one.")
+            # warn(f"disc {Path(disc_name).name} exists not creating new one.")
+            blank_line(1)
             console.print(f"   [blue]File:[/blue] [yellow]{Path(disc_name).name}[/yellow]")
             blank_line(1)
             drive_manager.insert_drive_b(disc_name)
@@ -408,3 +416,27 @@ def insert(disc_name, drive_a, drive_b):
         blank_line(1)
         drive_manager.drive_table()
     blank_line(1)
+    
+@disc.command(cls=CustomCommand)
+@click.option("-A", "--drive-a", is_flag=True, help="Show info for disc in drive A")
+@click.option("-B", "--drive-b", is_flag=True, help="Show info for disc in drive B")
+def eject(drive_a, drive_b):
+    """Eject disc from drive selected or specified."""
+    drive_manager = DriveManager()
+    disc_select = drive_manager.read_drive_select().upper()
+    # Validar que solo se especifique una opción
+    if drive_a and drive_b:
+        blank_line(1)
+        drive_manager.eject(disc_select)
+        drive_manager.drive_table()
+        blank_line(1)
+        return
+    else:
+        drive = None
+        if drive_a:
+            disc_select = 'A'
+        elif drive_b:
+            disc_select = 'B'
+        blank_line(1)
+        drive_manager.eject(disc_select)
+        drive_manager.drive_table()

@@ -709,26 +709,26 @@ class DriveManager:
 
         # Crear tabla Rich
         table = Table(
-            border_style="bright_blue",
+            border_style="bright_yellow",
             box=box.ROUNDED
         )
         
         table.add_column("Select", justify="center")
         table.add_column("Drive", justify="center")
-        table.add_column("disc", style="white")
-        table.add_column("Path", style="dim white")
+        table.add_column("Disc", style="white")
+        table.add_column("Path", style="dim grey50")
         
         # Símbolos y estilos según selección
         if select == "a":
-            symbol_a = "[bold green]◉[/bold green]"
-            drive_a_label = "[bold green]A[/bold green]"
-            symbol_b = "[yellow]◎[/yellow]"
-            drive_b_label = "[bold yellow]B[/bold yellow]"
+            symbol_a = "[bold green]✅[/bold green]"
+            drive_a_label = "[bold blue]A[/bold blue]"
+            symbol_b = "[red]❌[/red]"
+            drive_b_label = "[bold blue]B[/bold blue]"
         else:
-            symbol_a = "[yellow]◎[/yellow]"
-            drive_a_label = "[bold yellow]A[/bold yellow]"
-            symbol_b = "[bold green]◉[/bold green]"
-            drive_b_label = "[bold green]B[/bold green]"
+            symbol_a = "[red]❌[/red]"
+            drive_a_label = "[bold blue]A[/bold blue]"
+            symbol_b = "[bold green]✅[/bold green]"
+            drive_b_label = "[bold blue]B[/bold blue]"
         
         # Procesar disco A
         if drive_a:
@@ -1081,7 +1081,7 @@ class LegacyConfigManager:
         
         # Guardar emulador
         if emulator:
-            valid_emulators = ["RetroVirtualMachine", "CPCEmu", "M4Board"]
+            valid_emulators = ["RetroVirtualMachine", "M4Board"]
             if emulator in valid_emulators:
                 self.drive_manager.config.set("emulator", "default", emulator)
             else:

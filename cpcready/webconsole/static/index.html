@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPCReady Web Console</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Panel superior: Output -->
+        <div class="output-panel" id="output">
+            <!-- Aquí se mostrará la salida de los comandos -->
+        </div>
+        
+        <!-- Panel inferior: Input -->
+        <div class="input-panel">
+            <div class="prompt-line">
+                <span class="prompt-path" id="prompt-path">~</span>
+                <span class="prompt-symbol">cpc❯</span>
+                <input type="text" 
+                       id="command-input" 
+                       class="command-input" 
+                       autocomplete="off" 
+                       spellcheck="false"
+                       placeholder="Escribe un comando...">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Status indicator -->
+    <div class="status-indicator" id="status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connecting...</span>
+    </div>
+    
+    <script src="/static/app.js"></script>
+</body>
+</html>
