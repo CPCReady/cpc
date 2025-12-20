@@ -14,8 +14,8 @@
 
 import click
 from cpcready.pydsk import DSK, DSKError
-from cpcready.utils.click_custom import CustomGroup
+from cpcready.utils.click_custom import CustomGroup, RichGroup
 
-@click.group(cls=CustomGroup)
+@click.group(cls=RichGroup)
 def cat_group():
     pass

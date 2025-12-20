@@ -16,7 +16,7 @@ import click
 from pathlib import Path
 import shutil
 from cpcready.utils import console, system, DriveManager, SystemCPM, cassetteManager
-from cpcready.utils.click_custom import CustomCommand, CustomGroup
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup, RichGroup, RichCommand
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
 from cpcready.utils.update import show_update_notification
@@ -35,10 +35,21 @@ console = Console()
 
    
 @add_version_option_to_group
-@click.group(cls=CustomGroup, help="Create or manage virtual discs.", invoke_without_command=True, show_banner=True)
+@click.group(cls=RichGroup, help="Create or manage virtual discs.", invoke_without_command=True)
 @click.pass_context
 def disc(ctx):
-    """Select storage for CPC Ready session."""
+    """
+    Select disc storage for the CPCReady session.
+
+    This command sets the storage type to disc for the current session. All disc-related operations will use this setting.
+
+    Examples:
+        cpc disc           # Select disc storage for session
+
+    Notes:
+        - Use this before working with virtual discs (DSK files).
+        - If no subcommand is given, only the storage type is set.
+    """
     # Mostrar notificación de actualización si la hay
     show_update_notification()
     
@@ -50,13 +61,29 @@ def disc(ctx):
         ok("'disc' Selected for CPCReady session.")
         blank_line(1)
 
-@disc.command(cls=CustomCommand)
+@disc.command(cls=RichCommand)
 @click.argument("disc_name", required=True)
 @click.argument("format", required=False, default="DATA", type=click.Choice(["DATA", "VENDOR", "SYSTEM"]))
 @click.option("-A", "--drive-a", is_flag=True, help="Insert disc into drive A")
 @click.option("-B", "--drive-b", is_flag=True, help="Insert disc into drive B")
 def new(disc_name, format, drive_a, drive_b):
-    """Create a new virtual disc or insert existing disc into drive.
+    """
+    Create a new virtual disc or insert an existing disc into a drive.
+
+    Arguments:
+        disc_name : Name of the disc file to create or insert.
+        format    : Disc format (DATA, VENDOR, SYSTEM). Default: DATA.
+        -A        : Insert disc into drive A
+        -B        : Insert disc into drive B
+
+    Examples:
+        cpc disc new mydisc.dsk DATA -A      # Create DATA format disc and insert into drive A
+        cpc disc new game.dsk -B             # Insert existing disc into drive B
+
+    Notes:
+        - Only one drive can be specified at a time.
+        - If the disc already exists, it will not be recreated.
+        - The drive table is shown after insertion.
     """
     # Test step by step
     drive_manager = DriveManager()
@@ -89,10 +116,7 @@ def new(disc_name, format, drive_a, drive_b):
     
     if disc_path.exists():
         warn(f"disc '{disc_path.name}' exists not creating new one.")
-        # console.print(f"   [blue]File:[/blue] [yellow]{disc_path.name}[/yellow]")
-        # console.print(f"   [blue]Format:[/blue] [yellow]{format}[/yellow]")
-        # console.print(f"   [blue]Capacity:[/blue] [yellow]180 KB[/yellow]")
-        # console.print(f"   [blue]Free space:[/blue] [yellow]178 KB[/yellow]")
+
         blank_line(1)
         if drive_a or drive_b:
             drive_manager.drive_table()
@@ -131,12 +155,30 @@ def new(disc_name, format, drive_a, drive_b):
             drive_manager.drive_table()
         return
 
-@disc.command(cls=CustomCommand)
+@disc.command(cls=RichCommand)
 @click.argument("disc_name", required=False)
 @click.option("-A", "--drive-a", is_flag=True, help="Show info for disc in drive A")
 @click.option("-B", "--drive-b", is_flag=True, help="Show info for disc in drive B")
 def info(disc_name, drive_a, drive_b):
-    """Show detailed information about a disc file."""
+    """
+    Show detailed information about a disc file or the disc inserted in a drive.
+
+    Arguments:
+        disc_name : Name of the disc file (optional if using -A or -B)
+        -A        : Show info for disc in drive A
+        -B        : Show info for disc in drive B
+
+    Examples:
+        cpc disc info mydisc.dsk         # Show info for specific disc file
+        cpc disc info -A                 # Show info for disc in drive A
+        cpc disc info -B                 # Show info for disc in drive B
+
+    Notes:
+        - Only one drive can be specified at a time.
+        - Shows statistics, file list, and usage details.
+        - If no disc is inserted, an error is shown.
+        - If neither -A nor -B is specified, the default drive (cpc A or cpc B) currently defined in CPCReady will be used.
+        """
     drive_manager = DriveManager()
     dsk = DSK()
     
@@ -340,12 +382,28 @@ def info(disc_name, drive_a, drive_b):
     
     dsk.list_files(simple=False, use_rich=True, show_title=False)
 
-@disc.command(cls=CustomCommand)
+@disc.command(cls=RichCommand)
 @click.argument("disc_name", required=True)
 @click.option("-A", "--drive-a", is_flag=True, help="Show info for disc in drive A")
 @click.option("-B", "--drive-b", is_flag=True, help="Show info for disc in drive B")
 def insert(disc_name, drive_a, drive_b):
-    """Insert existing disc into specified drive."""
+    """
+    Insert an existing disc file into the specified drive.
+
+    Arguments:
+        disc_name : Name of the disc file to insert.
+        -A        : Insert into drive A
+        -B        : Insert into drive B
+
+    Examples:
+        cpc disc insert mydisc.dsk -A    # Insert disc into drive A
+        cpc disc insert game.dsk -B      # Insert disc into drive B
+
+    Notes:
+        - Only one drive can be specified at a time.
+        - The disc file must exist.
+        - The drive table is shown after insertion.
+    """
     drive_manager = DriveManager()
     
     # Validar que solo se especifique una opción
@@ -431,11 +489,26 @@ def insert(disc_name, drive_a, drive_b):
         drive_manager.drive_table()
     blank_line(1)
     
-@disc.command(cls=CustomCommand)
+@disc.command(cls=RichCommand)
 @click.option("-A", "--drive-a", is_flag=True, help="Show info for disc in drive A")
 @click.option("-B", "--drive-b", is_flag=True, help="Show info for disc in drive B")
 def eject(drive_a, drive_b):
-    """Eject disc from drive selected or specified."""
+    """
+    Eject the disc from the selected or specified drive.
+
+    Arguments:
+        -A : Eject disc from drive A
+        -B : Eject disc from drive B
+
+    Examples:
+        cpc disc eject -A        # Eject disc from drive A
+        cpc disc eject -B        # Eject disc from drive B
+        cpc disc eject           # Eject disc from currently selected drive (Defined executed cpc A or cpc B)
+
+    Notes:
+        - Only one drive can be specified at a time.
+        - The drive table is shown after ejection.
+    """
     drive_manager = DriveManager()
     disc_select = drive_manager.read_drive_select().upper()
     # Validar que solo se especifique una opción

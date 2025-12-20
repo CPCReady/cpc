@@ -16,12 +16,12 @@
 
 import click
 import questionary
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 from cpcready.utils.console import info2, ok, warn, blank_line
 from cpcready.utils.toml_config import ConfigManager
 
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 def emu():
     """Configure the emulator to use.
     

@@ -99,7 +99,7 @@ def show_settings_form():
     return resultado
 
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 def settings():
     """Configure CPCReady options in terminal UI"""
     try:

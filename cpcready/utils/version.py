@@ -23,29 +23,69 @@ import click
 from functools import wraps
 from cpcready import __version__, __author__, __license__
 from cpcready.utils.console import message, blank_line,warn
+from rich.panel import Panel
 from rich import print as rprint
 
 def show_banner():
     """Display ASCII art banner."""
     from rich.console import Console
     console = Console()
-    blank_line()
-    console.print("▞▀▖▛▀▖▞▀▖▛▀▖        ▌   ", style="bold yellow")
-    console.print("▌  ▙▄▘▌  ▙▄▘▞▀▖▝▀▖▞▀▌▌ ▌", style="bold yellow")
-    console.print("▌ ▖▌  ▌ ▖▌▚ ▛▀ ▞▀▌▌ ▌▚▄▌", style="bold yellow")
-    console.print("▝▀ ▘  ▝▀ ▘ ▘▝▀▘▝▀▘▝▀▘▗▄▘", style="bold yellow")
-    console.print(f"CLI Toolchain v{__version__}", style="yellow", highlight=False)
-    console.print(f"Copyright (c) 2025 {__author__}", style="yellow", highlight=False)
-    console.print(f"License: {__license__}", style="yellow", highlight=False)
-    console.print("Repository: https://github.com/CPCReady/cpc", style="yellow")
-    console.print("Issue Tracker: https://github.com/CPCReady/cpc/issues", style="yellow")
-    console.print("Docs: https://cpcready.github.io/docs", style="yellow")
-    blank_line()
+    console.print(get_banner_string(), end='')
+
+def get_banner_string():
+    """Capture ASCII art banner as string."""
+    from rich.console import Console
+    import io
+    
+    sio = io.StringIO()
+    console = Console(file=sio, force_terminal=True, width=81) 
+    # Width 80 u otro para asegurar que no haga wrap raro dentro del panelç
+    TextBanner=f"""
+▞▀▖▛▀▖▞▀▖▛▀▖        ▌                              
+▌  ▙▄▘▌  ▙▄▘▞▀▖▝▀▖▞▀▌▌ ▌                           
+▌ ▖▌  ▌ ▖▌▚ ▛▀ ▞▀▌▌ ▌▚▄▌                           
+▝▀ ▘  ▝▀ ▘ ▘▝▀▘▝▀▘▝▀▘▗▄▘  
+CLI Toolchain v{__version__}                        
+Copyright (c) 2025 {__author__}                        
+License: {__license__}
+    """
+
+
+    
+    TextInfo = """
+Repository:https://github.com/CPCReady/cpc
+Issue Tracker:https://github.com/CPCReady/cpc/issues
+Docs:https://cpcready.github.io/docs
+    """
+    console.clear()
+    from rich.text import Text
+    panel = Panel(Text(TextBanner, style="yellow"), border_style="yellow", style="yellow", width=81)
+    panel_info = Panel(Text(TextInfo, style="yellow"), border_style="yellow", style="yellow", width=81)
+    console.print(panel)
+    # console.print(panel_info)
+    
+    
+    # console.print(panel)
+    # console.print("\n")
+    # console.print("▞▀▖▛▀▖▞▀▖▛▀▖        ▌                              ", style="bold yellow")
+    # console.print("▌  ▙▄▘▌  ▙▄▘▞▀▖▝▀▖▞▀▌▌ ▌                           ", style="bold yellow")
+    # console.print("▌ ▖▌  ▌ ▖▌▚ ▛▀ ▞▀▌▌ ▌▚▄▌                           ", style="bold yellow")
+    # console.print("▝▀ ▘  ▝▀ ▘ ▘▝▀▘▝▀▘▝▀▘▗▄▘                           ", style="bold yellow")
+    # console.print(f"CLI Toolchain v{__version__}                        ", style="yellow", highlight=False)
+    # console.print(f"Copyright (c) 2025 {__author__}                        ", style="yellow", highlight=False)
+    # console.print(f"License: {__license__}                        ", style="yellow", highlight=False)
+    # console.print("Repository: https://github.com/CPCReady/cpc                        ", style="yellow")
+    # console.print("Issue Tracker: https://github.com/CPCReady/cpc/issues                        ", style="yellow")
+    # console.print("Docs: https://cpcready.github.io/docs                        ", style="yellow")
+    
+    return sio.getvalue()
 
 
 def show_version_info():
     """Display version information."""
-    show_banner()
+    print("\n")  # Blank line before version info
+    print(get_banner_string(), end='')
+    print()  # Blank line after version info
 
 
 def version_option_handler(ctx, param, value):

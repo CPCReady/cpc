@@ -16,7 +16,7 @@ import click
 from pathlib import Path
 import shutil
 from cpcready.utils import console, system, DriveManager, SystemCPM,cassetteManager
-from cpcready.utils.click_custom import CustomCommand, CustomGroup
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
 from cpcready.pydsk import DSK
@@ -26,12 +26,38 @@ from rich.panel import Panel
 from rich.syntax import Syntax
 console = Console()
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.argument("file_name", required=True)
-@click.option("-A", "--drive-a", is_flag=True, help="Insert disc into drive A")
-@click.option("-B", "--drive-b", is_flag=True, help="Insert disc into drive B")
+@click.option("-A", "--drive-a", is_flag=True, help="List BASIC file from virtual disc in drive A")
+@click.option("-B", "--drive-b", is_flag=True, help="List BASIC file from virtual disc in drive B")
 def list(file_name, drive_a, drive_b):
-    """List BASIC file from virtual disc."""
+    """
+    List the contents of a BASIC file from a virtual disc (DSK image) in CPCReady.
+
+    This command displays the listing of a BASIC program stored on a virtual disc (A/B). The file must be a valid BASIC file; binary and screen files cannot be listed.
+
+    Arguments:
+        file_name : Name of the BASIC file to list (e.g., PROG.BAS)
+
+    Options:
+        -A, --drive-a : List BASIC file from virtual disc in drive A
+        -B, --drive-b : List BASIC file from virtual disc in drive B
+
+    Behavior:
+        - If neither -A nor -B is specified, the default drive (cpc A or cpc B) currently defined in CPCReady will be used.
+        - Only valid BASIC files can be listed. Binary and screen files are not supported.
+        - The file must exist on the disk of the selected drive and for the current user number.
+
+    Examples:
+        cpc list PROG.BAS -A      # List BASIC file from drive A
+        cpc list GAME.BAS -B      # List BASIC file from drive B
+        cpc list DEMO.BAS         # List BASIC file from currently selected drive (Defined executed cpc A or cpc B)
+
+    Notes:
+        - If the file is not a valid BASIC program, an error will be shown.
+        - The listing is displayed with syntax highlighting and line numbers.
+        - After listing, the panel will show the file contents for review.
+    """
     # Obtener el nombre del disco usando DriveManager
     drive_manager = DriveManager()
     system_cpm = SystemCPM()

@@ -15,17 +15,23 @@
 import os
 import click
 from cpcready.utils.manager import SystemCPM
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 from cpcready.utils.console import ok, error, blank_line
 from cpcready.utils.toml_config import ConfigManager
 
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.argument("user_number", type=click.IntRange(0, 15), required=False)
 def user(user_number):
-    """Set user number (0-15) for current session.
-    
+    """
+    Set user number (0-15) for current session.
+
     If no user_number is provided, displays the current user number.
+
+    Examples:
+        cpc user 0        # Set user to 0
+        cpc user 7        # Set user to 7
+        cpc user          # Show current user
     """
     system_cpm = SystemCPM()
     config = ConfigManager()

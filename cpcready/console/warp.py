@@ -24,7 +24,7 @@ from rich.style import Style
 
 from cpcready.utils.toml_config import ConfigManager
 from cpcready.utils.console import console as rich_console
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 
 
 def file_exists(path: str) -> bool:

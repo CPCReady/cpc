@@ -37,14 +37,14 @@ from cpcready.console import warpconsole
 from cpcready.webconsole.cli import webconsole
 from cpcready.configweb.configweb import configweb
 from cpcready.environment.environment import env
-from cpcready.utils.click_custom import CustomGroup, CustomCommand
+from cpcready.utils.click_custom import CustomGroup, CustomCommand, RichCommand, RichGroup, RichCommand
 from cpcready.utils.console import message, blank_line
 from cpcready import __version__
 from cpcready.utils.version import add_version_option_to_group, show_version_info
 from cpcready.utils.update import show_update_notification
 
 @add_version_option_to_group
-@click.group(cls=CustomGroup, invoke_without_command=True, show_banner=True)
+@click.group(cls=RichGroup, invoke_without_command=True, show_banner=True)
 @click.pass_context
 def cli(ctx):
     """Toolchain CLI for Amstrad CPC."""
@@ -55,7 +55,7 @@ def cli(ctx):
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
 
-@cli.command(cls=CustomCommand)
+@cli.command(cls=RichCommand)
 def version():
     """Show version information."""
     show_version_info()
@@ -98,7 +98,6 @@ if __name__ == "__main__":
         'cpc': cli,
         'disc': disc,
         'tape': tape,
-        'drive': drive,
         'catcpc': cat,
         'user': user,
         'save': save,

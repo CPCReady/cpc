@@ -14,15 +14,27 @@
 
 import click
 from cpcready.utils import SystemCPM
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 from cpcready.utils.console import ok, error, info2, blank_line
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.argument("model_type", required=False, type=click.Choice(['464', '664', '6128'], case_sensitive=False))
 def model(model_type):
-    """Set or show current CPC model.
-    
-    Supported models: 464, 664, 6128
+    """
+    Set or show the current CPC model used in CPCReady.
+
+    This command allows you to set the CPC model (464, 664, 6128) for emulation and operations. The selected model will be used by other commands, such as run, when launching the emulator.
+
+    Arguments:
+        model_type : Model to set (464, 664, 6128). If omitted, shows the current model.
+
+    Examples:
+        cpc model 6128      # Set CPC model to 6128
+        cpc model           # Show current CPC model
+
+    Notes:
+        - The defined model here is used by the run command to select the CPC type in the emulator.
+        - Changing the model affects emulation and compatibility with some disk/tape images.
     """
     system_cpm = SystemCPM()
     

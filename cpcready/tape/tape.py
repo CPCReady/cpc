@@ -17,7 +17,7 @@ import click
 from pathlib import Path
 from cpcready.utils import console, system
 from cpcready.utils import console, system, DriveManager, SystemCPM, cassetteManager
-from cpcready.utils.click_custom import CustomCommand, CustomGroup, RichGroup
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup, RichGroup, RichCommand
 from cpcready.utils.console import ok, error, warn, blank_line
 from cpcready.utils.version import add_version_option_to_group
 from cpcready.utils.update import show_update_notification
@@ -38,10 +38,19 @@ def aux_int(value_str):
     return int(value_str)
 
 @add_version_option_to_group
-@click.group(cls=RichGroup, help="Create or manage virtual tapes (CDT).", invoke_without_command=True, show_banner=True)
+@click.group(cls=RichGroup, invoke_without_command=True, show_banner=False)
 @click.pass_context
 def tape(ctx):
-    """Manage tape images (CDT/TZX) for CPC Ready session."""
+    """
+    Manage tape images (CDT/TZX) for CPC Ready session.
+
+        Examples:
+            cpc tape new mytape.cdt         # Create a new tape image
+            cpc tape info mytape.cdt        # Show info about a tape
+            cpc tape cat mytape.cdt         # List blocks in a tape
+            cpc tape add mytape.cdt file.bin --type BIN --load 0x1000 --exec 0x1000
+            cpc tape check mytape.cdt       # Verify tape integrity
+        """
     # Mostrar notificación de actualización si la hay
     show_update_notification()
 
@@ -52,7 +61,7 @@ def tape(ctx):
         ok("'tape' Selected for CPCReady session.")
         blank_line(1)
 
-@tape.command(cls=CustomCommand)
+@tape.command(cls=RichCommand)
 @click.argument("tape_name", required=True)
 def new(tape_name):
     """Create a new empty tape image (CDT)."""
@@ -91,7 +100,7 @@ def new(tape_name):
     except Exception as e:
         error(f"Error creating tape: {e}")
 
-@tape.command(cls=CustomCommand)
+@tape.command(cls=RichCommand)
 @click.argument("tape_name", required=True)
 def info(tape_name):
     """Show detailed information about a tape file."""
@@ -126,7 +135,7 @@ def info(tape_name):
     except Exception as e:
         error(f"Error reading tape: {e}")
 
-@tape.command(cls=CustomCommand)
+@tape.command(cls=RichCommand)
 @click.argument("tape_name", required=True)
 def cat(tape_name):
     """List blocks and structure of the tape."""
@@ -135,7 +144,7 @@ def cat(tape_name):
     ctx = click.get_current_context()
     ctx.invoke(info, tape_name=tape_name)
         
-@tape.command(cls=CustomCommand)
+@tape.command(cls=RichCommand)
 @click.argument("tape_name", required=True)
 def check(tape_name):
     """Verify CDT tape format integrity."""
@@ -157,7 +166,7 @@ def check(tape_name):
     except Exception as e:
         error(f"Tape verification FAILED: {e}")
 
-@tape.command(cls=CustomCommand)
+@tape.command(cls=RichCommand)
 @click.argument("tape_name", required=True)
 @click.argument("input_file", required=True, type=click.Path(exists=True))
 @click.option("--speed", type=click.Choice(['1000', '2000']), default='2000', help="Baud rate (def: 2000).")

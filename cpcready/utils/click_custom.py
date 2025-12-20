@@ -20,27 +20,34 @@ class FormattedStderr:
     """Wrapper for stderr that adds formatting to Click error messages"""
     def __init__(self, original_stderr):
         self.original_stderr = original_stderr
-        self.buffer = []
-        self.in_error_sequence = False
+        self.error_started = False
+        self.error_ended = False
     
     def write(self, text):
         if isinstance(text, str):
-            # Detectar inicio de secuencia de error
-            if text.startswith('Usage:') and not self.in_error_sequence:
-                self.in_error_sequence = True
+            # Si empieza con "Usage:", es el inicio del mensaje de error
+            if text.startswith('Usage:') and not self.error_started:
+                self.error_started = True
                 self.original_stderr.write('\n')  # Línea en blanco antes
+                # Escribir en rojo
+                self.original_stderr.write('\033[91m')  # Color rojo
                 self.original_stderr.write(text)
                 return len(text)
-            elif 'Error:' in text and self.in_error_sequence:
+            
+            # Si estamos en un error, seguir escribiendo en rojo
+            if self.error_started and not self.error_ended:
                 self.original_stderr.write(text)
-                self.original_stderr.write('\n')  # Línea en blanco después
-                self.in_error_sequence = False
+                
+                # Si encontramos la línea con "Error:", es el final
+                if 'Error:' in text:
+                    self.error_ended = True
+                    self.original_stderr.write('\033[0m')  # Reset color
+                    self.original_stderr.write('\n')  # Línea en blanco después
+                
                 return len(text)
-            else:
-                self.original_stderr.write(text)
-                return len(text)
-        else:
-            return self.original_stderr.write(text)
+        
+        # Pasar todo lo demás directamente
+        return self.original_stderr.write(text)
     
     def flush(self):
         return self.original_stderr.flush()
@@ -88,10 +95,236 @@ class CustomGroup(click.Group):
         kwargs.setdefault('cls', CustomCommand)
         return super().command(*args, **kwargs)
 
+def format_as_rich_table(items, headers, header_style="bold bright_yellow", border_style="yellow", col_styles=None, col_widths=None):
+    """
+    Helper function to format a list of items (tuples) as a Rich table.
+    items: list of tuples (col1, col2)
+    headers: tuple of (header1, header2)
+    col_widths: tuple of (width1, width2) or None
+    """
+    if not items:
+        return ""
+
+    from rich.console import Console
+    from rich.table import Table
+    from rich import box
+    import io
+
+    table = Table(
+        box=box.ROUNDED, 
+        show_header=True, 
+        header_style=header_style,
+        border_style=border_style, 
+        expand=False,
+        padding=(0, 2),
+        show_lines=False
+    )
+    
+    col1_style = col_styles[0] if col_styles and len(col_styles) > 0 else "bold green"
+    col2_style = col_styles[1] if col_styles and len(col_styles) > 1 else "white"
+    
+    width1 = col_widths[0] if col_widths and len(col_widths) > 0 else None
+    width2 = col_widths[1] if col_widths and len(col_widths) > 1 else None
+
+    table.add_column(headers[0], style=col1_style, width=width1)
+    table.add_column(headers[1], style=col2_style, width=width2)
+
+    for col1, col2 in items:
+        table.add_row(col1, col2)
+
+    sio = io.StringIO()
+    console_temp = Console(file=sio, force_terminal=True)
+    console_temp.print(table)
+    return sio.getvalue()
+
+def print_rich_panel_help(cmd, ctx):
+    """Auxiliar para imprimir Usage y Help en un Panel Rich"""
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.text import Text
+    from rich import box
+    import io
+
+    # Construir Usage
+    usage_pieces = cmd.collect_usage_pieces(ctx)
+    usage_text = f"Usage: cpc {cmd.name} {' '.join(usage_pieces)}"
+    
+    # Construir Help text
+    help_text = cmd.help or ""
+    
+    # Combinar en un Panel
+    full_text = f"[bold white]{usage_text}[/bold white]\n\n[white]{help_text}[/white]"
+    
+    # Ancho calculado: 20 (col1) + 60 (col2) + 4 (padding interno) + 2 (bordes externos) + 1 (separador) = 87 aprox
+    # Ajustamos a 86/88 para que coincida visualmente con las tablas que tienen padding (0,2)
+    # Tabla: Border(1) + Pad(2) + 20 + Pad(2) + Border(1) + Pad(2) + 60 + Pad(2) + Border(1)
+    # Total chars: 1+2+20+2+1+2+60+2+1 = 91 chars
+    panel_width = 81
+    
+    panel = Panel(
+        full_text,
+        box=box.ROUNDED,
+        border_style="bright_magenta",
+        width=panel_width,
+        padding=(1, 2)
+    )
+    
+    sio = io.StringIO()
+    console = Console(file=sio, force_terminal=True)
+    console.print(panel)
+    return sio.getvalue()
+
+def print_rich_banner_panel():
+    """Auxiliar para imprimir Banner en un Panel Rich"""
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich import box
+    from cpcready.utils.version import get_banner_string
+    import io
+
+    banner_text = get_banner_string()
+
+    panel_width = 81
+    
+    panel = Panel(
+        banner_text,
+        box=box.ROUNDED,
+        border_style="bright_yellow",
+        width=panel_width,
+        padding=(1, 2)
+    )
+    
+    sio = io.StringIO()
+    console = Console(file=sio, force_terminal=True)
+    console.print(panel)
+    return sio.getvalue()
+
+class RichCommand(CustomCommand):
+    """
+    Comando Click que muestra las opciones usando una tabla Rich y Panel de ayuda.
+    """
+    def get_help(self, ctx):
+        """
+        Sobreescribimos get_help para evitar la lógica del padre CustomCommand
+        que imprime el banner en crudo. Aquí controlamos todo via format_help.
+        """
+        # Llamar directamente a la implementación base de click.Command
+        formatter = ctx.make_formatter()
+        self.format_help(ctx, formatter)
+        return formatter.getvalue()
+
+    def format_help(self, ctx, formatter):
+        """
+        Sobreescribe completamente el formato de ayuda.
+        """
+        # 1. Banner sin Panel (solo el texto formateado)
+        if self.show_banner:
+            try:
+                from cpcready.utils.version import get_banner_string
+                banner_str = get_banner_string()
+                formatter.write(banner_str)
+            except ImportError:
+                pass
+        
+        # 2. Panel con Usage y Descripción
+        # No usamos formatter.write_usage/heading sino que inyectamos el panel directo
+        panel_str = print_rich_panel_help(self, ctx)
+        formatter.write(f"\n{panel_str}")
+
+        # 3. Opciones (esto llama a nuestro format_options que usa tablas)
+        self.format_options(ctx, formatter)
+
+        # 4. Epilog
+        self.format_epilog(ctx, formatter)
+
+    def format_options(self, ctx, formatter):
+        """
+        Sobreescribe el formateo de opciones para usar una tabla Rich.
+        """
+        opts = []
+        for param in self.get_params(ctx):
+            rv = param.get_help_record(ctx)
+            if rv is not None:
+                opts.append(rv)
+
+        if opts:
+            table_str = format_as_rich_table(
+                opts, 
+                ("Options", "Description"),
+                header_style="bold bright_yellow",
+                border_style="yellow",
+                col_styles=("bold cyan", "white"),
+                col_widths=(15, 55)
+            )
+            formatter.write(f"\n{table_str}")
+        else:
+             super().format_options(ctx, formatter)
+
 class RichGroup(CustomGroup):
     """
-    Grupo de comandos Click que muestra la lista de comandos usando una tabla Rich.
+    Grupo de comandos Click que muestra la lista de comandos y opciones usando tablas y paneles Rich.
     """
+    def command(self, *args, **kwargs):
+        """Override command to use RichCommand by default"""
+        kwargs.setdefault('cls', RichCommand)
+        return super().command(*args, **kwargs)
+
+    def get_help(self, ctx):
+        """
+        Sobreescribimos get_help para evitar la lógica del padre CustomGroup
+        que imprime el banner en crudo. Aquí controlamos todo via format_help.
+        """
+        # Llamar directamente a la implementación base de click.Group
+        formatter = ctx.make_formatter()
+        self.format_help(ctx, formatter)
+        return formatter.getvalue()
+
+    def format_help(self, ctx, formatter):
+        """
+        Sobreescribe completamente el formato de ayuda del grupo.
+        """
+        # 1. Banner sin Panel (solo el texto formateado)
+        if self.show_banner:
+            try:
+                from cpcready.utils.version import get_banner_string
+                banner_str = get_banner_string()
+                formatter.write(banner_str)
+            except ImportError:
+                pass
+        
+        # 2. Panel con Usage y Descripción
+        panel_str = print_rich_panel_help(self, ctx)
+        formatter.write(f"\n{panel_str}")
+
+        # 3. Opciones (nuestras tablas)
+        self.format_options(ctx, formatter)
+
+        # 4. Epilog
+        self.format_epilog(ctx, formatter)
+
+    def format_options(self, ctx, formatter):
+        """
+        Sobreescribe el formateo de opciones para usar una tabla Rich.
+        """
+        opts = []
+        for param in self.get_params(ctx):
+            rv = param.get_help_record(ctx)
+            if rv is not None:
+                opts.append(rv)
+
+        if opts:
+            table_str = format_as_rich_table(
+                opts, 
+                ("Options", "Description"),
+                header_style="bold bright_yellow",
+                border_style="yellow",
+                col_styles=("bold cyan", "white"),
+                col_widths=(15, 55)
+            )
+            formatter.write(f"\n{table_str}")
+        
+        self.format_commands(ctx, formatter)
+
     def format_commands(self, ctx, formatter):
         """
         Sobreescribe el formateo de comandos para usar una tabla Rich.
@@ -101,45 +334,15 @@ class RichGroup(CustomGroup):
             cmd = self.get_command(ctx, subcommand)
             if cmd is None or cmd.hidden:
                 continue
-            commands.append((subcommand, cmd))
+            commands.append((subcommand, cmd.get_short_help_str(120)))
 
         if commands:
-            # Importaciones aquí para evitar dependencias circulares si las hubiera
-            # y mantener limpio el namespace global si no se usa
-            from rich.console import Console
-            from rich.table import Table
-            from rich import box
-            from rich.style import Style
-            import io
-
-            # Preparamos la tabla
-            table = Table(
-                box=box.ROUNDED, 
-                show_header=True, 
+            table_str = format_as_rich_table(
+                commands, 
+                ("Command", "Description"),
                 header_style="bold bright_yellow",
-                border_style="yellow", 
-                expand=False,
-                padding=(0, 2),
-                show_lines=False
+                border_style="yellow",
+                col_styles=("bold green", "white"),
+                col_widths=(15, 55)
             )
-            table.add_column("Command", style="bold green")
-            table.add_column("Description", style="white")
-
-            for subcommand, cmd in commands:
-                help_text = cmd.get_short_help_str(120)
-                table.add_row(subcommand, help_text)
-
-            sio = io.StringIO()
-            # force_terminal=True para asegurar códigos de color ANSI
-            # No forzamos width para que sea 'auto' o default
-            console_temp = Console(file=sio, force_terminal=True)
-            console_temp.print(table)
-            table_str = sio.getvalue()
-
-            # Escribimos en el formatter de Click
-            # Usamos write_paragraph no, mejor write directo pero dentro de una sección para consistencia visual
-            # Aunque la tabla ya tiene su propio 'heading' visual, click añade 'Commands:'
-            # Vamos a inyectarlo "raw"
-            
-            with formatter.section('Commands'):
-                 formatter.write(f"\n{table_str}")
+            formatter.write(f"\n{table_str}")

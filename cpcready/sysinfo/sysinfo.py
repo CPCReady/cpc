@@ -15,7 +15,7 @@
 import click
 from cpcready.utils.console import error, warn, blank_line
 from cpcready.utils.manager import DriveManager, SystemCPM, cassetteManager
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 from cpcready.utils.version import add_version_option
 from cpcready.utils.update import show_update_notification
 from rich.console import Console
@@ -26,9 +26,15 @@ from rich import box
 console = Console()
 
 @add_version_option
-@click.command(cls=CustomCommand, show_banner=True)
+@click.command(cls=RichCommand, show_banner=False)
 def sysinfo():
-    """System information."""
+    """
+    Show system and drive information for the current CPCReady session.
+
+    Examples:
+        cpc sysinfo         # Show all system and drive info
+        cpc sysinfo --help  # Show this help message
+    """
     show_update_notification()
     drive_manager = DriveManager()
     System = SystemCPM()

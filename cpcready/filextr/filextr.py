@@ -17,7 +17,7 @@ from pathlib import Path
 import shutil
 import fnmatch
 from cpcready.utils import console, system, DriveManager, SystemCPM,cassetteManager
-from cpcready.utils.click_custom import CustomCommand, CustomGroup
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
 from rich.console import Console
@@ -26,20 +26,39 @@ from cpcready.pydsk import DSK, DSKError, DSKFileNotFoundError
 console = Console()
 import os
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.argument("files", nargs=-1, required=True)
-@click.option("-A", "--drive-a", is_flag=True, help="Use drive A")
-@click.option("-B", "--drive-b", is_flag=True, help="Use drive B")
+@click.option("-A", "--drive-a", is_flag=True, help="Extract from drive A")
+@click.option("-B", "--drive-b", is_flag=True, help="Extract from drive B")
 def filextr(files, drive_a, drive_b):
-    """Extract files from virtual disc to current directory.
-    
-    Supports multiple files and wildcards.
-    
+    """
+    Extract one or more files from a virtual disc (DSK image) to the current directory in CPCReady.
+
+    This command allows you to extract files from a virtual disc (A/B) using specific file names or wildcards. Multiple files can be extracted in a single command.
+
+    Arguments:
+        files : List of file names or wildcard patterns to extract (e.g., FILE.BIN, *.BAS, GAME.*)
+
+    Options:
+        -A, --drive-a : Extract files from drive A
+        -B, --drive-b : Extract files from drive B
+
+    Behavior:
+        - If neither -A nor -B is specified, the default drive (cpc A or cpc B) currently defined in CPCReady will be used.
+        - Wildcards (*, ?) are supported for batch extraction.
+        - All files are extracted with their AMSDOS header preserved.
+        - The files are saved in the current working directory.
+
     Examples:
-        filextr file.bin
-        filextr file1.bin file2.bas
-        filextr "*.bin"
-        filextr "GAME.*"
+        cpc filextr file.bin -A
+        cpc filextr file1.bin file2.bas -B
+        cpc filextr "*.bin"           # Extract all .BIN files from selected drive
+        cpc filextr "GAME.*"          # Extract all files starting with GAME
+
+    Notes:
+        - If a file does not exist or no files match a pattern, a warning or error will be shown.
+        - The number of successfully and failed extractions will be displayed at the end.
+        - Extracted files keep their AMSDOS header for compatibility.
     """
     # Obtener el nombre del disco usando DriveManager
     drive_manager = DriveManager()

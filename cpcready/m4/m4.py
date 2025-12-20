@@ -21,7 +21,7 @@ import sys
 import click
 import questionary
 from pathlib import Path
-from cpcready.utils.click_custom import CustomCommand, CustomGroup
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup, RichGroup
 from cpcready.utils.console import info2, ok, error, warn, blank_line
 from cpcready.utils.toml_config import ConfigManager
 from cpcready.utils.m4board import M4Board
@@ -30,7 +30,7 @@ console = Console()
 
 
 
-@click.group(cls=CustomGroup)
+@click.group(cls=RichGroup)
 def m4():
     """M4Board management commands."""
     pass

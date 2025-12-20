@@ -14,17 +14,29 @@
 
 import click
 from cpcready.utils import SystemCPM
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 from cpcready.utils.console import ok, error, info2, blank_line
 from rich.console import Console
 console = Console()
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.argument("screen_mode", required=False, type=click.Choice(['0', '1', '2'], case_sensitive=False))
 def mode(screen_mode):
-    """Set or show current CPC screen mode.
-    
-    Supported modes: 0, 1, 2
+    """
+    Set or show the current CPC screen mode in CPCReady.
+
+    This command allows you to set the CPC screen mode (0, 1, 2) for emulation and operations. The selected mode will affect how graphics and text are displayed in the emulator and some commands.
+
+    Arguments:
+        screen_mode : Mode to set (0, 1, 2). If omitted, shows the current mode.
+
+    Examples:
+        cpc mode 1      # Set CPC screen mode to 1
+        cpc mode        # Show current CPC screen mode
+
+    Notes:
+        - Supported modes: 0 (high color, low resolution), 1 (medium color/resolution), 2 (low color, high resolution).
+        - Changing the mode affects display and compatibility with some programs.
     """
     system_cpm = SystemCPM()
  

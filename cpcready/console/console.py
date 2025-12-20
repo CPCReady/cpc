@@ -27,7 +27,7 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.formatted_text import HTML
 
 from cpcready.utils.toml_config import ConfigManager
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 
 
 def get_bottom_toolbar():
@@ -214,7 +214,7 @@ def get_all_completions() -> list:
     )
 
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 def console():
     """
     Interactive console with bottom status toolbar

@@ -17,7 +17,7 @@ from pathlib import Path
 import shutil
 import fnmatch
 from cpcready.utils import console, system, DriveManager, SystemCPM, cassetteManager
-from cpcready.utils.click_custom import CustomCommand, CustomGroup
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
 from rich.console import Console
@@ -25,20 +25,38 @@ from rich.panel import Panel
 from cpcready.pydsk import DSK, DSKError, DSKFileNotFoundError, DSKFileExistsError
 console = Console()
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.argument("file_patterns", nargs=-1, required=False)
-@click.option("-A", "--drive-a", is_flag=True, help="Insert disc into drive A")
-@click.option("-B", "--drive-b", is_flag=True, help="Insert disc into drive B")
+@click.option("-A", "--drive-a", is_flag=True, help="Erase files from virtual disc in drive A")
+@click.option("-B", "--drive-b", is_flag=True, help="Erase files from virtual disc in drive B")
 def era(file_patterns, drive_a, drive_b):
-    """Erase files from virtual disc.
-    
-    Supports multiple files and wildcards.
-    
+    """
+    Erase one or more files from a virtual disc (DSK image) in CPCReady.
+
+    This command allows you to delete files from a virtual disc (A/B) using specific file names or wildcards. Multiple files can be erased in a single command.
+
+    Arguments:
+        file_patterns : List of file names or wildcard patterns to erase (e.g., FILE.BIN, *.BAS, GAME.*)
+
+    Options:
+        -A, --drive-a : Erase files from virtual disc in drive A
+        -B, --drive-b : Erase files from virtual disc in drive B
+
+    Behavior:
+        - If neither -A nor -B is specified, the default drive (cpc A or cpc B) currently defined in CPCReady will be used.
+        - Wildcards (*, ?) are supported for batch deletion.
+        - The files must exist on the disk of the selected drive.
+
     Examples:
-        era file.bin
-        era file1.bin file2.bas
-        era "*.bin"
-        era "GAME.*"
+        cpc era file.bin -A
+        cpc era file1.bin file2.bas -B
+        cpc era "*.bin"           # Erase all .BIN files from selected drive (Defined executed cpc A or cpc B)
+        cpc era "GAME.*"          # Erase all files starting with GAME
+
+    Notes:
+        - If a file does not exist or no files match a pattern, a warning or error will be shown.
+        - The number of successfully and failed deletions will be displayed at the end.
+        - After erasing, the updated file list will be displayed for review.
     """
     # Validar que se hayan proporcionado patrones de archivo
     if not file_patterns:

@@ -19,10 +19,10 @@ import time
 import webbrowser
 import os
 from pathlib import Path
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 from cpcready.utils.console import ok, error, blank_line, info2
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 def configweb():
     """Configure CPCReady options via web interface (Streamlit)."""
     try:

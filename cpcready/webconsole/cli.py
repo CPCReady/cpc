@@ -6,11 +6,11 @@ import click
 import webbrowser
 import time
 import threading
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 from cpcready.utils.console import ok, error, blank_line, info2
 
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.option('--port', default=6128, help='Puerto del servidor web')
 @click.option('--no-browser', is_flag=True, help='No abrir navegador automáticamente')
 def webconsole(port, no_browser):

@@ -28,7 +28,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich import box
-from cpcready.utils.click_custom import CustomCommand, CustomGroup
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup, RichGroup, RichCommand
 from cpcready.utils.console import ok, warn, error, blank_line
 from cpcready.utils.version import add_version_option_to_group
 from cpcready.utils.update import show_update_notification
@@ -49,11 +49,27 @@ AVAILABLE_COMMANDS = [
 
 
 @add_version_option_to_group
-@click.group(cls=CustomGroup, help="Create and manage CPCReady project environments.", 
-             invoke_without_command=True, show_banner=True)
+@click.group(cls=RichGroup, help="Create and manage CPCReady project environments.", 
+             invoke_without_command=True, show_banner=False)
 @click.pass_context
 def env(ctx):
-    """CPCReady Environment (env) - Project environment manager."""
+    """
+    CPCReady Environment (env) - Project environment manager.
+
+    This group of commands allows you to create, view, and remove local environments for CPCReady projects. Environments provide wrapper scripts so you can run cpc commands without the 'cpc' prefix, similar to Python's virtualenv.
+
+    Compatible with Windows, Linux, and macOS.
+
+    Examples:
+        cpc env create         # Create environment in current directory
+        cpc env info           # Show info for current environment
+        cpc env remove         # Remove environment from current directory
+
+    Notes:
+        - Wrapper scripts are created for all main cpc commands.
+        - Use 'activate' and 'deactivate' scripts to manage environment activation.
+        - The environment does not affect Python virtualenvs or system packages.
+    """
     show_update_notification()
     
     if ctx.invoked_subcommand is None:
@@ -71,7 +87,7 @@ def _create_windows_scripts(bin_dir, project_dir, project_name):
 REM CPCReady Environment for '{cmd}' command
 REM Auto-generated - do not edit manually
 
-cpc-{cmd} %*
+cpc {cmd} %*
 """
         bat_script.write_text(bat_content)
         created_scripts.append(f"{cmd}.bat")
@@ -252,18 +268,27 @@ deactivate() {{
     return created_scripts
 
 
-@env.command(cls=CustomCommand)
+@env.command(cls=RichCommand)
 @click.option("--force", is_flag=True, help="Overwrite existing environment")
 def create(force):
-    """Create a new CPCReady project environment.
-    
-    This creates a local 'bin' directory with wrapper scripts for all cpc commands,
-    allowing you to use them without the 'cpc' prefix.
-    
+    """
+    Create a new CPCReady project environment in the current directory.
+
+    This command sets up a local 'bin' directory with wrapper scripts for all cpc commands, allowing you to use them without the 'cpc' prefix.
+
     Compatible with Windows (CMD/PowerShell), Linux and macOS.
-    
+
+    Arguments:
+        --force : Overwrite existing environment if present.
+
     Examples:
-        cpc env create          # Create in current directory
+        cpc env create           # Create environment in current directory
+        cpc env create --force   # Overwrite if already exists
+
+    Notes:
+        - Wrapper scripts are created for all main cpc commands.
+        - Use 'activate' and 'deactivate' scripts to manage environment activation.
+        - The environment does not affect Python virtualenvs or system packages.
     """
     # Determinar el directorio del proyecto
     name = ".cpcready"  # Nombre del directorio por defecto
@@ -347,13 +372,21 @@ __pycache__/
         blank_line(1)
 
 
-@env.command(cls=CustomCommand)
+@env.command(cls=RichCommand)
 def info():
-    """Show information about the current wrapper environment.
-    
+    """
+    Show information about the current CPCReady environment.
+
+    This command displays details about the wrapper environment in the current directory, including status, platform, location, and available scripts.
+
     Examples:
-        cpc  info          # Info for current directory
-        cpc env info myproject  # Info for 'myproject' directory
+        cpc env info           # Info for current environment
+        cpc env info myproject # Info for 'myproject' directory
+
+    Notes:
+        - Shows whether the environment is active or inactive.
+        - Lists the number of wrapper scripts available.
+        - Use 'activate' and 'deactivate' scripts to manage environment activation.
     """
     # Determinar el directorio del proyecto
     name = ".cpcready"  # Nombre del directorio por defecto
@@ -404,17 +437,26 @@ def info():
     blank_line(1)
 
 
-@env.command(cls=CustomCommand)
+@env.command(cls=RichCommand)
 @click.argument("name", required=False, default=".")
 @click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
 def remove(yes):
-    """Remove a wrapper environment.
-    
-    This deletes the 'bin' directory and all wrapper scripts.
-    
+    """
+    Remove a CPCReady wrapper environment from the current directory.
+
+    This command deletes the 'bin' directory and all wrapper scripts for the environment.
+
+    Arguments:
+        --yes, -y : Skip confirmation prompt.
+
     Examples:
-        cpc env remove          # Remove from current directory
-        cpc env remove myproject  # Remove from 'myproject' directory
+        cpc env remove           # Remove environment from current directory
+        cpc env remove myproject # Remove environment from 'myproject' directory
+        cpc env remove --yes     # Remove without confirmation
+
+    Notes:
+        - If the environment is active, you should deactivate it first.
+        - The environment removal does not affect Python virtualenvs or system packages.
     """
     # Determinar el directorio del proyecto
     name = ".cpcready"  # Nombre del directorio por defecto

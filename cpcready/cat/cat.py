@@ -16,7 +16,7 @@ import click
 from pathlib import Path
 import shutil
 from cpcready.utils import console, system, DriveManager,cassetteManager
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup, RichGroup, RichCommand
 from cpcready.utils.console import info2, ok, debug, warn, error, message, blank_line, banner
 from cpcready.utils.version import add_version_option
 from cpcready.utils.update import show_update_notification
@@ -27,12 +27,30 @@ from rich.panel import Panel
 # Crear consolas separadas para stdout y stderr
 console = Console()
 @add_version_option
-@click.command(cls=CustomCommand, show_banner=True)
+@click.command(cls=RichCommand)
 @click.option("-A", "--drive-a", is_flag=True, help="List files in the virtual disc from drive A")
 @click.option("-B", "--drive-b", is_flag=True, help="List files in the virtual disc from drive B")
 def cat(drive_a, drive_b):
-    """List files in the virtual disc.
-    If no option is selected, the selected drive is displayed.
+    """
+    List all files in the virtual disc (DSK image) for the selected drive.
+
+    This command displays the file list of the disc inserted in drive A or B, with rich formatting. If no option is selected, the currently active drive is used.
+
+    Options:
+        -A : List files from drive A
+        -B : List files from drive B
+
+    Examples:
+        cpc cat -A         # List files in disc from drive A
+        cpc cat -B         # List files in disc from drive B
+        cpc cat            # List files in disc from currently selected drive (Defined executed cpc A or cpc B)
+
+    Notes:
+        - Only one drive can be specified at a time.
+        - If no disc is inserted, an error is shown and the drive table is displayed.
+        - The file list includes deleted files and file types.
+        - Useful for quickly viewing the contents of a disc image.
+        - If neither -A nor -B is specified, the default drive (cpc A or cpc B) currently defined in CPCReady will be used.
     """
     show_update_notification()
     # estandarizamos nombre del disc

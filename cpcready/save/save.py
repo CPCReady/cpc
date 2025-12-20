@@ -19,7 +19,7 @@ from pathlib import Path
 import shutil
 import tempfile
 from cpcready.utils import console, system, DriveManager, cassetteManager, SystemCPM
-from cpcready.utils.click_custom import CustomCommand, CustomGroup
+from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
 from rich.console import Console
@@ -79,20 +79,58 @@ def is_header(ruta):
         
         return load_addr, exec_addr
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.argument("file_name", required=True)
 @click.argument("type_file", required=False, type=click.Choice(["a", "b", "p"], case_sensitive=True))
 @click.argument("load_addr", required=False)
 @click.argument("exec_addr", required=False)
-@click.option("-A", "--drive-a", is_flag=True, help="Insert disc into drive A")
-@click.option("-B", "--drive-b", is_flag=True, help="Insert disc into drive B")
+@click.option("-A", "--drive-a", is_flag=True, help="Save file to virtual disc in drive A")
+@click.option("-B", "--drive-b", is_flag=True, help="Save file to virtual disc in drive B")
 def save(file_name, type_file, load_addr, exec_addr, drive_a, drive_b):
-    """Save file to virtual tape/disc.
-    
+    """
+    Save a file to a virtual tape or disc (DSK image) in CPCReady.
+
+    This command allows you to save files in different formats to a virtual disc (A/B) or tape, automatically converting line endings to DOS format (CRLF) for compatibility.
+
     Type options:
-      - a: ASCII/Data file (no AMSDOS header)
-      - b: Binary file with AMSDOS header (requires load_addr and optional exec_addr)
-      - p: Program file with AMSDOS header (preserves existing header if present)
+        a : ASCII/Data file (no AMSDOS header)
+                - Use for plain text or BASIC files (.BAS) without AMSDOS header.
+                - Example: save myfile.bas a -A
+
+        b : Binary file with AMSDOS header
+                - Requires load_addr and optionally exec_addr.
+                - Adds AMSDOS header if missing.
+                - Example: save myfile.bin b 0x4000 0x4000 -A
+
+        p : Program file with AMSDOS header
+                - Preserves existing AMSDOS header if present.
+                - Example: save myprog.bin p -A
+
+    Arguments:
+        file_name   : Path to the file to save.
+        type_file   : File type (a, b, p). If omitted, auto-detects based on file extension/header.
+        load_addr   : (For type 'b') Load address in hex (e.g., 0x4000 or &4000).
+        exec_addr   : (For type 'b') Exec address in hex (optional).
+
+    Options:
+        -A, --drive-a   : Save to virtual disc in drive A
+        -B, --drive-b   : Save to virtual disc in drive B
+
+    Examples:
+        cpc save myfile.bas a -A
+        cpc save myfile.bin b 0x4000 0x4000 -B
+        cpc save myprog.bin p -A
+        cpc save myfile.txt        # Auto-detect type and save
+
+    Notes:
+        - If no type is specified, the command will auto-detect based on file extension and header.
+        - For binary files ('b'), load_addr is required. Exec_addr is optional (defaults to load_addr).
+        - ASCII files ('a') are saved without AMSDOS header (RAW).
+        - Program files ('p') preserve any existing AMSDOS header.
+        - The file is converted to DOS format (CRLF) before saving.
+        - After saving, the updated file list will be shown.
+        - If neither -A nor -B is specified, the default drive (cpc A or cpc B) currently defined in CPCReady will be used.
+
     """
     
     debug(f"file={file_name}, type={type_file}, load={load_addr}, exec={exec_addr}")

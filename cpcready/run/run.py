@@ -16,24 +16,48 @@
 
 import click
 from pathlib import Path
-from cpcready.utils.click_custom import CustomCommand
+from cpcready.utils.click_custom import CustomCommand, RichCommand, RichCommand
 from cpcready.utils.console import info2, error, blank_line
 from cpcready.utils.toml_config import ConfigManager
 from cpcready.utils.manager import DriveManager, cassetteManager 
 from cpcready.utils.retrovirtualmachine import RVM
 
 
-@click.command(cls=CustomCommand)
+@click.command(cls=RichCommand)
 @click.argument("file_to_run", required=False)
 @click.option("-A", "--drive-a", is_flag=True, help="Use disk from drive A")
 @click.option("-B", "--drive-b", is_flag=True, help="Use disk from drive B")
 def run(file_to_run, drive_a, drive_b):
-    """Run a file from the selected drive in RetroVirtualMachine.
-    
-    FILE_TO_RUN: Name of the file to execute from the disk (e.g., DISC, GAME.BAS)
-    
-    If -A or -B is not specified, uses the currently selected drive.
-    The file must exist in the disk of the selected drive.
+    """
+    Run a file from the selected drive in RetroVirtualMachine (RVM).
+
+    This command launches the RetroVirtualMachine emulator with the disk image from the selected drive (A/B) and optionally runs a file from that disk.
+
+    Arguments:
+        FILE_TO_RUN : Name of the file to execute from the disk (e.g., DISC, GAME.BAS). Optional. If omitted, only the emulator is launched with the disk.
+
+    Options:
+        -A, --drive-a : Use disk from drive A
+        -B, --drive-b : Use disk from drive B
+
+    Behavior:
+        - If neither -A nor -B is specified, the default drive (cpc A or cpc B) currently defined in CPCReady will be used.
+        - The file must exist on the disk of the selected drive and for the current user number.
+        - The emulator path must be configured using the emu command.
+
+    Examples:
+        cpc run GAME.BAS -A         # Run GAME.BAS from drive A in RVM
+        cpc run PROGRAM.BIN -B      # Run PROGRAM.BIN from drive B in RVM
+        cpc run                     # Launch RVM with the current disk, no file executed
+        cpc run GAME.BAS            # Run GAME.BAS from the currently selected drive (Defined executed cpc A or cpc B)
+
+    Notes:
+        - If the file does not exist on the disk, an error will be shown.
+        - The CPC model used in the emulator is the one defined with the command 'cpc model'.
+        - The CPC model and emulator path are read from the configuration file.
+        - You can change the selected drive with the drive command.
+        - The emulator version is checked before launching.
+        
     """
     
     # Cargar configuración
