@@ -36,37 +36,60 @@ def sysinfo():
         cpc sysinfo --help  # Show this help message
     """
     show_update_notification()
+    
     drive_manager = DriveManager()
+    cassete_manager = cassetteManager()
     System = SystemCPM()
-        
-    blank_line(1)
-    console.print(
-        Panel(
-            "Drive Information",
-            border_style="yellow",
-            width=22,
-            style="bold white",
-        )
-    )
     
-    drive_manager.drive_table()
-
     
-    console.print(
-        Panel(
-            "System Information",
-            border_style="yellow",
-            width=22,
-            style="bold white",
-        )
-    )
-
     emulator = drive_manager.read_emulator()
     cpc_model = System.get_model()
     screen = System.get_mode()
     ip = drive_manager.read_m4board_ip()
     user = System.get_user_number()
+    storage = System.get_storage()
+    tape = cassete_manager.get_tape()
+    
+    blank_line(1)
+    
+    console.print()
+    console.rule("Storage", style="bright_yellow", align="left")
+    console.print()
+    
+    table = Table(
+        show_header=False,
+        border_style="bold yellow",
+        box=box.ROUNDED
+    )
 
+    table.add_column("Select", style="bold cyan", no_wrap=True)
+    table.add_column("Path", style="green", width=19)
+
+    table.add_row("Select", storage)
+
+    console.print(table)
+    console.print()
+    console.rule("Cassette Details", style="bright_yellow", align="left",)
+    console.print()
+    
+    table = Table(
+        show_header=False,
+        border_style="bold yellow",
+        box=box.ROUNDED
+    )
+
+    table.add_column("Tape", style="bold cyan", no_wrap=True)
+    table.add_column("Path", style="green", width=20)
+    table.add_row("Path", tape if tape else "No cassette inserted")
+    console.print(table)
+    
+    console.print()
+    console.rule("Drive Details", style="bright_yellow", align="left")
+    console.print()
+    drive_manager.drive_table()
+    console.print()
+    console.rule("System Information", style="bright_yellow", align="left")
+    console.print()
     table = Table(
         border_style="bright_yellow",
         box=box.ROUNDED

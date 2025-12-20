@@ -104,9 +104,13 @@ def show_update_notification():
     try:
         has_update, latest_version = check_for_updates()
         if has_update:
-            print()
-            console.print(f"[yellow]New version available: v{latest_version} (current: v{__version__})[/yellow]", highlight=False)
-            console.print("[yellow]Update with: pipx upgrade cpcready[/yellow]", highlight=False)
+            from rich.panel import Panel
+            msg = (
+                f"[yellow]New version available: v{latest_version} (current: v{__version__})[/yellow]\n"
+                f"[yellow]Update with: pipx upgrade cpcready[/yellow]"
+            )
+            panel = Panel(msg, border_style="red", style="yellow", width=60)
+            console.print(panel)
     except Exception:
         # In case of any error, silently do nothing
         pass
