@@ -87,3 +87,59 @@ class CustomGroup(click.Group):
         """Override command to use CustomCommand by default"""
         kwargs.setdefault('cls', CustomCommand)
         return super().command(*args, **kwargs)
+
+class RichGroup(CustomGroup):
+    """
+    Grupo de comandos Click que muestra la lista de comandos usando una tabla Rich.
+    """
+    def format_commands(self, ctx, formatter):
+        """
+        Sobreescribe el formateo de comandos para usar una tabla Rich.
+        """
+        commands = []
+        for subcommand in self.list_commands(ctx):
+            cmd = self.get_command(ctx, subcommand)
+            if cmd is None or cmd.hidden:
+                continue
+            commands.append((subcommand, cmd))
+
+        if commands:
+            # Importaciones aquí para evitar dependencias circulares si las hubiera
+            # y mantener limpio el namespace global si no se usa
+            from rich.console import Console
+            from rich.table import Table
+            from rich import box
+            from rich.style import Style
+            import io
+
+            # Preparamos la tabla
+            table = Table(
+                box=box.ROUNDED, 
+                show_header=True, 
+                header_style="bold bright_yellow",
+                border_style="yellow", 
+                expand=False,
+                padding=(0, 2),
+                show_lines=False
+            )
+            table.add_column("Command", style="bold green")
+            table.add_column("Description", style="white")
+
+            for subcommand, cmd in commands:
+                help_text = cmd.get_short_help_str(120)
+                table.add_row(subcommand, help_text)
+
+            sio = io.StringIO()
+            # force_terminal=True para asegurar códigos de color ANSI
+            # No forzamos width para que sea 'auto' o default
+            console_temp = Console(file=sio, force_terminal=True)
+            console_temp.print(table)
+            table_str = sio.getvalue()
+
+            # Escribimos en el formatter de Click
+            # Usamos write_paragraph no, mejor write directo pero dentro de una sección para consistencia visual
+            # Aunque la tabla ya tiene su propio 'heading' visual, click añade 'Commands:'
+            # Vamos a inyectarlo "raw"
+            
+            with formatter.section('Commands'):
+                 formatter.write(f"\n{table_str}")

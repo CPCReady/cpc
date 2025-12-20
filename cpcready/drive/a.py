@@ -14,7 +14,7 @@
 
 import click
 from cpcready.utils.console import error, warn, blank_line
-from cpcready.utils.manager import DriveManager
+from cpcready.utils.manager import DriveManager, cassetteManager
 from cpcready.utils.click_custom import CustomCommand
 from cpcready.utils.version import add_version_option
 from cpcready.utils.update import show_update_notification

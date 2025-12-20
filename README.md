@@ -270,7 +270,7 @@ No es necesario ningún parámetro extra ni configuración especial: solo ejecut
 
 ## License
 
-Apache GPL 3.0- See [LICENSE.md](LICENSE.md) for details.
+GENERAL PUBLIC LICENSE 3.0- See [LICENSE.md](LICENSE.md) for details.
 
 ---
 

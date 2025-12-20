@@ -69,6 +69,9 @@ class ConfigManager:
                 "model": "6128",
                 "mode": 1,
                 "storage": "disc"
+            },
+            "cassette": {
+                "tape": ""
             }
         }
     

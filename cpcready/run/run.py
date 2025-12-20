@@ -19,7 +19,7 @@ from pathlib import Path
 from cpcready.utils.click_custom import CustomCommand
 from cpcready.utils.console import info2, error, blank_line
 from cpcready.utils.toml_config import ConfigManager
-from cpcready.utils.manager import DriveManager
+from cpcready.utils.manager import DriveManager, cassetteManager 
 from cpcready.utils.retrovirtualmachine import RVM
 
 

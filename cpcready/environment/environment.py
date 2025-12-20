@@ -42,9 +42,9 @@ IS_POSIX = platform.system() in ['Linux', 'Darwin']  # Linux o macOS
 
 # Lista de comandos disponibles para crear wrappers
 AVAILABLE_COMMANDS = [
-    'cat', 'disc', 'drive', 'emu', 'era', 'filextr',
+    'cat', 'disc', 'emu', 'era', 'filextr',
     'list', 'mode', 'model', 'ren', 'run', 'rvm', 
-    'save', 'user', 'sysinfo', 'a', 'b'
+    'save', 'user', 'sysinfo', 'a', 'b', 'tape'
 ]
 
 
@@ -52,8 +52,8 @@ AVAILABLE_COMMANDS = [
 @click.group(cls=CustomGroup, help="Create and manage CPCReady project environments.", 
              invoke_without_command=True, show_banner=True)
 @click.pass_context
-def wrapper(ctx):
-    """CPCReady Environment - Project environment manager."""
+def env(ctx):
+    """CPCReady Environment (env) - Project environment manager."""
     show_update_notification()
     
     if ctx.invoked_subcommand is None:
@@ -252,7 +252,7 @@ deactivate() {{
     return created_scripts
 
 
-@wrapper.command(cls=CustomCommand)
+@env.command(cls=CustomCommand)
 @click.option("--force", is_flag=True, help="Overwrite existing environment")
 def create(force):
     """Create a new CPCReady project environment.
@@ -263,7 +263,7 @@ def create(force):
     Compatible with Windows (CMD/PowerShell), Linux and macOS.
     
     Examples:
-        cpc environment create          # Create in current directory
+        cpc env create          # Create in current directory
     """
     # Determinar el directorio del proyecto
     name = ".cpcready"  # Nombre del directorio por defecto
@@ -281,7 +281,7 @@ def create(force):
     # Verificar si ya existe
     if bin_dir.exists() and not force:
         warn(f"Environment already exists in '{project_dir}'")
-        console.print(f"   Use --force to overwrite")
+        console.print(f"  Use --force to overwrite")
         blank_line(1)
         return
     
@@ -347,13 +347,13 @@ __pycache__/
         blank_line(1)
 
 
-@wrapper.command(cls=CustomCommand)
+@env.command(cls=CustomCommand)
 def info():
     """Show information about the current wrapper environment.
     
     Examples:
         cpc  info          # Info for current directory
-        cpc wrapper info myproject  # Info for 'myproject' directory
+        cpc env info myproject  # Info for 'myproject' directory
     """
     # Determinar el directorio del proyecto
     name = ".cpcready"  # Nombre del directorio por defecto
@@ -371,7 +371,7 @@ def info():
     # Verificar si existe el wrapper
     if not bin_dir.exists():
         error(f"No environment found in '{project_dir}'")
-        console.print("   Run 'cpc environment create' to create one")
+        console.print("   Run 'cpc env create' to create one")
         blank_line(1)
         return
     
@@ -404,7 +404,7 @@ def info():
     blank_line(1)
 
 
-@wrapper.command(cls=CustomCommand)
+@env.command(cls=CustomCommand)
 @click.argument("name", required=False, default=".")
 @click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
 def remove(yes):
@@ -413,8 +413,8 @@ def remove(yes):
     This deletes the 'bin' directory and all wrapper scripts.
     
     Examples:
-        cpc wrapper remove          # Remove from current directory
-        cpc wrapper remove myproject  # Remove from 'myproject' directory
+        cpc env remove          # Remove from current directory
+        cpc env remove myproject  # Remove from 'myproject' directory
     """
     # Determinar el directorio del proyecto
     name = ".cpcready"  # Nombre del directorio por defecto

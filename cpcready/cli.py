@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import click
-from cpcready.drive import drive,a,b
+from cpcready.drive import a,b
 from cpcready.sysinfo import sysinfo
 from cpcready.disc import disc
 from cpcready.save import save
@@ -23,6 +23,7 @@ from cpcready.era import era
 from cpcready.list import list
 from cpcready.filextr.filextr import filextr
 from cpcready.cat.cat import cat
+from cpcready.tape.tape import tape
 from cpcready.user.user import user
 from cpcready.ren.ren import ren
 from cpcready.model.model import model
@@ -35,7 +36,7 @@ from cpcready.emu.emu import emu
 from cpcready.console import warpconsole
 from cpcready.webconsole.cli import webconsole
 from cpcready.configweb.configweb import configweb
-from cpcready.wrapper.wrapper import wrapper
+from cpcready.environment.environment import env
 from cpcready.utils.click_custom import CustomGroup, CustomCommand
 from cpcready.utils.console import message, blank_line
 from cpcready import __version__
@@ -60,7 +61,7 @@ def version():
     show_version_info()
 
 # Añadir comandos al CLI principal
-cli.add_command(drive, name='drive')
+# cli.add_command(drive, name='drive')
 cli.add_command(disc)
 cli.add_command(cat)
 cli.add_command(save)
@@ -75,10 +76,11 @@ cli.add_command(run)
 cli.add_command(emu)
 cli.add_command(rvm_group)
 # cli.add_command(warpconsole)
-cli.add_command(wrapper)
+cli.add_command(env)
 cli.add_command(a)
 cli.add_command(b)
 cli.add_command(sysinfo)
+cli.add_command(tape)
 # cli.add_command(webconsole)
 # cli.add_command(configweb)
 # cli.add_command(m4_group)
@@ -95,6 +97,7 @@ if __name__ == "__main__":
     command_map = {
         'cpc': cli,
         'disc': disc,
+        'tape': tape,
         'drive': drive,
         'catcpc': cat,
         'user': user,

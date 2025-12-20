@@ -23,522 +23,497 @@ from cpcready.utils.toml_config import ConfigManager
 
 console = Console()
 
-class discManager:
-    """
-    Clase para interactuar con idsk20 desde Python.
-    Permite listar, importar, extraer, borrar y crear imágenes DSK de Amstrad CPC.
-    """
+# class discManager:
+#     """
+#     Clase para interactuar con idsk20 desde Python.
+#     Permite listar, importar, extraer, borrar y crear imágenes DSK de Amstrad CPC.
+#     """
 
-    def __init__(self, idsk_path="idsk20"):
-        """
-        Inicializa la clase con la ruta del ejecutable idsk20.
-        """
-        self.idsk_path = idsk_path
+#     def __init__(self, idsk_path="idsk20"):
+#         """
+#         Inicializa la clase con la ruta del ejecutable idsk20.
+#         """
+#         self.idsk_path = idsk_path
 
-    def _run(self, args):
-        """
-        Ejecuta un comando idsk20 y devuelve la salida.
-        """
-        cmd = [self.idsk_path] + args
-        try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, check=True
-            )
-            return result.stdout.strip()
-        except subprocess.CalledProcessError as e:
-            # raise RuntimeError(f"Error ejecutando idsk20: {e.stderr.strip()}") from e
-            # error(f"Error ejecutando idsk20: {e.stderr.strip()}")
-            return None
-
-
-    def cat(self, dsk_file):
-        """Lista el contenido de la imagen DSK."""
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
-        return self._run([dsk_file, "-l"])
-
-    def cat_list(self, dsk_file):
-        """Lista el contenido de la imagen DSK."""
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
-        return self._run([dsk_file, "--ls"])
-
-    def new(self, dsk_file):
-        """Crea una nueva imagen DSK vacía."""
-        self._run([dsk_file, "-n"])
-        ok("disc created successfully")
-        return True
+#     def _run(self, args):
+#         """
+#         Ejecuta un comando idsk20 y devuelve la salida.
+#         """
+#         cmd = [self.idsk_path] + args
+#         try:
+#             result = subprocess.run(
+#                 cmd, capture_output=True, text=True, check=True
+#             )
+#             return result.stdout.strip()
+#         except subprocess.CalledProcessError as e:
+#             # raise RuntimeError(f"Error ejecutando idsk20: {e.stderr.strip()}") from e
+#             # error(f"Error ejecutando idsk20: {e.stderr.strip()}")
+#             return None
 
 
-    def get(self, dsk_file, filename):
-        """Extrae un archivo (o archivos con wildcard) de la imagen DSK."""
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
+#     def cat(self, dsk_file):
+#         """Lista el contenido de la imagen DSK."""
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
+#         return self._run([dsk_file, "-l"])
+
+#     def cat_list(self, dsk_file):
+#         """Lista el contenido de la imagen DSK."""
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
+#         return self._run([dsk_file, "--ls"])
+
+#     def new(self, dsk_file):
+#         """Crea una nueva imagen DSK vacía."""
+#         self._run([dsk_file, "-n"])
+#         ok("disc created successfully")
+#         return True
+
+
+#     def get(self, dsk_file, filename):
+#         """Extrae un archivo (o archivos con wildcard) de la imagen DSK."""
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
         
-        # Si contiene wildcard (* o ?), obtener lista de archivos y extraer todos
-        if '*' in filename or '?' in filename:
-            import fnmatch
+#         # Si contiene wildcard (* o ?), obtener lista de archivos y extraer todos
+#         if '*' in filename or '?' in filename:
+#             import fnmatch
             
-            # Obtener listado de archivos del disco
-            listing = self.cat_list(dsk_file)
-            if not listing:
-                warn(f"Could not read disc contents")
-                return None
+#             # Obtener listado de archivos del disco
+#             listing = self.cat_list(dsk_file)
+#             if not listing:
+#                 warn(f"Could not read disc contents")
+#                 return None
             
-            # Parsear nombres de archivos del listado
-            files_to_extract = []
-            for line in listing.splitlines():
-                parts = line.split()
-                if len(parts) >= 2:
-                    # Extraer nombre del archivo
-                    if parts[1].startswith('.'):
-                        # NOMBRE .EXT formato
-                        file_name = f"{parts[0]}{parts[1]}"
-                    else:
-                        # NOMBRE.EXT formato
-                        file_name = parts[0]
+#             # Parsear nombres de archivos del listado
+#             files_to_extract = []
+#             for line in listing.splitlines():
+#                 parts = line.split()
+#                 if len(parts) >= 2:
+#                     # Extraer nombre del archivo
+#                     if parts[1].startswith('.'):
+#                         # NOMBRE .EXT formato
+#                         file_name = f"{parts[0]}{parts[1]}"
+#                     else:
+#                         # NOMBRE.EXT formato
+#                         file_name = parts[0]
                     
-                    # Verificar si coincide con el patrón wildcard
-                    if fnmatch.fnmatch(file_name.upper(), filename.upper()):
-                        files_to_extract.append(file_name)
+#                     # Verificar si coincide con el patrón wildcard
+#                     if fnmatch.fnmatch(file_name.upper(), filename.upper()):
+#                         files_to_extract.append(file_name)
             
-            if not files_to_extract:
-                warn(f"No files match pattern '{filename}'")
-                return None
+#             if not files_to_extract:
+#                 warn(f"No files match pattern '{filename}'")
+#                 return None
             
-            # Extraer cada archivo
-            extracted_count = 0
-            for file_name in files_to_extract:
-                cmd = [self.idsk_path, dsk_file, "-g", file_name]
-                try:
-                    result = subprocess.run(
-                        cmd, capture_output=True, text=True, check=True
-                    )
-                    ok(f"Extracted: {file_name}")
-                    extracted_count += 1
-                except subprocess.CalledProcessError as e:
-                    warn(f"Failed to extract: {file_name}")
+#             # Extraer cada archivo
+#             extracted_count = 0
+#             for file_name in files_to_extract:
+#                 cmd = [self.idsk_path, dsk_file, "-g", file_name]
+#                 try:
+#                     result = subprocess.run(
+#                         cmd, capture_output=True, text=True, check=True
+#                     )
+#                     ok(f"Extracted: {file_name}")
+#                     extracted_count += 1
+#                 except subprocess.CalledProcessError as e:
+#                     warn(f"Failed to extract: {file_name}")
             
-            return f"Extracted {extracted_count} of {len(files_to_extract)} file(s)"
-        else:
-            # Extracción simple de un solo archivo - sin mostrar warnings del DSK
-            cmd = [self.idsk_path, dsk_file, "-g", filename]
-            try:
-                result = subprocess.run(
-                    cmd, capture_output=True, text=True, check=True
-                )
-                # Solo retornar éxito sin los warnings
-                return "File extracted successfully"
-            except subprocess.CalledProcessError as e:
-                error_msg = e.stderr.strip() if e.stderr else "Unknown error"
-                if "not found" in error_msg.lower():
-                    error(f"File '{filename}' not found in disc")
-                else:
-                    error(f"Error extracting file: {error_msg}")
-                return None
+#             return f"Extracted {extracted_count} of {len(files_to_extract)} file(s)"
+#         else:
+#             # Extracción simple de un solo archivo - sin mostrar warnings del DSK
+#             cmd = [self.idsk_path, dsk_file, "-g", filename]
+#             try:
+#                 result = subprocess.run(
+#                     cmd, capture_output=True, text=True, check=True
+#                 )
+#                 # Solo retornar éxito sin los warnings
+#                 return "File extracted successfully"
+#             except subprocess.CalledProcessError as e:
+#                 error_msg = e.stderr.strip() if e.stderr else "Unknown error"
+#                 if "not found" in error_msg.lower():
+#                     error(f"File '{filename}' not found in disc")
+#                 else:
+#                     error(f"Error extracting file: {error_msg}")
+#                 return None
 
-    def era(self, dsk_file, filename):
-        """Elimina un archivo del DSK."""
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"DSK file not found: '{dsk_file}'")
-            return None
+#     def era(self, dsk_file, filename):
+#         """Elimina un archivo del DSK."""
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"DSK file not found: '{dsk_file}'")
+#             return None
         
-        cmd = [self.idsk_path, dsk_file, "-r", filename]
-        try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, check=True
-            )
-            ok(f"File '{filename}' erased successfully from disc.")
-            return result.stdout.strip()
-        except subprocess.CalledProcessError as e:
-            # Si el error es porque el archivo no existe en el disco, mostrar warning
-            if "not found" in e.stderr.lower() or "file not found" in e.stderr.lower():
-                warn(f"File '{filename}' not found in disc, nothing to delete")
-                return None
-            else:
-                error(f"Error ejecutando idsk20: {e.stderr.strip()}")
-                return None
-    def ren(self, dsk_file, file_old, file_new):
-        """Renombra un archivo en el DSK."""
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"DSK file not found: '{dsk_file}'")
-            return None
+#         cmd = [self.idsk_path, dsk_file, "-r", filename]
+#         try:
+#             result = subprocess.run(
+#                 cmd, capture_output=True, text=True, check=True
+#             )
+#             ok(f"File '{filename}' erased successfully from disc.")
+#             return result.stdout.strip()
+#         except subprocess.CalledProcessError as e:
+#             # Si el error es porque el archivo no existe en el disco, mostrar warning
+#             if "not found" in e.stderr.lower() or "file not found" in e.stderr.lower():
+#                 warn(f"File '{filename}' not found in disc, nothing to delete")
+#                 return None
+#             else:
+#                 error(f"Error ejecutando idsk20: {e.stderr.strip()}")
+#                 return None
+#     def ren(self, dsk_file, file_old, file_new):
+#         """Renombra un archivo en el DSK."""
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"DSK file not found: '{dsk_file}'")
+#             return None
         
-        cmd = [self.idsk_path, dsk_file, "-m", file_old, "--to", file_new]
-        try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, check=True
-            )
-            ok(f"File '{file_old}' renamed successfully to '{file_new}' on disc.")
-            return result.stdout.strip()
-        except subprocess.CalledProcessError as e:
-            # Capturar tanto stdout como stderr
-            error_msg = e.stderr.strip() if e.stderr else ""
-            output_msg = e.stdout.strip() if e.stdout else ""
+#         cmd = [self.idsk_path, dsk_file, "-m", file_old, "--to", file_new]
+#         try:
+#             result = subprocess.run(
+#                 cmd, capture_output=True, text=True, check=True
+#             )
+#             ok(f"File '{file_old}' renamed successfully to '{file_new}' on disc.")
+#             return result.stdout.strip()
+#         except subprocess.CalledProcessError as e:
+#             # Capturar tanto stdout como stderr
+#             error_msg = e.stderr.strip() if e.stderr else ""
+#             output_msg = e.stdout.strip() if e.stdout else ""
             
-            # Combinar mensajes
-            full_error = error_msg or output_msg or "Unknown error"
+#             # Combinar mensajes
+#             full_error = error_msg or output_msg or "Unknown error"
             
-            # Si el error es porque el archivo no existe en el disco
-            if "not found" in full_error.lower() or "file not found" in full_error.lower():
-                error(f"File '{file_old}' not found in disc")
-                return None
-            else:
-                error(f"Error renaming file: {full_error}")
-                return None
+#             # Si el error es porque el archivo no existe en el disco
+#             if "not found" in full_error.lower() or "file not found" in full_error.lower():
+#                 error(f"File '{file_old}' not found in disc")
+#                 return None
+#             else:
+#                 error(f"Error renaming file: {full_error}")
+#                 return None
             
-    def list(self, dsk_file, filename):
-        """Lista el contenido de un archivo BASIC del DSK."""
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"DSK file not found: '{dsk_file}'")
-            return None
+#     def list(self, dsk_file, filename):
+#         """Lista el contenido de un archivo BASIC del DSK."""
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"DSK file not found: '{dsk_file}'")
+#             return None
         
-        cmd = [self.idsk_path, dsk_file, "-b", filename]
-        try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, check=True
-            )
-            # ok(f"File '{filename}' erased successfully from disc.")
-            return result.stdout.strip()
-        except subprocess.CalledProcessError as e:
-            # Si el error es porque el archivo no existe en el disco, mostrar warning
-            if "not found" in e.stderr.lower() or "file not found" in e.stderr.lower():
-                error(f"File '{filename}' not found in disc")
-                return None
-            else:
-                # error(f"Error ejecutando idsk20: {e.stderr.strip()}")
-                return None
+#         cmd = [self.idsk_path, dsk_file, "-b", filename]
+#         try:
+#             result = subprocess.run(
+#                 cmd, capture_output=True, text=True, check=True
+#             )
+#             # ok(f"File '{filename}' erased successfully from disc.")
+#             return result.stdout.strip()
+#         except subprocess.CalledProcessError as e:
+#             # Si el error es porque el archivo no existe en el disco, mostrar warning
+#             if "not found" in e.stderr.lower() or "file not found" in e.stderr.lower():
+#                 error(f"File '{filename}' not found in disc")
+#                 return None
+#             else:
+#                 # error(f"Error ejecutando idsk20: {e.stderr.strip()}")
+#                 return None
 
-    def save(self, dsk_file, src_file, type_file=None, load_addr=None, exec_addr=None, force=False, readonly=False, system=False, user=None):
-        """
-        Inserta un archivo en la imagen DSK.
+#     def save(self, dsk_file, src_file, type_file=None, load_addr=None, exec_addr=None, force=False, readonly=False, system=False, user=None):
+#         """
+#         Inserta un archivo en la imagen DSK.
 
-        file_type: 0=ASCII, 1=BINARY, 2=raw
-        load_addr, exec_addr: direcciones hex opcionales (ej. '4000', 'C000')
-        """
-        # Validar que el archivo DSK existe
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            blank_line(1)
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return False
+#         file_type: 0=ASCII, 1=BINARY, 2=raw
+#         load_addr, exec_addr: direcciones hex opcionales (ej. '4000', 'C000')
+#         """
+#         # Validar que el archivo DSK existe
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             blank_line(1)
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return False
         
-        # Validar que el archivo fuente existe
-        src_path = Path(src_file)
-        if not src_path.exists():
-            blank_line(1)
-            error(f"File not found: {src_file}")
-            return False
+#         # Validar que el archivo fuente existe
+#         src_path = Path(src_file)
+#         if not src_path.exists():
+#             blank_line(1)
+#             error(f"File not found: {src_file}")
+#             return False
         
-        args = [dsk_file, "-i", src_file]
+#         args = [dsk_file, "-i", src_file]
 
-        if type_file is not None:
-            args += ["-t", str(type_file)]
-        if load_addr:
-            args += ["-c", load_addr]
-        if exec_addr:
-            args += ["-e", exec_addr]
-        if force:
-            args.append("-f")
-        if readonly:
-            args.append("-o")
-        if system:
-            args.append("-s")
-        if user is not None:
-            args += ["-u", str(user)]
+#         if type_file is not None:
+#             args += ["-t", str(type_file)]
+#         if load_addr:
+#             args += ["-c", load_addr]
+#         if exec_addr:
+#             args += ["-e", exec_addr]
+#         if force:
+#             args.append("-f")
+#         if readonly:
+#             args.append("-o")
+#         if system:
+#             args.append("-s")
+#         if user is not None:
+#             args += ["-u", str(user)]
 
-        return self._run(args)
+#         return self._run(args)
 
     
-    def list_basic(self, dsk_file, filename, split=False):
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
+#     def list_basic(self, dsk_file, filename, split=False):
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
         
-        args = [dsk_file, "-b", filename]
-        if split:
-            args.append("-p")
-        return self._run(args)
+#         args = [dsk_file, "-b", filename]
+#         if split:
+#             args.append("-p")
+#         return self._run(args)
 
-    def list_ascii(self, dsk_file, filename):
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
+#     def list_ascii(self, dsk_file, filename):
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
         
-        return self._run([dsk_file, "-a", filename])
+#         return self._run([dsk_file, "-a", filename])
 
-    def list_dams(self, dsk_file, filename):
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
+#     def list_dams(self, dsk_file, filename):
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
         
-        return self._run([dsk_file, "-d", filename])
+#         return self._run([dsk_file, "-d", filename])
 
-    def list_hex(self, dsk_file, filename):
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
+#     def list_hex(self, dsk_file, filename):
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
         
-        return self._run([dsk_file, "-h", filename])
+#         return self._run([dsk_file, "-h", filename])
 
-    def disassemble(self, dsk_file, filename):
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
+#     def disassemble(self, dsk_file, filename):
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
         
-        return self._run([dsk_file, "-z", filename])
+#         return self._run([dsk_file, "-z", filename])
 
-    def file_type(self, dsk_file, filename):
-        """
-        Muestra el tipo de archivo en el DSK.
+#     def file_type(self, dsk_file, filename):
+#         """
+#         Muestra el tipo de archivo en el DSK.
         
-        Args:
-            dsk_file (str): Ruta al archivo DSK
-            filename (str): Nombre del archivo a consultar
+#         Args:
+#             dsk_file (str): Ruta al archivo DSK
+#             filename (str): Nombre del archivo a consultar
             
-        Returns:
-            str: Salida del comando con el tipo de archivo (ej: "8BP.BIN: BINARY")
-                 None si el archivo no existe en el disco
-        """
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return None
+#         Returns:
+#             str: Salida del comando con el tipo de archivo (ej: "8BP.BIN: BINARY")
+#                  None si el archivo no existe en el disco
+#         """
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return None
         
-        cmd = [self.idsk_path, dsk_file, "-y", filename]
-        try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, check=True
-            )
-            return result.stdout.strip()
-        except subprocess.CalledProcessError as e:
-            # Si el error es porque el archivo no existe en el disco
-            if "not found" in e.stderr.lower() or "file not found" in e.stderr.lower():
-                error(f"File '{filename}' not found in disc")
-                return None
-            else:
-                error(f"Error ejecutando idsk20: {e.stderr.strip()}")
-                return None
+#         cmd = [self.idsk_path, dsk_file, "-y", filename]
+#         try:
+#             result = subprocess.run(
+#                 cmd, capture_output=True, text=True, check=True
+#             )
+#             return result.stdout.strip()
+#         except subprocess.CalledProcessError as e:
+#             # Si el error es porque el archivo no existe en el disco
+#             if "not found" in e.stderr.lower() or "file not found" in e.stderr.lower():
+#                 error(f"File '{filename}' not found in disc")
+#                 return None
+#             else:
+#                 error(f"Error ejecutando idsk20: {e.stderr.strip()}")
+#                 return None
 
-    def cat_table(self, dsk_file):
-        """
-        Muestra el contenido del disco en formato tabla usando Rich.
+#     def cat_table(self, dsk_file):
+#         """
+#         Muestra el contenido del disco en formato tabla usando Rich.
         
-        Args:
-            dsk_file (str): Ruta al archivo DSK
-        """
-        from rich.console import Console
-        from rich.table import Table
-        from rich import box
+#         Args:
+#             dsk_file (str): Ruta al archivo DSK
+#         """
+#         from rich.console import Console
+#         from rich.table import Table
+#         from rich import box
         
-        console = Console()
+#         console = Console()
         
-        # Validar que el archivo DSK existe
-        dsk_path = Path(dsk_file)
-        if not dsk_path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return False
+#         # Validar que el archivo DSK existe
+#         dsk_path = Path(dsk_file)
+#         if not dsk_path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return False
         
-        # Obtener el listado del disco
-        try:
-            result = self.cat_list(dsk_file)
-        except RuntimeError as e:
-            error(f"Error reading disc: {e}")
-            return False
+#         # Obtener el listado del disco
+#         try:
+#             result = self.cat_list(dsk_file)
+#         except RuntimeError as e:
+#             error(f"Error reading disc: {e}")
+#             return False
         
-        if not result:
-            warn("Empty disc or no data available")
-            return False
+#         if not result:
+#             warn("Empty disc or no data available")
+#             return False
         
-        # Convertir el resultado en líneas
-        result_lines = result.strip().splitlines()
+#         # Convertir el resultado en líneas
+#         result_lines = result.strip().splitlines()
         
-        # Crear tabla
-        table = Table(
-            title=f"[bold]{Path(dsk_file).name}[/bold]",
-            border_style="bright_blue",
-            box=box.ROUNDED
-        )
+#         # Crear tabla
+#         table = Table(
+#             title=f"[bold]{Path(dsk_file).name}[/bold]",
+#             border_style="bright_blue",
+#             box=box.ROUNDED
+#         )
         
-        table.add_column("File", style="bold yellow")
-        table.add_column("Size", justify="right", style="green")
-        table.add_column("Load Addr", justify="center", style="bright_magenta")
-        table.add_column("Exec Addr", justify="center", style="bright_magenta")
-        table.add_column("User", justify="center", style="white")
+#         table.add_column("File", style="bold yellow")
+#         table.add_column("Size", justify="right", style="green")
+#         table.add_column("Load Addr", justify="center", style="bright_magenta")
+#         table.add_column("Exec Addr", justify="center", style="bright_magenta")
+#         table.add_column("User", justify="center", style="white")
         
-        # Parsear cada línea del listado
-        free_space = None
-        for line in result_lines:
-            # Detectar línea de espacio libre (ej: "151K free")
-            if "free" in line.lower():
-                free_space = line.strip()
-                continue
+#         # Parsear cada línea del listado
+#         free_space = None
+#         for line in result_lines:
+#             # Detectar línea de espacio libre (ej: "151K free")
+#             if "free" in line.lower():
+#                 free_space = line.strip()
+#                 continue
             
-            # Ignorar líneas de advertencia, vacías o líneas de borde
-            if (not line.strip() or 
-                "warning" in line.lower() or 
-                "track" in line.lower() or
-                line.strip().startswith("─") or
-                line.strip().startswith("│") or
-                line.strip().startswith("├")):
-                continue
+#             # Ignorar líneas de advertencia, vacías o líneas de borde
+#             if (not line.strip() or 
+#                 "warning" in line.lower() or 
+#                 "track" in line.lower() or
+#                 line.strip().startswith("─") or
+#                 line.strip().startswith("│") or
+#                 line.strip().startswith("├")):
+#                 continue
             
-            # Dividir por espacios
-            parts = line.split()
+#             # Dividir por espacios
+#             parts = line.split()
             
-            # Ignorar líneas que no cumplan con el formato esperado
-            # Formato esperado: NOMBRE .EXT TAMAÑO K LOAD EXEC User NUMERO
-            # o: NOMBRE.EXT TAMAÑO K LOAD EXEC User NUMERO
-            try:
-                if len(parts) >= 6:
-                    # Verificar si la extensión está separada (empieza con punto)
-                    if parts[1].startswith('.'):
-                        # NOMBRE .EXT TAMAÑO K LOAD EXEC User NUMERO
-                        filename = f"{parts[0]}{parts[1]}"
-                        size_str = f"{parts[2]} {parts[3]}"
-                        load = parts[4]
-                        exec_addr = parts[5]
-                        user = parts[7] if len(parts) > 7 else "0"
-                    else:
-                        # NOMBRE.EXT TAMAÑO K LOAD EXEC User NUMERO
-                        filename = parts[0]
-                        size_str = f"{parts[1]} {parts[2]}"
-                        load = parts[3]
-                        exec_addr = parts[4]
-                        user = parts[6] if len(parts) > 6 else "0"
+#             # Ignorar líneas que no cumplan con el formato esperado
+#             # Formato esperado: NOMBRE .EXT TAMAÑO K LOAD EXEC User NUMERO
+#             # o: NOMBRE.EXT TAMAÑO K LOAD EXEC User NUMERO
+#             try:
+#                 if len(parts) >= 6:
+#                     # Verificar si la extensión está separada (empieza con punto)
+#                     if parts[1].startswith('.'):
+#                         # NOMBRE .EXT TAMAÑO K LOAD EXEC User NUMERO
+#                         filename = f"{parts[0]}{parts[1]}"
+#                         size_str = f"{parts[2]} {parts[3]}"
+#                         load = parts[4]
+#                         exec_addr = parts[5]
+#                         user = parts[7] if len(parts) > 7 else "0"
+#                     else:
+#                         # NOMBRE.EXT TAMAÑO K LOAD EXEC User NUMERO
+#                         filename = parts[0]
+#                         size_str = f"{parts[1]} {parts[2]}"
+#                         load = parts[3]
+#                         exec_addr = parts[4]
+#                         user = parts[6] if len(parts) > 6 else "0"
                     
-                    table.add_row(filename, size_str, load, exec_addr, user)
-            except (ValueError, IndexError):
-                # Ignorar líneas que no se puedan parsear
-                continue
+#                     table.add_row(filename, size_str, load, exec_addr, user)
+#             except (ValueError, IndexError):
+#                 # Ignorar líneas que no se puedan parsear
+#                 continue
         
-        # Añadir línea de separación y espacio libre si existe
-        if free_space:
-            # Marcar la última fila como fin de sección solo si hay filas
-            if len(table.rows) > 0:
-                table.rows[-1].end_section = True
-            table.add_row(
-                f"[bold bright_green]{free_space}[/bold bright_green]",
-                "", "", "", ""
-            )
+#         # Añadir línea de separación y espacio libre si existe
+#         if free_space:
+#             # Marcar la última fila como fin de sección solo si hay filas
+#             if len(table.rows) > 0:
+#                 table.rows[-1].end_section = True
+#             table.add_row(
+#                 f"[bold bright_green]{free_space}[/bold bright_green]",
+#                 "", "", "", ""
+#             )
         
-        # Mostrar tabla
-        console.print(table)
-        return True
+#         # Mostrar tabla
+#         console.print(table)
+#         return True
 
-    def info_disc(self, dsk_file, verbose=False):
-        """Print a human-friendly information summary for a DSK file.
+#     def info_disc(self, dsk_file, verbose=False):
+#         """Print a human-friendly information summary for a DSK file.
 
-        This mirrors the behaviour of `generate-disc-readme.sh` but prints
-        the summary to stdout using colorized output.
-        """
+#         This mirrors the behaviour of `generate-disc-readme.sh` but prints
+#         the summary to stdout using colorized output.
+#         """
         
-        path = Path(dsk_file)
-        disc_manager = discManager(self.idsk_path)
-        if not path.exists():
-            error(f"\nDSK file not found: {dsk_file}\n")
-            return False
+#         path = Path(dsk_file)
+#         disc_manager = discManager(self.idsk_path)
+#         if not path.exists():
+#             error(f"\nDSK file not found: {dsk_file}\n")
+#             return False
 
-        # Use the existing cat method to get listing
-        try:
-            listing_raw = self.cat(dsk_file) or ""
-        except RuntimeError:
-            listing_raw = ""
+#         # Use the existing cat method to get listing
+#         try:
+#             listing_raw = self.cat(dsk_file) or ""
+#         except RuntimeError:
+#             listing_raw = ""
 
-        if not listing_raw.strip():
-            disc_listing = ["(Empty disc)"]
-            file_lines = []
-        else:
-            # Extract file data lines from the table (lines with │ that contain file info)
-            file_lines = []
-            for line in listing_raw.splitlines():
-                # Skip table borders and headers, look for lines with file data
-                if "│" in line and not line.strip().startswith("│     File") and not "─" in line and not "free" in line.lower():
-                    # Clean the line and extract file info
-                    clean_line = line.replace("│", "").strip()
-                    if clean_line and not clean_line.startswith("File"):
-                        file_lines.append(clean_line)
+#         if not listing_raw.strip():
+#             disc_listing = ["(Empty disc)"]
+#             file_lines = []
+#         else:
+#             # Extract file data lines from the table (lines with │ that contain file info)
+#             file_lines = []
+#             for line in listing_raw.splitlines():
+#                 # Skip table borders and headers, look for lines with file data
+#                 if "│" in line and not line.strip().startswith("│     File") and not "─" in line and not "free" in line.lower():
+#                     # Clean the line and extract file info
+#                     clean_line = line.replace("│", "").strip()
+#                     if clean_line and not clean_line.startswith("File"):
+#                         file_lines.append(clean_line)
             
-            disc_listing = file_lines if file_lines else ["(Empty disc)"]
+#             disc_listing = file_lines if file_lines else ["(Empty disc)"]
 
-        # Count types from the cleaned file lines
-        basic_files = sum(1 for l in file_lines if ".BAS" in l.upper())
-        binary_files = sum(1 for l in file_lines if ".BIN" in l.upper())
-        text_files = sum(1 for l in file_lines if any(ext in l.upper() for ext in (".TXT", ".DOC")))
-        other_files = max(0, len(file_lines) - basic_files - binary_files - text_files) if file_lines else 0
+#         # Count types from the cleaned file lines
+#         basic_files = sum(1 for l in file_lines if ".BAS" in l.upper())
+#         binary_files = sum(1 for l in file_lines if ".BIN" in l.upper())
+#         text_files = sum(1 for l in file_lines if any(ext in l.upper() for ext in (".TXT", ".DOC")))
+#         other_files = max(0, len(file_lines) - basic_files - binary_files - text_files) if file_lines else 0
 
-        # File size
-        try:
-            disc_size = path.stat().st_size
-        except Exception:
-            disc_size = "Unknown"
+#         # File size
+#         try:
+#             disc_size = path.stat().st_size
+#         except Exception:
+#             disc_size = "Unknown"
 
-        # Header
-        name = path.stem.upper()
-        console.print(f"[bold cyan]{name} disc INFORMATION[/bold cyan]")
-        print("=" * 60)
-        print(f"disc file: {dsk_file}")
-        print(f"disc size: {disc_size} bytes")
-        blank_line(1)
+#         # Header
+#         name = path.stem.upper()
+#         console.print(f"[bold cyan]{name} disc INFORMATION[/bold cyan]")
+#         print("=" * 60)
+#         print(f"disc file: {dsk_file}")
+#         print(f"disc size: {disc_size} bytes")
+#         blank_line(1)
 
-        # Summary
-        print("-" * 60)
-        console.print(f"[yellow]disc SUMMARY[/yellow]")
-        print("-" * 60)
-        total_files = len(file_lines) if file_lines else 0
-        print(f"Total files: {total_files}")
-        print(f"- BASIC programs: {basic_files}")
-        print(f"- Binary files: {binary_files}")
-        print(f"- Text files: {text_files}")
-        print(f"- Other files: {other_files}")
-        blank_line(1)
-        print("-" * 60)
-        console.print(f"[yellow]CAT FILES[/yellow]")
-        print("-" * 60)
-        blank_line(1)
-        # File listing - show the formatted table from cat method
-        disc_manager.cat_table(dsk_file)
-
-        # # BASIC program short descriptions if verbose
-        # if verbose and basic_files > 0 and file_lines:
-        #     blank_line(1)
-        #     print(f"{Fore.MAGENTA}BASIC PROGRAMS{Style.RESET_ALL}")
-        #     print("-" * 60)
-        #     # Try to extract some lines from first BASIC files
-        #     for line in file_lines:
-        #         if ".BAS" in line.upper():
-        #             # Extract filename from the cleaned line
-        #             parts = line.split()
-        #             if len(parts) >= 2:
-        #                 filename = parts[0] + parts[1]  # e.g., "DEMO13" + ".BAS"
-        #                 try:
-        #                     basic_content = self._run([dsk_file, "-b", filename])
-        #                 except RuntimeError:
-        #                     basic_content = ""
-        #                 if basic_content:
-        #                     sample = "\n".join(basic_content.splitlines()[:6])
-        #                     print(f"{filename}:")
-        #                     for l in sample.splitlines():
-        #                         print(f"  {l}")
-        #                     blank_line(1)
-
-        # print(f"{Fore.CYAN}Generated with idsk20 (if available){Style.RESET_ALL}")
-        blank_line(1)
-        return True
+#         # Summary
+#         print("-" * 60)
+#         console.print(f"[yellow]disc SUMMARY[/yellow]")
+#         print("-" * 60)
+#         total_files = len(file_lines) if file_lines else 0
+#         print(f"Total files: {total_files}")
+#         print(f"- BASIC programs: {basic_files}")
+#         print(f"- Binary files: {binary_files}")
+#         print(f"- Text files: {text_files}")
+#         print(f"- Other files: {other_files}")
+#         blank_line(1)
+#         print("-" * 60)
+#         console.print(f"[yellow]CAT FILES[/yellow]")
+#         print("-" * 60)
+#         blank_line(1)
+#         # File listing - show the formatted table from cat method
+#         disc_manager.cat_table(dsk_file)
+#         blank_line(1)
+#         return True
 
 class DriveManager:
     def __init__(self, drive_file="cpcready.toml"):
@@ -943,6 +918,51 @@ class DriveManager:
             title=f"Drive {drive}"
         )
         console.print(grouped_panel)
+
+class cassetteManager:
+    """
+    Clase para gestionar configuraciones del cassette.
+    """
+    def __init__(self, config_file="cpcready.toml"):
+        """
+        Inicializa la clase con la ruta del fichero de configuración.
+        """
+        self.config = ConfigManager(config_file)
+
+    def _initial_structure(self):
+        """Devuelve la estructura base del sistema de drives."""
+        return {
+            "tape": ""
+        }
+
+    def _secure_structure(self):
+        """Ya no es necesario, ConfigManager se encarga de la estructura inicial."""
+        pass
+
+    # --- RESET A VALORES ---
+    def reset(self, forzar=False):
+        """Resetea la estructura de drives a valores iniciales."""
+        self.config.reset()
+        return True
+
+    def get_tape(self):
+        """
+        Obtiene el nombre del cassette guardado en TOML.
+        
+        Returns:
+            str: Nombre del cassette (CDT), por defecto ""
+        """
+        return self.config.get("cassette", "tape", "")
+    
+    def set_tape(self, tape):
+        """
+        Guarda el nombre del cassette en TOML.
+        
+        Args:
+            tape (str): Nombre del cassette (CDT)
+        """
+        self.config.set("cassette", "tape", tape)
+    
 
 
 class SystemCPM:

@@ -18,7 +18,7 @@ import click
 from pathlib import Path
 import shutil
 import tempfile
-from cpcready.utils import console, system, DriveManager, discManager, SystemCPM
+from cpcready.utils import console, system, DriveManager, cassetteManager, SystemCPM
 from cpcready.utils.click_custom import CustomCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
@@ -87,7 +87,7 @@ def is_header(ruta):
 @click.option("-A", "--drive-a", is_flag=True, help="Insert disc into drive A")
 @click.option("-B", "--drive-b", is_flag=True, help="Insert disc into drive B")
 def save(file_name, type_file, load_addr, exec_addr, drive_a, drive_b):
-    """Save file to virtual disc.
+    """Save file to virtual tape/disc.
     
     Type options:
       - a: ASCII/Data file (no AMSDOS header)

@@ -13,9 +13,9 @@
 # and limitations under the License.
 
 from .manager import DriveManager
-from .manager import discManager
+from .manager import cassetteManager
 from .manager import SystemCPM
 from .manager import LegacyConfigManager
 from .toml_config import ConfigManager
 
-__all__ = ['DriveManager', 'discManager', 'SystemCPM', 'LegacyConfigManager', 'ConfigManager']
+__all__ = ['DriveManager', 'cassetteManager', 'SystemCPM', 'LegacyConfigManager', 'ConfigManager']

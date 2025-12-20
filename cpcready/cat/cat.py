@@ -15,7 +15,7 @@
 import click
 from pathlib import Path
 import shutil
-from cpcready.utils import console, system, DriveManager
+from cpcready.utils import console, system, DriveManager,cassetteManager
 from cpcready.utils.click_custom import CustomCommand
 from cpcready.utils.console import info2, ok, debug, warn, error, message, blank_line, banner
 from cpcready.utils.version import add_version_option

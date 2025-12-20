@@ -16,7 +16,7 @@ import click
 from pathlib import Path
 import shutil
 import fnmatch
-from cpcready.utils import console, system, DriveManager, discManager, SystemCPM
+from cpcready.utils import console, system, DriveManager, SystemCPM, cassetteManager
 from cpcready.utils.click_custom import CustomCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group

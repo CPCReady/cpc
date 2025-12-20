@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions
 # and limitations under the License.
 
-"""CPCReady Wrapper - Project environment manager."""
+"""CPCReady - Project environment manager."""
 
-from .wrapper import wrapper
-
-__all__ = ['wrapper']
+from .environment import env
+__all__ = ['env']

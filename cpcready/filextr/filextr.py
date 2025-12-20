@@ -16,7 +16,7 @@ import click
 from pathlib import Path
 import shutil
 import fnmatch
-from cpcready.utils import console, system, DriveManager, discManager, SystemCPM
+from cpcready.utils import console, system, DriveManager, SystemCPM,cassetteManager
 from cpcready.utils.click_custom import CustomCommand, CustomGroup
 from cpcready.utils.console import info2, ok, debug, warn, error, message,blank_line,banner
 from cpcready.utils.version import add_version_option_to_group
@@ -43,8 +43,6 @@ def filextr(files, drive_a, drive_b):
     """
     # Obtener el nombre del disco usando DriveManager
     drive_manager = DriveManager()
-    disc_manager = discManager("idsk20")
-
     
     disc_name = drive_manager.get_disc_name(drive_a, drive_b)
     
