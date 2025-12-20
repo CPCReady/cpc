@@ -69,7 +69,7 @@ def sysinfo():
 
     console.print(table)
     console.print()
-    console.rule("Cassette Details", style="bold yellow", align="left",)
+    console.rule("Cassette Details", style="bright_yellow", align="left",)
     console.print()
     
     table = Table(
@@ -108,8 +108,7 @@ def sysinfo():
         str(emulator),
         str(ip)
     )
-    
-    # Mostrar tabla
+
     console.print(table)
     blank_line(1)
     
