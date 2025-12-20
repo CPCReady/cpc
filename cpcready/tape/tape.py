@@ -63,9 +63,10 @@ def tape(ctx):
 
 @tape.command(cls=RichCommand)
 @click.argument("tape_name", required=True)
-def new(tape_name):
+@click.option("-C", "--cassette", is_flag=True, help="Insert cassette into virtual tape drive")
+def new(tape_name, cassette):
     """Create a new empty tape image (CDT)."""
-    tape_name = str(system.process_dsk_name(tape_name))
+    tape_name = str(system.process_cdt_name(tape_name))
     
     # Asegurarnos de que tenga extensión .cdt (aunque process_dsk_name suele pensar en dsk)
     if not tape_name.lower().endswith('.cdt'):
@@ -74,32 +75,35 @@ def new(tape_name):
     tape_path = Path(tape_name)
     
     if tape_path.exists():
+        blank_line(1)
         warn(f"Tape '{tape_path.name}' already exists.")
+        if cassette:
+            cassette_mgr = cassetteManager()
+            cassette_mgr.set_tape(str(tape_path))
+            blank_line(1)
+            ok(f"Cassette '{tape_path.name}' inserted into virtual tape drive.")
+            
+        blank_line(1)
         return
 
     try:
         cdt = CDT(str(tape_path))
         cdt.create()
         cdt.save()
-        
+        blank_line(1)
         ok(f"Tape '{tape_path.name}' created successfully!")
         blank_line(1)
-        
-        # Mostrar información básica
-        table = Table(show_header=False, box=None, padding=(0, 0))
-        table.add_column(style="blue", justify="left")
-        table.add_column(style="yellow", justify="left")
-        
-        table.add_row("File: ", tape_path.name)
-        table.add_row("Format: ", "CDT/TZX (Amstrad CPC)")
-        table.add_row("Blocks: ", "1 (Empty Pause)")
-        
-        console.print(table)
-        blank_line(1)
-        
+        if cassette:
+            cassette_mgr = cassetteManager()
+            cassette_mgr.set_tape(str(tape_path))
+            ok(f"Cassette '{tape_path.name}' inserted into virtual tape drive.")
+            blank_line(1)
+        # console.print(table)
+        cdt.list_files(simple=False, use_rich=True, title=tape_path.name, show_title=True)
+
     except Exception as e:
         error(f"Error creating tape: {e}")
-
+    
 @tape.command(cls=RichCommand)
 @click.argument("tape_name", required=True)
 def info(tape_name):
@@ -112,7 +116,7 @@ def info(tape_name):
     tape_path = Path(tape_name)
     
     if not tape_path.exists():
-        error(f"Tape file not found: {tape_name}")
+        error(f"\nTape file not found: {tape_name}\n")
         return
         
     try:
@@ -126,11 +130,11 @@ def info(tape_name):
         info = cdt.get_info()
         
         blank_line(1)
-        console.print(f"[bold blue]Tape Info:[/bold blue] [yellow]{tape_path.resolve()}[/yellow]")
+        console.print(f"[bold blue]Tape Info:[/bold blue] [yellow]{tape_path.name}[/yellow]")
         blank_line(1)
         
         # Usar el listado rico de alto nivel
-        cdt.list_files(simple=False, use_rich=True, show_title=False)
+        cdt.list_files(simple=False, use_rich=True, title=tape_path.name, show_title=True)
         
     except Exception as e:
         error(f"Error reading tape: {e}")

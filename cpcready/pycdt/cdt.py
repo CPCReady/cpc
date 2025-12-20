@@ -245,7 +245,7 @@ class CDT:
                         pass
         return found
 
-    def list_files(self, simple: bool = False, use_rich: bool = True, show_title: bool = True) -> str:
+    def list_files(self, simple: bool = False, use_rich: bool = True, show_title: bool = True, title: str = None) -> str:
         """
         Lista los archivos contenidos en la cinta
         
@@ -263,18 +263,18 @@ class CDT:
                 from rich.table import Table
                 from rich.panel import Panel
                 from rich import box
-                
+
                 console = Console()
-                
-                title = f"[bold yellow] ▶ {self.header.title}[/bold yellow]" if show_title else None
-                
+
+                table_title = title if title is not None else (f"[bold yellow] ▶ {self.header.title}[/bold yellow]" if show_title else None)
+
                 table = Table(
-                    title=title,
+                    title=" ▶ " + (table_title.upper() if table_title else None),
                     title_justify="left",
                     show_header=True,
                     header_style="bold white",
                     border_style="bright_yellow",
-                    title_style="bold cyan",
+                    title_style="bold yellow",
                     box=box.ROUNDED
                 )
                 

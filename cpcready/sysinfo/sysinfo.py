@@ -73,14 +73,19 @@ def sysinfo():
     console.print()
     
     table = Table(
-        show_header=False,
+        show_header=True,
         border_style="bold yellow",
         box=box.ROUNDED
     )
 
-    table.add_column("Tape", style="bold cyan", no_wrap=True)
-    table.add_column("Path", style="green", width=20)
-    table.add_row("Path", tape if tape else "No cassette inserted")
+    table.add_column("Tape", style="bright_green", no_wrap=True)
+    table.add_column("Path", style="dim bright_green")
+    if tape:
+        from pathlib import Path as _Path
+        tape_path = _Path(tape)
+        table.add_row(tape_path.name, str(tape_path))
+    else:
+        table.add_row("[yellow]No cassette inserted[/yellow]", "")
     console.print(table)
     
     console.print()

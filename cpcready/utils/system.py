@@ -19,10 +19,35 @@ from pathlib import Path
 
 def process_dsk_name(disc_image: str):
     path = Path(disc_image)
-    
+
     # Asegurarse de que tenga la extensión .dsk
     if path.suffix.lower() != ".dsk":
         path = path.with_suffix(".dsk")
+
+    # Obtener la ruta absoluta
+    if len(path.parts) == 1:
+        # Solo nombre de archivo - usar directorio actual
+        absolute_path = Path.cwd() / path
+    else:
+        # Incluye una ruta (relativa o absoluta)
+        if path.is_absolute():
+            absolute_path = path
+        else:
+            absolute_path = path.resolve()
+
+    # Crear el directorio si no existe
+    parent_directory = absolute_path.parent
+    if not parent_directory.exists():
+        parent_directory.mkdir(parents=True, exist_ok=True)
+
+    return absolute_path
+
+def process_cdt_name(disc_image: str):
+    path = Path(disc_image)
+    
+    # Asegurarse de que tenga la extensión .cdt
+    if path.suffix.lower() != ".cdt":
+        path = path.with_suffix(".cdt")
     
     # Obtener la ruta absoluta
     if len(path.parts) == 1:
@@ -34,7 +59,7 @@ def process_dsk_name(disc_image: str):
             absolute_path = path
         else:
             absolute_path = path.resolve()
-    
+
     # Crear el directorio si no existe
     parent_directory = absolute_path.parent
     if not parent_directory.exists():
