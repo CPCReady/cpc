@@ -73,9 +73,7 @@ def cat(drive_a, drive_b):
     if storage_mode == "tape":
         tape_name = cassette_mgr.get_tape()
         if tape_name == "":
-            blank_line(1)
             error("No tape inserted in the cassette drive.\n")
-            cassette_mgr.cassette_table()
             return
         tape_path = Path(f"{tape_name}")
         
@@ -107,7 +105,6 @@ def cat(drive_a, drive_b):
                 disc_name = drive_manager.read_drive_b()
         
         if disc_name == "":
-            blank_line(1)
             error(f"Drive {drive}: disc missing\n")
             drive_manager.drive_table()
             return

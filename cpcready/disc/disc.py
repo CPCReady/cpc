@@ -35,11 +35,11 @@ console = Console()
 
    
 @add_version_option_to_group
-@click.group(cls=RichGroup, help="Create or manage virtual discs.", invoke_without_command=True)
+@click.group(cls=RichGroup, invoke_without_command=True)
 @click.pass_context
 def disc(ctx):
     """
-    Select disc storage for the CPCReady session.
+    Manage tape images (DSK).
 
     This command sets the storage type to disc for the current session. All disc-related operations will use this setting.
 

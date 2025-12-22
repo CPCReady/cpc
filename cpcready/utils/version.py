@@ -57,7 +57,6 @@ Repository:https://github.com/CPCReady/cpc
 Issue Tracker:https://github.com/CPCReady/cpc/issues
 Docs:https://cpcready.github.io/docs
     """
-    console.clear()
     from rich.text import Text
     panel = Panel(Text(TextBanner, style="yellow"), border_style="yellow", style="yellow", width=81)
     panel_info = Panel(Text(TextInfo, style="yellow"), border_style="yellow", style="yellow", width=81)
@@ -83,7 +82,6 @@ Docs:https://cpcready.github.io/docs
 
 def show_version_info():
     """Display version information."""
-    print("\n")  # Blank line before version info
     print(get_banner_string(), end='')
     print()  # Blank line after version info
 

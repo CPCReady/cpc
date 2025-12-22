@@ -929,6 +929,21 @@ class cassetteManager:
         """
         self.config = ConfigManager(config_file)
 
+    def eject(self):
+        """Eject cassette from cassette drive (remove tape reference)."""
+        current_tape = self.get_tape()
+        if current_tape == "":
+            blank_line(1)
+            warn("There is no tape in the cassette drive.\n")
+            return False
+        self.config.set("cassette", "tape", "")
+        ok(f"Cassette '{current_tape}' ejected from cassette drive.\n")
+        return True
+        """
+        Inicializa la clase con la ruta del fichero de configuración.
+        """
+        self.config = ConfigManager(config_file)
+
     def _initial_structure(self):
         """Devuelve la estructura base del sistema de drives."""
         return {

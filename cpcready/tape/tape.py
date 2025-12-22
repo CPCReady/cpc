@@ -41,7 +41,7 @@ console = Console()
 @click.pass_context
 def tape(ctx):
     """
-    Manage tape images (CDT/TZX) for CPC Ready session.
+    Manage tape images (CDT).
 
         Examples:
             cpc tape new mytape.cdt         # Create a new tape image
@@ -103,41 +103,35 @@ def new(tape_name, cassette):
     except Exception as e:
         error(f"Error creating tape: {e}")
     
-# @tape.command(cls=RichCommand)
-# @click.argument("tape_name", required=True)
-# def info(tape_name):
-#     """Show detailed information about a tape file."""
-#     # Manejar extensión si falta
-#     if not tape_name.lower().endswith('.cdt') and not Path(tape_name).exists():
-#         if Path(tape_name + '.cdt').exists():
-#             tape_name += '.cdt'
-            
-#     tape_path = Path(tape_name)
-    
-#     if not tape_path.exists():
-#         error(f"\nTape file not found: {tape_name}\n")
-#         return
-        
-#     try:
-#         cdt = CDT(str(tape_path))
-#         # Al inicializar con filename, ya intenta cargar si existe. 
-#         # Si no existiera fallaría, pero ya checkeramos exists arriba.
-#         # De todos modos, para ser explicitos podemos llamar a load si no lo hizo el init (que si lo hace)
-#         if not cdt.blocks: # safety check si falló carga silenciosa o algo
-#              cdt.load(str(tape_path))
-        
-#         info = cdt.get_info()
-        
-#         blank_line(1)
-#         console.print(f"[bold blue]Tape Info:[/bold blue] [yellow]{tape_path.name}[/yellow]")
-#         blank_line(1)
-        
-#         # Usar el listado rico de alto nivel
-#         cdt.list_files(simple=False, use_rich=True, title=tape_path.name, show_title=True)
-        
-#     except Exception as e:
-#         error(f"Error reading tape: {e}")
+@tape.command(cls=RichCommand)
+@click.argument("tape_name", required=True)
+def insert(tape_name):
+    """Show detailed information about a tape file."""
 
+    tape_name = str(system.process_cdt_name(tape_name))
+    tape_path = Path(f"{tape_name}")
+    
+    if not tape_path.exists():
+        error(f"\nTape file not found: {tape_name}\n")
+        return
+        
+    cassette_mgr = cassetteManager()
+    current_tape =cassette_mgr.get_tape()
+    if current_tape == tape_name:
+        blank_line(1)
+        warn(f"Cassette '{tape_path.name}' is already inserted in the virtual tape drive.")
+        blank_line(1)
+        return
+    cdt = CDT(str(tape_path))
+    cdt.check()
+    blank_line(1)
+    ok(f"Tape '{tape_path.name}' verifies OK.")
+    
+    cassette_mgr.set_tape(str(tape_path))
+    ok(f"Cassette '{tape_path.name}' inserted into virtual tape drive.")
+    blank_line(1)
+    cdt.list_files(simple=False, use_rich=True, title=tape_path.name, show_title=True)
+    
 @tape.command(cls=RichCommand)
 def eject():
     """List blocks and structure of the tape."""
@@ -150,8 +144,7 @@ def eject():
     if tape_name == "":
         error("No tape inserted in the cassette drive.\n")
         return
-    tape_name = Path(f"{tape_name}").name
-    cassette_mgr.set_tape("")
+    cassette_mgr.eject()
     blank_line(1)
     ok(f"Cassette '{tape_name}' ejected from virtual tape drive.\n")
     
