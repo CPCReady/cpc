@@ -218,31 +218,54 @@ class CDT:
     def _get_blocks_with_headers(self):
         """
         Identifica bloques que contienen cabeceras de archivos
-        
         Returns:
             Lista de tuplas (bloque_datos, cabecera_parseada)
         """
         found = []
         for i, block in enumerate(self.blocks):
-            # Buscar bloques Turbo (ID 0x11) que tengan datos
+            # Solo considerar bloques TurboSpeed con cabecera AMSDOS (0x2C) o ASCII (0x16)
             if hasattr(block, 'data') and len(block.data) > 0:
-                # Cabecera AMSDOS estándar empieza con sync byte, pero en el bloque CDT
-                # el primer byte es el sync byte de datos (0x2C header, 0x16 data).
-                # Pero en la implementación de CDT.py, block.data incluye el sync byte al principio.
-                # Si es una cabecera, el primer byte de datos (tras el sync) suele ser el tipo
-                
-                # Check for header block (usually first byte of data is 0x2C sync for header)
-                if len(block.data) > 0 and block.data[0] == 0x2C:
-                     try:
+                if block.data[0] == 0x2C:
+                    try:
                         header = DataHeader()
-                        # DataHeader.set espera los datos SIN el sync byte 0x2C si viene del parseo raw
-                        # Pero en block.data[0] estÃ¡ el sync. DataHeader.set toma el slice.
-                        # Vamos a ver como lo hace dump en TurboSpeed:
-                        # header.set(self.data[1:])
                         header.set(block.data[1:])
-                        found.append((block, header))
-                     except:
+                        # Solo añadir si el nombre es válido y tipo es BIN o ASCII
+                        if header.filename.strip() and header.type in (0, 2):
+                            found.append((block, header))
+                    except Exception:
                         pass
+                elif block.data[0] == 0x16:
+                    header = DataHeader()
+                    filename_real = getattr(block, 'filename_real', None)
+                    if filename_real:
+                        header.filename = filename_real
+                    else:
+                        # Buscar el nombre real en el bloque anterior si es cabecera AMSDOS
+                        prev_block = self.blocks[i-1] if i > 0 else None
+                        prev_name = None
+                        if prev_block and hasattr(prev_block, 'data') and len(prev_block.data) > 0 and prev_block.data[0] == 0x2C:
+                            try:
+                                prev_header = DataHeader()
+                                prev_header.set(prev_block.data[1:])
+                                prev_name = prev_header.filename
+                            except Exception:
+                                pass
+                        if prev_name:
+                            header.filename = prev_name
+                        else:
+                            # Si no, usar el nombre del archivo CDT si existe
+                            if self.filename and isinstance(self.filename, str):
+                                header.filename = Path(self.filename).stem.upper()
+                            else:
+                                header.filename = "FILE"
+                    header.type = 0  # ASCII
+                    header.length = len(block.data) - 1
+                    header.addr_load = 0
+                    header.addr_start = 0
+                    header.block_id = i+1
+                    # Solo añadir si el nombre es válido
+                    if header.filename.strip():
+                        found.append((block, header))
         return found
 
     def list_files(self, simple: bool = False, use_rich: bool = True, show_title: bool = True, title: str = None) -> str:
@@ -266,10 +289,11 @@ class CDT:
 
                 console = Console()
 
-                table_title = title if title is not None else (f"[bold yellow] ▶ {self.header.title}[/bold yellow]" if show_title else None)
+                # Evitar markup en el título para prevenir errores de cierre de etiquetas
+                table_title = title if title is not None else (f" ▶ {self.header.title}" if show_title else None)
 
                 table = Table(
-                    title=" ▶ " + (table_title.upper() if table_title else None),
+                    title=(" ▶ " + table_title.upper()) if table_title else None,
                     title_justify="left",
                     show_header=True,
                     header_style="bold white",
@@ -289,24 +313,17 @@ class CDT:
                 for block, header in files:
                     # Determinar tipo
                     file_type_str = "[dim]UNKNOWN[/dim]"
+                    style = "[white]"
                     if header.type == 0:
-                        file_type_str = "[cyan]BASIC[/cyan]"
-                        style = "[bold cyan]"
-                    elif header.type == 1:
-                        file_type_str = "[bright_yellow]BASIC+[/bright_yellow]"
+                        file_type_str = "[cyan]ASCII[/cyan]"
                         style = "[bold cyan]"
                     elif header.type == 2:
-                        file_type_str = "[blue]BINARY[/blue]"
+                        file_type_str = "[blue]BIN[/blue]"
                         style = "[bold yellow]"
-                    elif header.type == 22: # Screen
-                        file_type_str = "[magenta]SCREEN$[/magenta]"
-                        style = "[magenta]"
                     else:
                         file_type_str = f"[dim]Type {header.type}[/dim]"
                         style = "[white]"
-                        
                     filename = header.filename.rstrip('\x00')
-                    
                     table.add_row(
                         f"{style}{filename}[/]",
                         file_type_str,
@@ -323,8 +340,8 @@ class CDT:
                 console.print(table)
                 
                 # Mostrar resumen de bloques
-                blocks_summary = f"[bold blue]{len(self.blocks)}[/bold blue] blocks total"
-                console.print(Panel(blocks_summary, style="bright_blue", expand=False))
+                blocks_summary = f"[bold green]{len(self.blocks)}[/bold green] blocks total"
+                console.print(Panel(blocks_summary, style="bright_yellow", expand=False))
                 console.print()
                 
                 return None

@@ -60,8 +60,16 @@ def ren(file_old, file_new, drive_a, drive_b):
         - Wildcards (*, ?) are allowed in file names for batch renaming (e.g., *.BAS, PROG?.BIN).
     """
     # Obtener el nombre del disco usando DriveManager
-    drive_manager = DriveManager()
+    system_cpm = SystemCPM()
+    storage_mode = system_cpm.get_storage()
     
+    if storage_mode != "disc":
+        blank_line(1)
+        error("The current storage mode is not set to 'disc'. Cannot erase files from disc.")
+        blank_line(1)
+        return 1
+    
+    drive_manager = DriveManager()
     disc_name = drive_manager.get_disc_name(drive_a, drive_b)
     
     if disc_name is None:

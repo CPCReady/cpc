@@ -54,10 +54,23 @@ def era(file_patterns, drive_a, drive_b):
         cpc era "GAME.*"          # Erase all files starting with GAME
 
     Notes:
+        - Only files that exist on the disc of the selected drive can be extracted.
         - If a file does not exist or no files match a pattern, a warning or error will be shown.
         - The number of successfully and failed deletions will be displayed at the end.
         - After erasing, the updated file list will be displayed for review.
     """
+    
+    cassette_mgr = cassetteManager()
+    system_cpm = SystemCPM()
+    storage_mode = system_cpm.get_storage()
+    
+    if storage_mode != "disc":
+        blank_line(1)
+        error("The current storage mode is not set to 'disc'. Cannot erase files from disc.")
+        blank_line(1)
+        return 1
+    
+    
     # Validar que se hayan proporcionado patrones de archivo
     if not file_patterns:
         blank_line(1)
@@ -67,7 +80,6 @@ def era(file_patterns, drive_a, drive_b):
     
     # Obtener el nombre del disco usando DriveManager
     drive_manager = DriveManager()
-    
     disc_name = drive_manager.get_disc_name(drive_a, drive_b)
     
     if disc_name is None:

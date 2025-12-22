@@ -186,7 +186,11 @@ class RVM:
         if archivo_dsk:
             parametros.extend(["-i", archivo_dsk])
         
-        if archivo_ejecutar:
+        if archivo_ejecutar == "only_tape":
+            # Comando para ejecutar el archivo: run"archivo"\n
+            #parametros.append(f'-c=run"{archivo_ejecutar}"\\n')
+            parametros.append(f'-c=|tape\\nrun""\\n')
+        elif archivo_ejecutar:
             # Comando para ejecutar el archivo: run"archivo"\n
             parametros.append(f'-c=run"{archivo_ejecutar}"\\n')
         

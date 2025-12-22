@@ -56,10 +56,23 @@ def filextr(files, drive_a, drive_b):
         cpc filextr "GAME.*"          # Extract all files starting with GAME
 
     Notes:
+        - Only files that exist on the disc of the selected drive can be extracted.
         - If a file does not exist or no files match a pattern, a warning or error will be shown.
         - The number of successfully and failed extractions will be displayed at the end.
         - Extracted files keep their AMSDOS header for compatibility.
     """
+    
+    cassette_mgr = cassetteManager()
+    system_cpm = SystemCPM()
+    storage_mode = system_cpm.get_storage()
+    
+    if storage_mode != "disc":
+        blank_line(1)
+        error("The current storage mode is not set to 'disc'. Cannot erase files from disc.")
+        blank_line(1)
+        return 1
+    
+    
     # Obtener el nombre del disco usando DriveManager
     drive_manager = DriveManager()
     

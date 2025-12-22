@@ -15,7 +15,7 @@
 import click
 from pathlib import Path
 import shutil
-from cpcready.utils import console, system, DriveManager,cassetteManager
+from cpcready.utils import console, system, DriveManager,cassetteManager,SystemCPM
 from cpcready.utils.click_custom import CustomCommand, RichCommand, CustomGroup, RichGroup, RichCommand
 from cpcready.utils.console import info2, ok, debug, warn, error, message, blank_line, banner
 from cpcready.utils.version import add_version_option
@@ -23,6 +23,7 @@ from cpcready.utils.update import show_update_notification
 from cpcready.pydsk import DSK, DSKError
 from rich.console import Console
 from rich.panel import Panel
+from cpcready.pycdt.cdt import CDT, CDTError
 
 # Crear consolas separadas para stdout y stderr
 console = Console()
@@ -55,43 +56,72 @@ def cat(drive_a, drive_b):
     show_update_notification()
     # estandarizamos nombre del disc
     drive_manager = DriveManager()
-
-       # Validar que solo se especifique una unidad
-    if drive_a and drive_b:
-        error("Cannot specify both -A and -B options. Choose one drive.")
-        return
-
-    drive = None
-    if drive_a:
-        drive = 'A'
-        disc_name = drive_manager.read_drive_a()
-    elif drive_b:
-        drive = 'B'
-        disc_name = drive_manager.read_drive_b()
-    else:
-        drive = drive_manager.read_drive_select().upper()
-        if drive == 'A':
-            disc_name = drive_manager.read_drive_a()
-        else:
-            disc_name = drive_manager.read_drive_b()
+    cassette_mgr = cassetteManager()
+    system_cpm = SystemCPM()
+    storage_mode = system_cpm.get_storage()
     
-   
-    if disc_name == "":
-        blank_line(1)
-        error(f"Drive {drive}: disc missing\n")
-        drive_manager.drive_table()
-        return
-
-    disc_path = Path(f"{disc_name}")
-    if not disc_path.exists():
-        error(f"{disc_name} assigned to drive {drive} does not exist.")
-        drive_manager.eject(drive)
-        drive_manager.drive_table()
-        return
-        
-    dsk = DSK(disc_name)
+    
+    
     blank_line(1)
-    dsk.list_files(simple=False, use_rich=True)
+    if storage_mode == "disc":
+        console.print(Panel.fit("[bold white]Listing files from virtual disc (DSK)[/bold white]", style="bright_yellow"))
+    elif storage_mode == "tape":
+        console.print(Panel.fit("[bold white]Listing files from virtual tape (CDT)[/bold white]", style="bright_yellow"))
+       # Validar que solo se especifique una unidad
+    
+    blank_line(1)
+    if storage_mode == "tape":
+        tape_name = cassette_mgr.get_tape()
+        if tape_name == "":
+            blank_line(1)
+            error("No tape inserted in the cassette drive.\n")
+            cassette_mgr.cassette_table()
+            return
+        tape_path = Path(f"{tape_name}")
+        
+        if not tape_path.exists():
+            error(f"{tape_name} assigned to cassette drive does not exist.")
+            cassette_mgr.eject()
+            return
+        
+        cdt = CDT(str(tape_name))
+        cdt.list_files(show_title=True, title=Path(tape_name).name)
+        return
+    elif storage_mode == "disc":
+        if drive_a and drive_b:
+            error("Cannot specify both -A and -B options. Choose one drive.")
+            return
+
+        drive = None
+        if drive_a:
+            drive = 'A'
+            disc_name = drive_manager.read_drive_a()
+        elif drive_b:
+            drive = 'B'
+            disc_name = drive_manager.read_drive_b()
+        else:
+            drive = drive_manager.read_drive_select().upper()
+            if drive == 'A':
+                disc_name = drive_manager.read_drive_a()
+            else:
+                disc_name = drive_manager.read_drive_b()
+        
+        if disc_name == "":
+            blank_line(1)
+            error(f"Drive {drive}: disc missing\n")
+            drive_manager.drive_table()
+            return
+
+        disc_path = Path(f"{disc_name}")
+        if not disc_path.exists():
+            error(f"{disc_name} assigned to drive {drive} does not exist.")
+            drive_manager.eject(drive)
+            drive_manager.drive_table()
+            return
+            
+        dsk = DSK(disc_name)
+        blank_line(1)
+        dsk.list_files(simple=False, use_rich=True)
 
 
 
