@@ -1,17 +1,17 @@
-
-# Copyright 2025 David CH.F (destroyer)
+# Copyright (C) 2025 David CH.F (destroyer)
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at:
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions
-# and limitations under the License.
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import click
 from pathlib import Path
@@ -27,14 +27,6 @@ from rich.table import Table
 import sys
 
 console = Console()
-
-# def aux_int(value_str):
-#     """Helper para convertir string a int soportando hex (0x)"""
-#     if isinstance(value_str, int):
-#         return value_str
-#     if value_str.startswith('0x') or value_str.startswith('&') or value_str.startswith('$'):
-#         return int(value_str.replace('&', '0x').replace('$', '0x'), 16)
-#     return int(value_str)
 
 @add_version_option_to_group
 @click.group(cls=RichGroup, invoke_without_command=True, show_banner=False)
@@ -148,123 +140,3 @@ def eject():
     blank_line(1)
     ok(f"Cassette '{tape_name}' ejected from virtual tape drive.\n")
     
-    
-#     """Verify CDT tape format integrity."""
-#     # Manejar extensión si falta
-#     if not tape_name.lower().endswith('.cdt') and not Path(tape_name).exists():
-#         if Path(tape_name + '.cdt').exists():
-#             tape_name += '.cdt'
-            
-#     tape_path = Path(tape_name)
-    
-#     if not tape_path.exists():
-#         error(f"Tape file not found: {tape_name}")
-#         return
-        
-#     try:
-#         cdt = CDT(str(tape_path))
-#         cdt.check()
-#         ok(f"Tape '{tape_path.name}' verifies OK.")
-#     except Exception as e:
-#         error(f"Tape verification FAILED: {e}")
-
-
-# # Comando para añadir archivo ASCII
-# @tape.command("add_ascii", cls=RichCommand)
-# @click.argument("tape_name", required=True)
-# @click.argument("input_file", required=True, type=click.Path(exists=True))
-# @click.option("--speed", type=click.Choice(['1000', '2000']), default='2000', help="Baud rate (def: 2000).")
-# @click.option("--name", help="AMSDOS filename (max 16 chars).")
-# def add_ascii(tape_name, input_file, speed, name):
-#     """Add an ASCII file to the tape image."""
-#     if not tape_name.lower().endswith('.cdt') and not Path(tape_name).exists():
-#         if Path(tape_name + '.cdt').exists():
-#             tape_name += '.cdt'
-#     tape_path = Path(tape_name)
-#     if not tape_path.exists():
-#         error(f"Tape file not found: {tape_name}")
-#         return
-#     try:
-#         cdt = CDT(str(tape_path))
-#         with open(input_file, 'rb') as f:
-#             content = bytearray(f.read())
-#         amsdos_name = name if name else Path(input_file).name.upper()
-#         if len(amsdos_name) > 16:
-#             amsdos_name = amsdos_name[:16]
-#         header = cdt.create_data_header(
-#             filename=amsdos_name,
-#             load_addr=0,
-#             exec_addr=0,
-#             file_type=DataHeader.FT_ASCII
-#         )
-#         console.print(f"Adding [cyan]{input_file}[/cyan] as [yellow]{amsdos_name}[/yellow] [blue]ASCII[/blue]...")
-#         cdt.add_file(content, header, int(speed))
-#         cdt.save()
-#         ok(f"ASCII file added successfully to '{tape_path.name}'.")
-#     except Exception as e:
-#         error(f"Error adding ASCII file to tape: {e}")
-
-# # Comando para añadir archivo BINARIO
-# @tape.command("add_bin", cls=RichCommand)
-# @click.argument("tape_name", required=True)
-# @click.argument("input_file", required=True, type=click.Path(exists=True))
-# @click.option("--speed", type=click.Choice(['1000', '2000']), default='2000', help="Baud rate (def: 2000).")
-# @click.option("--name", help="AMSDOS filename (max 16 chars).")
-# @click.option("--load", help="Load address (dec/hex) for BIN files.")
-# @click.option("--exec", help="Execution address (dec/hex) for BIN files.")
-# def add_bin(tape_name, input_file, speed, name, load, exec):
-#     """Add a BIN file to the tape image (with load/exec address)."""
-#     if not tape_name.lower().endswith('.cdt') and not Path(tape_name).exists():
-#         if Path(tape_name + '.cdt').exists():
-#             tape_name += '.cdt'
-#     tape_path = Path(tape_name)
-#     if not tape_path.exists():
-#         error(f"Tape file not found: {tape_name}")
-#         return
-#     try:
-#         cdt = CDT(str(tape_path))
-#         with open(input_file, 'rb') as f:
-#             content = bytearray(f.read())
-#         amsdos_name = name if name else Path(input_file).name.upper()
-#         if len(amsdos_name) > 16:
-#             amsdos_name = amsdos_name[:16]
-#         load_addr = aux_int(load) if load else 0
-#         exec_addr = aux_int(exec) if exec else 0
-#         header = cdt.create_data_header(
-#             filename=amsdos_name,
-#             load_addr=load_addr,
-#             exec_addr=exec_addr,
-#             file_type=DataHeader.FT_BIN
-#         )
-#         type_str = f"[blue]BIN[/blue] (load: {hex(load_addr)}, exec: {hex(exec_addr)})"
-#         console.print(f"Adding [cyan]{input_file}[/cyan] as [yellow]{amsdos_name}[/yellow] {type_str}...")
-#         cdt.add_file(content, header, int(speed))
-#         cdt.save()
-#         ok(f"BIN file added successfully to '{tape_path.name}'.")
-#     except Exception as e:
-#         error(f"Error adding BIN file to tape: {e}")
-
-# # Comando para añadir archivo RAW
-# @tape.command("add_raw", cls=RichCommand)
-# @click.argument("tape_name", required=True)
-# @click.argument("input_file", required=True, type=click.Path(exists=True))
-# @click.option("--speed", type=click.Choice(['1000', '2000']), default='2000', help="Baud rate (def: 2000).")
-# def add_raw(tape_name, input_file, speed):
-#     """Add a RAW file to the tape image (no AMSDOS header)."""
-#     if not tape_name.lower().endswith('.cdt') and not Path(tape_name).exists():
-#         if Path(tape_name + '.cdt').exists():
-#             tape_name += '.cdt'
-#     tape_path = Path(tape_name)
-#     if not tape_path.exists():
-#         error(f"Tape file not found: {tape_name}")
-#         return
-#     try:
-#         cdt = CDT(str(tape_path))
-#         with open(input_file, 'rb') as f:
-#             content = bytearray(f.read())
-#         console.print(f"Adding [cyan]{input_file}[/cyan] as [yellow]RAW[/yellow] data...")
-#         cdt.add_file(content, None, int(speed))
-#         cdt.save()
-#         ok(f"RAW file added successfully to '{tape_path.name}'.")
-#     except Exception as e:
-#         error(f"Error adding RAW file to tape: {e}")
